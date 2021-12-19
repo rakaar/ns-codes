@@ -4,7 +4,7 @@ function project
     close all;
 
 
-    b = -1;
+    b = 0.25;
     v_0 = -65; % source - http://www.columbia.edu/cu/appliedneuroshp/Spring2018/Spring18SHPAppliedNeuroLec5.pdf
     u_0 = b * v_0;
     [t r] = ode15s(@izhikevich_model, [0 300], [v_0 u_0]);
