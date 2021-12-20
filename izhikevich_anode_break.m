@@ -20,7 +20,7 @@ function result = izhikevich_model(t,r)
     c1 = 0.04; c2 = 5; c3=140; c4=1; c5=1;
     a=0.03;b=0.25;c=-60;d=4;
 
-    if t < 20 & t > 10
+    if t < 40 & t > 10
         i = -1.6;
     else
         i = 0;
