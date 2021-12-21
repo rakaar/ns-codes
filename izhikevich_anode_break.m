@@ -1,4 +1,5 @@
 function project
+    close all;
     b = 0.25;
     v_0 = -64; % source - http://www.columbia.edu/cu/appliedneuroshp/Spring2018/Spring18SHPAppliedNeuroLec5.pdf
     u_0 = b * v_0;
@@ -10,7 +11,7 @@ function project
 
     figure(12)
         plot(t, r(:,2));
-        title("izhikevich v vs t");
+        title("izhikevich u vs t");
     grid
 end
 
@@ -23,15 +24,21 @@ function result = izhikevich_model(t,r)
     else
         i = 0;
     end
-    result = zeros(2,1); % v, u
-    v = r(1);
-    u = r(2); 
-    if v >= 30
-        fprintf("\n crossed 30 %f \n", v);
-        v = c;
-        u = u + d;
+
+    % r(1) is v, r(2) is u
+    if r(1) > 30
+        fprintf("\n crossed 30 %f \n", r(1));
+        r(1) = c;
+        r(2) = r(2) + d;
     end
+    fprintf("\n now r1 is  %f \n", r(1));
+
+    result = zeros(2,1); % dv/dt, du/dt
+    % result(1) = c1*(r(1)^2) + (c2*r(1)) + c3 - c4*r(2) + c5*i;
+    result = zeros(2,1); % dv/dt, du/dt
+    result(1) = 0.04*(r(1)^2) + 5*r(1) + 140 - r(2) + i;
+    result(2) = a * ((b * r(1)) - r(2));
+
     
-    result(1) = c1*(v^2) + c2*v + c3 - c4*u + c5*i;
-    result(2) = a * ((b * v) - u);
+
 end
