@@ -1,5 +1,28 @@
-function param_tune
-    a=0.03; b=0.25; c=-52;  d=0;
+function loop_and_see
+    standard_a=0.03; standard_b=0.25; standard_c=-52;  standard_d=0;
+    
+    disp('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    for i=-0.10:0.01:0.1
+        run_izhikevich(standard_a+i, standard_b, standard_c, standard_d);
+    end
+    disp('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+
+    for i=-0.10:0.01:0.1
+        run_izhikevich(standard_a, standard_b+i, standard_c, standard_d);
+    end
+
+    disp('ccccccccccccccccccccccccccccccc')
+    for i=-0.10:0.01:0.1
+        run_izhikevich(standard_a, standard_b, standard_c+i, standard_d);
+    end
+    
+    disp('ddddddddddddddddddddddddddddddd')
+    for i=-0.10:0.01:0.1
+        run_izhikevich(standard_a, standard_b, standard_c, standard_d+i);
+    end
+end
+function run_izhikevich(a,b,c,d)
+    % a=0.03; b=0.25; c=-52;  d=0;
     V=-64;  u=b*V;
     VV=[];  uu=[];
     tau = 0.001;  tspan = 0:tau:100;
@@ -22,17 +45,17 @@ function param_tune
         uu(end+1)=u;
     end;
     
-    fprintf("a=%f b=%f c=%f d=%f \n", a, b, c, d);
+    fprintf("\n a=%f b=%f c=%f d=%f \n", a, b, c, d);
     num_of_spikes = get_num_of_spikes(VV);
     first_spike = get_first_spike_time(VV,1);
     first_spike_after_negative_i_cuts = get_first_spike_time(VV, 25000);
     fprintf("%d spikes \n", num_of_spikes);
-    fprintf("%first spike-> from 0: %f, from 25ms: %f \n", first_spike, first_spike_after_negative_i_cuts);
+    fprintf(" %f, %f \n", first_spike, first_spike_after_negative_i_cuts);
 
 
-    plot(tspan,VV,[0 T1 T1 (T1+5) (T1+5) max(tspan)],-85+[0 0 -5 -5 0 0]);
-    axis([0 max(tspan) -90 30])
-    title([' value ', num2str(i)]);
+    % plot(tspan,VV,[0 T1 T1 (T1+5) (T1+5) max(tspan)],-85+[0 0 -5 -5 0 0]);
+    % axis([0 max(tspan) -90 30])
+    % title([' value ', num2str(i)]);
 end
 
 function num_of_spikes = get_num_of_spikes(voltage_arr)
@@ -46,14 +69,17 @@ function num_of_spikes = get_num_of_spikes(voltage_arr)
     end
 end
 
-function spike_time = get_first_spike_time(voltage_arr, from_time)
+function return_value = get_first_spike_time(voltage_arr, from_time)
     len = length(voltage_arr);
+    return_value = 0;
+    spike_time = -1;
     for i=from_time:len
         if voltage_arr(i) >= 30
             spike_time = i/1000;
             break;
         end
     end
+    return_value = spike_time;
 end
 
 
