@@ -1,5 +1,6 @@
 % for i=-5:1:5
-    a=0.5; b=0.50; c=-30;  d=8;
+a=0.5; b=0.5; c=-52;  d=0;
+
     V=-64;  u=b*V;
     VV=[];  uu=[];
     tau = 0.2;  tspan = 0:tau:200;
@@ -24,6 +25,7 @@
     figure(floor(100+1))
         plot(tspan,VV,[0 T1 T1 (T1+5) (T1+5) max(tspan)],-85+[0 0 -5 -5 0 0]);
         axis([0 max(tspan) -90 30])
-        title([' value ', num2str(i)]);
+        % title([' value ', num2str(i)]);
+        title('voltage vs t,(blue - voltage, red - current)')
     grid
 % end
