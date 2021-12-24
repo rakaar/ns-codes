@@ -2,9 +2,22 @@ function loop_and_see
     standard_a=0.03; standard_b=0.25; standard_c=-52;  standard_d=0;
     
     disp('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    first_spike_arr = [];
+    num_of_spikes_arr = [];
     for i=-0.10:0.01:0.1
-        run_izhikevich(standard_a+i, standard_b, standard_c, standard_d);
+        voltage_array = run_izhikevich(standard_a+i, standard_b, standard_c, standard_d);
+        first_spike_arr = [first_spike_arr, get_first_spike_time(voltage_array, 1)];
+        num_of_spikes_arr = [num_of_spikes_arr, get_num_of_spikes(voltage_array)];
     end
+    figure(10)
+        scatter(-0.10:0.01:0.1, first_spike_arr, 'red','filled');
+        title('a vs first spike')
+    grid
+    figure(11)
+        scatter(-0.10:0.01:0.1, num_of_spikes_arr,'red', 'filled');
+        title('a vs num of spikes')
+    grid
+
     disp('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
 
     for i=-0.10:0.01:0.1
@@ -12,16 +25,16 @@ function loop_and_see
     end
 
     disp('ccccccccccccccccccccccccccccccc')
-    for i=-0.10:0.01:0.1
+    for i=-10:1:10
         run_izhikevich(standard_a, standard_b, standard_c+i, standard_d);
     end
     
     disp('ddddddddddddddddddddddddddddddd')
-    for i=-0.10:0.01:0.1
+    for i=-10:1:10
         run_izhikevich(standard_a, standard_b, standard_c, standard_d+i);
     end
 end
-function run_izhikevich(a,b,c,d)
+function voltage_values = run_izhikevich(a,b,c,d)
     % a=0.03; b=0.25; c=-52;  d=0;
     V=-64;  u=b*V;
     VV=[];  uu=[];
@@ -52,7 +65,7 @@ function run_izhikevich(a,b,c,d)
     fprintf("%d spikes \n", num_of_spikes);
     fprintf(" %f, %f \n", first_spike, first_spike_after_negative_i_cuts);
 
-
+    voltage_values = VV;
     % plot(tspan,VV,[0 T1 T1 (T1+5) (T1+5) max(tspan)],-85+[0 0 -5 -5 0 0]);
     % axis([0 max(tspan) -90 30])
     % title([' value ', num2str(i)]);
@@ -72,7 +85,7 @@ end
 function return_value = get_first_spike_time(voltage_arr, from_time)
     len = length(voltage_arr);
     return_value = 0;
-    spike_time = -1;
+    spike_time = 0;
     for i=from_time:len
         if voltage_arr(i) >= 30
             spike_time = i/1000;
