@@ -19,20 +19,55 @@ function loop_and_see
     grid
 
     disp('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-
+    first_spike_arr = [];
+    num_of_spikes_arr = [];
     for i=-0.10:0.01:0.1
-        run_izhikevich(standard_a, standard_b+i, standard_c, standard_d);
+        voltage_array = run_izhikevich(standard_a, standard_b+i, standard_c, standard_d);
+        first_spike_arr = [first_spike_arr, get_first_spike_time(voltage_array, 1)];
+        num_of_spikes_arr = [num_of_spikes_arr, get_num_of_spikes(voltage_array)];
     end
+    figure(20)
+        scatter(-0.10:0.01:0.1, first_spike_arr, 'red','filled');
+        title('b vs first spike')
+    grid
+    figure(21)
+        scatter(-0.10:0.01:0.1, num_of_spikes_arr,'red', 'filled');
+        title('b vs num of spikes')
+    grid
 
     disp('ccccccccccccccccccccccccccccccc')
+    first_spike_arr = [];
+    num_of_spikes_arr = [];
     for i=-10:1:10
-        run_izhikevich(standard_a, standard_b, standard_c+i, standard_d);
+        voltage_array = run_izhikevich(standard_a, standard_b, standard_c+i, standard_d);
+        first_spike_arr = [first_spike_arr, get_first_spike_time(voltage_array, 1)];
+        num_of_spikes_arr = [num_of_spikes_arr, get_num_of_spikes(voltage_array)];
     end
+    figure(30)
+        scatter(-10:1:10, first_spike_arr, 'red','filled');
+        title('c vs first spike')
+    grid
+    figure(31)
+        scatter(-10:1:10, num_of_spikes_arr,'red', 'filled');
+        title('c vs num of spikes')
+    grid
     
     disp('ddddddddddddddddddddddddddddddd')
+    first_spike_arr = [];
+    num_of_spikes_arr = [];
     for i=-10:1:10
-        run_izhikevich(standard_a, standard_b, standard_c, standard_d+i);
+        voltage_array = run_izhikevich(standard_a, standard_b, standard_c, standard_d+i);
+        first_spike_arr = [first_spike_arr, get_first_spike_time(voltage_array, 1)];
+        num_of_spikes_arr = [num_of_spikes_arr, get_num_of_spikes(voltage_array)];
     end
+    figure(40)
+        scatter(-10:1:10, first_spike_arr, 'red','filled');
+        title('d vs first spike')
+    grid
+    figure(41)
+        scatter(-10:1:10, num_of_spikes_arr,'red', 'filled');
+        title('d vs num of spikes')
+    grid
 end
 function voltage_values = run_izhikevich(a,b,c,d)
     % a=0.03; b=0.25; c=-52;  d=0;
