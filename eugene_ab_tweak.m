@@ -1,6 +1,6 @@
 function check_ab
     standard_a=0.5; standard_b=0.5; standard_c=-52;  standard_d=0;
-    
+    quit();
     disp('a - bbbbbbbbbbbb')
     for i=-0.1:0.01:0.1
         for j=-0.1:0.01:0.1
