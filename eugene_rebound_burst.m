@@ -1,7 +1,7 @@
 % for i=-5:1:5
-% a=0.5; b=0.5; c=-52;  d=0;
- a=0.03; b=0.25; c=-52;  d=0; % original in paper for rebound burst
- a=0.7; b=0.3; c=-52;  d=0; 
+a=0.5; b=0.5; c=-52;  d=0; % for early spike, but premature spike also hapen
+%  a=0.03; b=0.25; c=-52;  d=0; % original in paper for rebound burst
+%  a=0.7; b=0.3; c=-52;  d=0; 
  
  V=-64;  u=b*V;
     VV=[];  uu=[];
@@ -25,7 +25,7 @@
         uu(end+1)=u;
     end;
     figure(floor(100+1))
-        plot(tspan,VV,[0 T1 T1 (T1+5) (T1+5) max(tspan)],-85+[0 0 -5 -5 0 0]);
+        plot(tspan,VV);
         axis([0 max(tspan) -90 30])
         % title([' value ', num2str(i)]);
         title('voltage vs t,(blue - voltage, red - current)')
