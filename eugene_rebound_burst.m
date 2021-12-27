@@ -1,7 +1,8 @@
 % for i=-5:1:5
 % a=0.5; b=0.5; c=-52;  d=0; % for early spike, but premature spike also hapen
 %  a=0.03; b=0.25; c=-52;  d=0; % original in paper for rebound burst
-a=0.03; b=0.25; c=-52;  d=0;
+% a=0.03; b=0.25; c=-52;  d=0;
+a=0.03; b=0.25; c=-52; d=0;
  V=-64;  u=b*V;
     VV=[];  uu=[];
     tau = 0.001;  tspan = 0:tau:100;
