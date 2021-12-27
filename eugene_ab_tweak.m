@@ -1,6 +1,6 @@
 function check_ab
     standard_a=0.5; standard_b=0.5; standard_c=-52;  standard_d=0;
-    quit();
+    return;
     disp('a - bbbbbbbbbbbb')
     for i=-0.1:0.01:0.1
         for j=-0.1:0.01:0.1
@@ -13,7 +13,7 @@ function check_ab
                     first_spike = get_first_spike_time(voltage_array,1);
                     if first_spike >= 25
                         disp('*************************************************************************')
-                        quit();
+                        return;
                     end
                     first_spike_after_negative_i_cuts = get_first_spike_time(voltage_array, 25000);
                     fprintf("%d spikes \n", num_of_spikes);
