@@ -1,9 +1,10 @@
 function check_ab
     standard_a=0; standard_b=0; standard_c=-52;  standard_d=0;
     disp('a - bbbbbbbbbbbb')
-    for i=0.01:0.01:3
-        for j=0.01:0.01:3
-                    a=i;b=j;c=standard_c;d=standard_d;
+    for i=0.91:0.05:3
+        for j=0.01:0.05:3
+            for k=-2:0.5:6
+                    a=i;b=j;c=standard_c;d=k;
                     voltage_array = run_izhikevich(a, b, c, d);
                     fprintf("\n a=%f b=%f c=%f d=%f \n", a, b, c, d);
                     num_of_spikes = get_num_of_spikes(voltage_array);
@@ -15,6 +16,7 @@ function check_ab
                     first_spike_after_negative_i_cuts = get_first_spike_time(voltage_array, 25000);
                     fprintf("%d spikes \n", num_of_spikes);
                     fprintf(" %f, %f \n", first_spike, first_spike_after_negative_i_cuts);
+            end
         end
     end
 end
