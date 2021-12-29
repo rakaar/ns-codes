@@ -1,9 +1,15 @@
 function project
-    v_0 = -58; h_0 = 0;   
+    v_0 = -58; h_0 = 1;   
     [t r] = ode15s(@integrate_fire_burst, [0 200], [v_0 h_0]);
 
-    figure(1)
-        plot(t,r(:,1));
+    figure(15)
+        T1=20;
+        plot(t, r(:,1), [0 T1 T1 (T1+5) (T1+5) 200],-55+[0 0 -5 -5 0 0]);
+        axis([0 200 -80 -30]);
+    grid
+
+    figure(25)
+        plot(t, r(:,2));
     grid
 
 end
@@ -11,8 +17,7 @@ end
 function result = integrate_fire_burst(t,r)
     % vars
     c = 2;
-    i0 = 2;
-    i1 = 1;
+    i1 = 0;
     f=1;
 
     g_leak = 0.035;
@@ -27,13 +32,21 @@ function result = integrate_fire_burst(t,r)
     tau_h_plus = 100;
     tau_h_minus = 20;
 
+    
+    T1=20;
+    if (t>T1) & (t < T1+5) 
+        i0=-2;
+    else
+        i0=0;
+    end;
+
     v = r(1);
     h = r(2);
 
-    if v >= v_theta
-        disp("here ????")
-        v = v_reset;
-    end
+    % if v >= v_theta
+    %     disp("here ????")
+    %     v = v_reset;
+    % end
     result = zeros(2,1); 
     result(1) = (1/c) * ( ...
          (i0 + i1*cos(2000*pi*f*t)) ...
@@ -45,4 +58,10 @@ function result = integrate_fire_burst(t,r)
     else
         result(2) = (1-h)/tau_h_plus;
     end
+
+    if v >= v_theta
+        disp("here ????")
+        v = v_reset;
+    end
+
 end
