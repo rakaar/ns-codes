@@ -13,7 +13,7 @@ v_leak = -65;
 v_h = -60;
 v_t = 120;
 
-g_t = 0.07;
+g_t = 0.01;
 
 tau_h_plus = 100;
 tau_h_minus = 20;
@@ -63,7 +63,10 @@ figure(12)
 grid
 
 figure(13)
+    hold on
     scatter(t_inital:dt:t_final,h_arr);
+    plot([0 T1 T1 (T1+5) (T1+5) t_final], [0 0 -0.2 -0.2 0 0]);
+    hold off
 grid
 
 
