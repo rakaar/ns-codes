@@ -28,7 +28,7 @@ v = v_0; h  = h_0;
 
 for t=t_inital:dt:t_final
     if (t>T1) & (t < T1+5) 
-        i0=-0.67;
+        i0=-2.67;
     else
         i0=0;
     end;
@@ -57,7 +57,10 @@ for t=t_inital:dt:t_final
 end
 
 figure(12)
-    plot(t_inital:dt:t_final, v_arr, [0 T1 T1 (T1+5) (T1+5) t_final],-55+[0 0 -5 -5 0 0]);
-    axis([0 t_final -60 -30]);
+    plot(t_inital:dt:t_final, v_arr, [0 T1 T1 (T1+10) (T1+10) t_final],-55+[0 0 -5 -5 0 0]);
+    axis([0 t_final -80 -30]);
+grid
 
+figure(13)
+    scatter(t_inital:dt:t_final,h_arr);
 grid
