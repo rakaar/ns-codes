@@ -1,3 +1,4 @@
+function project
 
 % vars
 c = 2;
@@ -23,7 +24,7 @@ h_arr = [];
 dt = 0.001; t_inital=0; t_final=200;
 T1=20;
 
-v_0 = -58; h_0 = 1;
+v_0 = -58; h_0 = 0.4;
 v = v_0; h  = h_0;
 
 for t=t_inital:dt:t_final
@@ -37,7 +38,7 @@ for t=t_inital:dt:t_final
     (1/c) * ( ...
          (i0 + i1*cos(2000*pi*f*t)) ...
          - (g_leak*(v-v_leak))  ...
-         -(g_t * heaviside(v-v_h) * h * (v-v_t)) ...
+         -(g_t * my_heaviside(v,v_h) * h * (v-v_t)) ...
          )...
     );
     if v >= v_h
@@ -64,3 +65,15 @@ grid
 figure(13)
     scatter(t_inital:dt:t_final,h_arr);
 grid
+
+
+
+end % project end
+
+function heaviside_value = my_heaviside(v,v_h)
+    if v >= v_h
+        heaviside_value = 1;
+    else
+        heaviside_value = 0;
+    end
+end

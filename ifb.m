@@ -1,6 +1,6 @@
 function project
     v_0 = -58; h_0 = 1;   
-    [t r] = ode15s(@integrate_fire_burst, [0 200], [v_0 h_0]);
+    [t r] = ode45(@integrate_fire_burst, [0 200], [v_0 h_0]);
 
     figure(15)
         T1=20;
