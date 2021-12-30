@@ -9,7 +9,7 @@ f=1;
 g_leak = 0.035;
 v_theta = -35;
 v_reset = -50;
-v_leak = -65;
+v_leak = -20;
 v_h = -60;
 v_t = 120;
 
