@@ -7,9 +7,9 @@ i1 = 0; % we are not bothered about sinosidal curents
 f=1;
 
 g_leak = 0.035;
-v_theta = -35;
-v_reset = -50;
-v_leak = -20;
+v_theta = -44; % try for -46, -47, -48
+v_reset = -50 ;
+v_leak = -30;
 v_h = -60;
 v_t = 120;
 
@@ -24,7 +24,7 @@ h_arr = [];
 dt = 0.001; t_inital=0; t_final=200;
 T1=20;
 
-v_0 = -58; h_0 = 0.4;
+v_0 = -70; h_0 = 0.2;
 v = v_0; h  = h_0;
 
 for t=t_inital:dt:t_final
