@@ -9,7 +9,7 @@ f=1;
 g_leak = 0.035;
 v_theta = -48; % try for -46, -47, -48
 v_reset = -50 ;
-v_leak = -30;
+v_leak = -25;
 v_h = -60;
 v_t = 250;
 
