@@ -11,7 +11,7 @@ v_theta = -48; % try for -46, -47, -48
 v_reset = -50 ;
 v_leak = -30;
 v_h = -60;
-v_t = 120;
+v_t = 250;
 
 g_t = 0.01;
 
