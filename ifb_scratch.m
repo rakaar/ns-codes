@@ -7,7 +7,7 @@ i1 = 0; % we are not bothered about sinosidal curents
 f=1;
 
 g_leak = 0.035;
-v_theta = -46; % try for -46, -47, -48
+v_theta = -48; % try for -46, -47, -48
 v_reset = -50 ;
 v_leak = -30;
 v_h = -60;
@@ -16,7 +16,7 @@ v_t = 120;
 g_t = 0.01;
 
 tau_h_plus = 100;
-tau_h_minus = 20;
+tau_h_minus = 100;
 
 v_arr = [];
 h_arr = [];
