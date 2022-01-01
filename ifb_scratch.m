@@ -24,7 +24,7 @@ h_arr = [];
 dt = 0.001; t_inital=0; t_final=200;
 T1=20;
 
-v_0 = -70; h_0 = 0.1;
+v_0 = -70; h_0 = 0.2;
 v = v_0; h  = h_0;
 
 for t=t_inital:dt:t_final
