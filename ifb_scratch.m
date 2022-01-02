@@ -29,7 +29,9 @@ v = v_0; h  = h_0;
 
 for t=t_inital:dt:t_final
     if (t>T1) & (t < T1+20) 
-        i0=-2;
+        i0=-10;
+    else if (t>=100) & (t<=120)
+        i0=500;
     else
         i0=0;
     end;
