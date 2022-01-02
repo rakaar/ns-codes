@@ -15,7 +15,7 @@ v_t = 120;
 
 g_t = 0.07;
 
-tau_h_plus = 0.05;
+tau_h_plus = 40;
 tau_h_minus = 100;
 
 v_arr = [];
