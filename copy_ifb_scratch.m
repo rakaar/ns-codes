@@ -6,7 +6,7 @@ c = 2;
 i1 = 0; % we are not bothered about sinosidal curents
 f=1;
 
-g_leak = 0.04;
+g_leak = 0.035;
 v_theta = -35; % try for -46, -47, -48
 v_reset = -50 ;
 v_leak = -40;
@@ -16,7 +16,7 @@ v_t = 120;
 g_t = 0.07;
 
 tau_h_plus = 40;
-tau_h_minus = 100;
+tau_h_minus = 80;
 
 v_arr = [];
 h_arr = [];
@@ -30,7 +30,7 @@ v = v_0; h  = h_0;
 for t=t_inital:dt:t_final
     if (t>T1) & (t < T1+20) 
         % i0=-0.3;
-        i0 = -0.3;
+        i0 = -0.25;
     elseif (t>=45) & (t<=55)
         i0=0;
     else
