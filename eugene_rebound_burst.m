@@ -10,8 +10,8 @@
     for t=tspan
         if (t>T1) & (t < T1+5) 
             I=-1200;
-        elseif (t >= 70) & (t <=80)
-            I=10;
+        % elseif (t >= 70) & (t <=80)
+        %     I=10;
         else
             I=0;
         end;
