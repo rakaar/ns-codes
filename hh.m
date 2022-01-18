@@ -121,6 +121,26 @@ function project
         title('regular-n vs t')
     grid
 
+    %% only fixed h
+    
+    figure(21)
+        [t_h,r_h] = ode15s(@hh4_with_fixed_h,[0 200],[double(X2.v2), double(X2.m2), double(X2.n2)]);
+        subplot(3,1,1)
+        plot(t_h, r_h(:,1));
+        title('fixed h-v vs t')
+
+        subplot(3,1,2)
+        plot(t_h, r_h(:,2));
+        title('fixed h-m vs t')
+
+        subplot(3,1,3)
+        plot(t_h, r_h(:,3));
+        title('fixed h-n vs t')
+
+        
+    grid
+
+    %% only fixed h
 end % end of project
 
 function result = hh4(t,r)
@@ -216,7 +236,7 @@ function result = hh4_without_h(t,r)
 end
 
 function result = hh4_with_fixed_h(t,r)
-    h_fixed = 0.596121;
+    h_fixed = 0.15;
     % vars
     g_k_bar = 36;
     e_k = -72;

@@ -1,17 +1,23 @@
 % for i=-5:1:5
 % a=0.5; b=0.5; c=-52;  d=0; % for early spike, but premature spike also hapen
- a=0.03; b=0.25; c=-60;  d=0; % original in paper for rebound burst
 % a=0.03; b=0.25; c=-52;  d=0;
 % a=0.03; b=0.25; c=-52; d=0;
- V=-64;  u=b*V;
+tic
+a=0.03; b=0.25; c=-55;  d=0; % original in paper for rebound burst
+
+% currents = [20 50 100 500 800 1200];
+%for cur=1:length(currents)
+    V=-64;  u=b*V;
+    VV = zeros(1,100*1000+1);
+    uu = zeros(1, 100*1000 + 1);
     VV=[];  uu=[];
-    tau = 0.001;  tspan = 0:tau:100;
+    tau = 0.001;  tspan = 0:tau:500;
     T1=20;
     for t=tspan
-        if (t>T1) & (t < T1+5) 
-            I=-1200;
-        % elseif (t >= 70) & (t <=80)
-        %     I=10;
+        if (t>T1) & (t < T1+25) 
+            I=-10;
+         elseif (t >= 80) & (t <=90)
+            I=0;
         else
             I=0;
         end;
@@ -26,9 +32,14 @@
         end;
         uu(end+1)=u;
     end;
-    figure(floor(100+1))
-            plot(tspan,VV,[0 T1 T1 (T1+5) (T1+5) max(tspan)],-85+[0 0 -5 -5 0 0]);
+
+    toc
+    figure(1)
+            plot(tspan,VV,[0 T1 T1 (T1+100) (T1+100) max(tspan)],-85+[0 0 -5 -5 0 0]);
             axis([0 max(tspan) -90 30])
-            title('voltage vs t,(blue - voltage, red - current)')
+            title(['current is -',num2str(currents(1,cur))])
     grid
-% end
+
+    
+%end
+
