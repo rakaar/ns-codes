@@ -1,5 +1,5 @@
 tic
-a=0.03; b=0.25; c=-40;  d=6;
+a=0.03; b=0.25; c=-44;  d=0.8;
 V=-64;  u=b*V;
 T_end = 500;
 tau = 0.2;  tspan = 0:tau:T_end;
@@ -9,12 +9,14 @@ current_span = 200;
 VV=zeros(1, length(tspan));  
 uu=zeros(1, length(tspan));
 
-T2 = 150;
-current_span2 = 30;
+T2 = 450;
+current_span2 = 50;
 
 for t=tspan
     if (t>T1) & (t < T1+current_span) 
         I=-10;
+    elseif (t>T2) & (t<T2+current_span2)
+        I=0.5;
     else
         I=0;
     end;
@@ -31,6 +33,6 @@ for t=tspan
 end;
 toc
 
-plot(tspan,VV,[0 T1 T1 (T1+current_span) (T1+current_span) max(tspan)],-85+[0 0 -5 -5 0 0]);
+plot(tspan,VV,[0 T1 T1 (T1+current_span) (T1+current_span) T2 T2 (T2+current_span2) (T2+current_span2) max(tspan)],-85+[0 0 -5 -5 0 0 5 5 0 0]);
 axis([0 max(tspan) -90 30])
 title('(N) rebound burst');
