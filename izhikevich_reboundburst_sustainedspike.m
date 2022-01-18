@@ -9,14 +9,13 @@ current_span = 100;
 VV=zeros(1, length(tspan));  
 uu=zeros(1, length(tspan));
 
-T2 = 150;
+T2 = 350;
 current_span2 = 30;
-
 for t=tspan
     if (t>T1) & (t < T1+current_span) 
         I=-10;
     elseif (t>T2) & (t < T2+current_span2)
-        I=0;
+        I=2;
     else
         I=0;
     end;
@@ -33,6 +32,6 @@ for t=tspan
 end;
 toc
 
-plot(tspan,VV,[0 T1 T1 (T1+current_span) (T1+current_span) max(tspan)],-85+[0 0 -5 -5 0 0]);
+plot(tspan,VV,[0 T1 T1 (T1+current_span) (T1+current_span) T2 T2 (T2+current_span2) (T2+current_span2) max(tspan)],-85+[0 0 -5 -5 0 0 5 5 0 0]);
 axis([0 max(tspan) -90 30])
 title('(N) rebound burst');
