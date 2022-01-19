@@ -1,5 +1,6 @@
+close all;
 tic
-a=0.03; b=0.25; c=-44;  d=0.8;
+a=0.02; b=0.25; c=-58;  d=0.5;
 V=-64;  u=b*V;
 T_end = 700;
 tau = 0.2;  tspan = 0:tau:T_end;
@@ -14,7 +15,7 @@ current_span2 = 50;
 
 for t=tspan
     if (t>T1) & (t < T1+current_span) 
-        I=-18;
+        I=-10;
     elseif (t>T2) & (t<T2+current_span2)
         I=0.5;
     else
