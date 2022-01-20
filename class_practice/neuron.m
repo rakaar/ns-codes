@@ -1,17 +1,25 @@
-classdef Neuron
-    properties
-        a = 0;
-        voltage_arr = zeros(1,2);
-    end
+classdef neuron
+   properties
+        a ;
+        b ;
+        c ;
+        d ;
     
-    methods
-        function obj = Neuron(a_val)
-            obj.a = a_val;
-        end
-        
-        function voltage_values = fire_neuron()
-            voltage_arr = zeros(1,2);
-        end
+   end
+   
+   methods
+       
+       function obj = neuron(a,b,c,d)
+           obj.a = a;
+           obj.b = b;
+           obj.c = c;
+           obj.d = d;
+            
+       end
+       function obj = change_d(obj,d_value)
+           
+            obj.d = d_value;
+           
+       end
     end
-
 end
