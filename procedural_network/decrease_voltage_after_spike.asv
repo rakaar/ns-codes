@@ -1,0 +1,6 @@
+function new_voltage = decrease_voltage_after_spike(original_voltage)
+    original_voltage = reshape(original_voltage, 1, length(original_voltage));
+    threshold = 0.03;
+    for i=1:
+    
+end

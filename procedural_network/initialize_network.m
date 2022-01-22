@@ -9,11 +9,7 @@ dt = 0.2;
 t_simulate = 700;
 tspan = 0:dt:t_simulate;
 
-% Voltage: key is column number, value is voltage values
-% voltages = containers.Map('KeyType','int32', 'ValueType','any');
-% for k=1:1:n_columns
-%     voltages(k) = zeros(n_total_neurons, t_simulate/dt + 1);
-% end
+% voltages is a 3d tensor
 voltages = zeros(n_columns, n_total_neurons, length(tspan));
 
 % neuron params: 
@@ -62,8 +58,6 @@ synaptic_resources = zeros(125, 3, t_simulate/dt + 1);
 
 %================== testing ======================
 % fire a neuron 10 in column 11
-% column11 = voltages(11);
-% [ column11(10, :), ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
 [voltage_val, ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
 voltages(11, 10, :) = reshape(voltage_val, 1, 1, length(tspan));
 figure(1)
@@ -75,7 +69,6 @@ random_neurons = [94 28 39];
 for i=1:3
     [voltage_val, ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
     voltages(11, random_neurons(i), :) = reshape(voltage_val, 1, 1, length(tspan));
-    % [column11(random_neurons(i),:), ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
 end
 
 % checking for 10
@@ -136,6 +129,8 @@ for i=2:n_total_neurons
     voltages(11, 1, :) =  voltages(11, 1, :) + reshape(w*xe.*shift_1(g).*shift_1(x).*shift_1(x), 1, 1, length(tspan));
    
 end
+
+voltages(11, 1, :) = reshape(decrease_voltage_after_spike(voltages(11, 1, :)), 1,1,length(tspan));
 % -- what about the rules of decreasing voltage ???
 
 figure(3)
