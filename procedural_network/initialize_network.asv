@@ -74,8 +74,6 @@ for i=1:3
     [column11(random_neurons(i),:), ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
 end
 
-% checking for 10
-check_10_xe = [];
 % resources depletion for 94 28 39 10
 for i=1:n_total_neurons
     for j=1:length(column11)
@@ -89,25 +87,15 @@ for i=1:n_total_neurons
         synaptic_resources(i, 1) = x_r + (-M*(x_r/tau_re)) + (x_i/tau_ir);
         synaptic_resources(i, 2) = x_e + (M*(x_r/tau_re)) - (x_e/tau_ei);
         synaptic_resources(i ,3) = x_i + (x_e/tau_ei) - (x_i/tau_ir);
-    
-    if i==94
-        check_10_xe = [check_10_xe, synaptic_resources(i,2)];
-    end
-    
     end
 end
-
-figure(12)
-    plot(check_10_xe)
-    title('xe of 10th neuron')
-grid
 
 figure(2)
     plot(tspan, column11(28, :))
 grid
 
 figure(5)
-    plot(synaptic_resources(:, 2)); % xe of all neurons
+    
 grid
 
 % synapse test
@@ -120,12 +108,11 @@ for i=2:n_total_neurons
     w = weight_matrix(1,i);
     xe = synaptic_resources(i,2);
       
-    column11(1, :) =  column11(1, :) + w*shift_1(g).*shift_1(x).*shift_1(x);
+    column11(1, :) =  column11(1, :) + xe*w*shift_1(g).*shift_1(x).*shift_1(x);
    
 end
 % -- what about the rules of decreasing voltage ???
 
 figure(3)
     plot(tspan, column11(1,:))
-    title('voltage of neuron 1 ')
 grid
