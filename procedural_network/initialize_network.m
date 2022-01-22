@@ -56,8 +56,8 @@ end
 
 % syaptic resources for all neurons - xr, xe, xi
 tau_re = 0.9; tau_ei = 27; tau_ir = 5000;
-synaptic_resources = zeros(125,3);
-synaptic_resources(:,1) = 1;
+synaptic_resources = zeros(125, 3, t_simulate/dt + 1);
+
 
 %================== testing ======================
 % fire a neuron 10 in column 11
@@ -83,44 +83,53 @@ for i=1:n_total_neurons
         if column11(i,j) == 30
             M = 1;
         end 
-        x_r = synaptic_resources(i, 1); 
-        x_e = synaptic_resources(i, 2);
-        x_i = synaptic_resources(i, 3);
-        synaptic_resources(i, 1) = x_r + (-M*(x_r/tau_re)) + (x_i/tau_ir);
-        synaptic_resources(i, 2) = x_e + (M*(x_r/tau_re)) - (x_e/tau_ei);
-        synaptic_resources(i ,3) = x_i + (x_e/tau_ei) - (x_i/tau_ir);
+       
+        
+        if j==1
+            x_r = 1;
+            x_e = 0;
+            x_i = 0;
+        else
+             x_r = synaptic_resources(i, 1, j-1); 
+             x_e = synaptic_resources(i, 2, j-1);
+             x_i = synaptic_resources(i, 3, j-1);
+        end
+        
+        synaptic_resources(i, 1, j) = x_r + (-M*(x_r/tau_re)) + (x_i/tau_ir);
+        synaptic_resources(i, 2, j) = x_e + (M*(x_r/tau_re)) - (x_e/tau_ei);
+        synaptic_resources(i ,3, j) = x_i + (x_e/tau_ei) - (x_i/tau_ir);
     
-    if i==94
-        check_10_xe = [check_10_xe, synaptic_resources(i,2)];
-    end
+        if i==94
+            check_10_xe = [check_10_xe, synaptic_resources(i,2,j)];
+        end
     
     end
 end
 
+
 figure(12)
     plot(check_10_xe)
-    title('xe of 10th neuron')
+    title('xe of 94th neuron')
 grid
 
 figure(2)
     plot(tspan, column11(28, :))
+    title('voltage of 28thn neuron')
 grid
 
-figure(5)
-    plot(synaptic_resources(:, 2)); % xe of all neurons
-grid
 
 % synapse test
 % all neurons add to column 11 neuron 1
-volt_1 = 0;
+
 for i=2:n_total_neurons
     x = voltage_to_spikes(column11(i,:));
     g = get_g_t(x);
     g = g(1,1:length(x));
     w = weight_matrix(1,i);
-    xe = synaptic_resources(i,2);
+    xe = synaptic_resources(i,2, :);
+    xe = reshape(xe, 1, length(x));
       
-    column11(1, :) =  column11(1, :) + w*shift_1(g).*shift_1(x).*shift_1(x);
+    column11(1, :) =  column11(1, :) + w*xe.*shift_1(g).*shift_1(x).*shift_1(x);
    
 end
 % -- what about the rules of decreasing voltage ???
