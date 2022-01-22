@@ -53,7 +53,7 @@ end
 
 % syaptic resources for all neurons - xr, xe, xi
 tau_re = 0.9; tau_ei = 27; tau_ir = 5000;
-synaptic_resources = zeros(125, 3, t_simulate/dt + 1);
+synaptic_resources = zeros(n_total_neurons, 3, t_simulate/dt + 1);
 
 
 %================== testing ======================
@@ -130,7 +130,7 @@ for i=2:n_total_neurons
    
 end
 
-voltages(11, 1, :) = reshape(decrease_voltage_after_spike(voltages(11, 1, :)), 1,1,length(tspan));
+voltages(11, 1, :) = reshape(voltages(11, 1, :), 1,1,length(tspan));
 % -- what about the rules of decreasing voltage ???
 
 figure(3)
