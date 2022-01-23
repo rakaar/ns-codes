@@ -6,7 +6,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
     
 % time step
 dt = 0.2;  % 20 ms as per paper https://www.izhikevich.org/publications/whichmod.pdf and code http://www.izhikevich.org/publications/figure1.m
-t_simulate = 100; % 10 s 
+t_simulate = 1000; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % voltages is a 3d tensor
