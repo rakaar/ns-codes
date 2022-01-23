@@ -5,8 +5,8 @@ n_inhibitory = 25;
 n_total_neurons = n_excitatory + n_inhibitory;
     
 % time step
-dt = 0.2;  % 20 ms as per paper https://www.izhikevich.org/publications/whichmod.pdf and code http://www.izhikevich.org/publications/figure1.m
-t_simulate = 100; % 10 s 
+dt = 0.2; 
+t_simulate = 700;
 tspan = 0:dt:t_simulate;
 
 % voltages is a 3d tensor
@@ -56,12 +56,11 @@ tau_re = 0.9; tau_ei = 27; tau_ir = 5000;
 synaptic_resources = zeros(n_total_neurons, 3, t_simulate/dt + 1);
 
 
-[voltage_val, ~] = neuron_fire(dt, t_simulate, 0,0,0,0,0,0, neuron_params_rb_ss);
+[voltage_val, ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
 voltages(11, 10, :) = reshape(voltage_val, 1, 1, length(tspan));
 figure(1)
     plot(tspan, reshape(voltages(11, 10, :), 1, length(tspan)));
 grid
-%{
 
 %================== testing ======================
 % fire a neuron 10 in column 11
@@ -144,4 +143,3 @@ figure(3)
     plot(tspan, reshape(voltages(11, 1, :), 1, length(tspan)));
     title('voltage of neuron 1 ')
 grid
-%}

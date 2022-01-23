@@ -10,6 +10,9 @@ function [VV, uu] = neuron_fire(dt, t_simulate, tp, tp_span, positive_current, t
     % initlialize 
     V=-64;  u=b*V;
     
+    % noise
+    I_background = 3; % generates 2.5 spikes/s
+    
     VV = zeros(1, length(tspan));
     uu = zeros(1, length(tspan));
     
@@ -22,7 +25,7 @@ function [VV, uu] = neuron_fire(dt, t_simulate, tp, tp_span, positive_current, t
                 I = 0;
             end
     
-             V = V + dt*(0.04*V^2+5*V+140-u+I);
+             V = V + dt*(0.04*V^2+5*V+140-u+I+I_background);
              u = u + dt*a*(b*V-u);
              if V > 30
                  VV(1, round(t/dt + 1))=30;
