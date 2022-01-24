@@ -5,12 +5,22 @@ n_inhibitory = 25;
 n_total_neurons = n_excitatory + n_inhibitory;
     
 % time step
+physical_time_in_ms = 20; %dt time step 
 dt = 0.2;  % 20 ms as per paper https://www.izhikevich.org/publications/whichmod.pdf and code http://www.izhikevich.org/publications/figure1.m
 t_simulate = 1000; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
+% making bins of 100ms = 5*dt and calculating spike rate
+spike_rate_dt = 5*dt;
+tspan_spike_rates = 0:spike_rate_dt:t_simulate;
+
 % voltages is a 3d tensor
 voltages = zeros(n_columns, n_total_neurons, length(tspan));
+spikes = zeros(n_columns, n_total_neurons, length(tspan));
+
+% spike rate
+spike_rates = zeros(n_columns, n_total_neurons, length(tspan_spike_rates));
+
 
 % neuron params: 
 % for rebound burst and sustained_spike
@@ -60,7 +70,26 @@ synaptic_resources = zeros(n_total_neurons, 3, t_simulate/dt + 1);
 voltages(11, 10, :) = reshape(voltage_val, 1, 1, length(tspan));
 figure(1)
     plot(tspan, reshape(voltages(11, 10, :), 1, length(tspan)));
+    xlim([0 100]);
+    title('c 11 n 10 voltage')
 grid
+
+spikes(11, 10, :) = reshape(voltage_to_spikes(voltages(11, 10, :)) ,1, 1, length(tspan));
+
+figure(2)
+    stem(tspan, reshape(spikes(11, 10, :), 1, length(tspan)));
+    xlim([0 100]);
+    title('c 11 n 10 spikes')
+grid
+
+spike_rates(11, 10, :) = reshape(spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes(11, 10, :)), 1,1,length(tspan_spike_rates));
+
+figure(3)
+    stem(tspan_spike_rates, reshape(spike_rates(11, 10, :),  1,length(tspan_spike_rates)))
+    xlim([0 20]);
+    title('c 11 n 10 spike rate/s')
+grid
+
 %{
 
 %================== testing ======================
