@@ -13,8 +13,9 @@ function spike_rate = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physica
             spike_rate(1,i+1) = spike_rate(1,i+1) + spikes(1,j);
         end
 
-        %spike_rate(1,i+1) = spike_rate(1,i+1)/(spike_rate_dt*physical_time_in_ms*0.001);
+        spike_rate(1,i+1) = spike_rate(1,i+1)/(spike_rate_bin_size*physical_time_in_ms*0.001);
     end
+    
     
     
 end
