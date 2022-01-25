@@ -11,7 +11,7 @@ function [VV, uu] = neuron_fire(dt, t_simulate, tp, tp_span, positive_current, t
     V=-64;  u=b*V;
     
     % noise
-    I_background = 1.5; % generates 2.5 spikes/s
+    I_background = 1; % generates 2.5 spikes/s
     
     VV = zeros(1, length(tspan));
     uu = zeros(1, length(tspan));

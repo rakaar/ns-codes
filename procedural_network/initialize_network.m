@@ -1,5 +1,5 @@
 % basic variables
-n_columns = 21;
+n_columns = 5;
 n_excitatory = 100; 
 n_inhibitory = 25; 
 n_total_neurons = n_excitatory + n_inhibitory;
@@ -11,7 +11,7 @@ t_simulate = 1000; % x100 ms = x0.1s
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 5*dt and calculating spike rate
-spike_rate_dt = 10*dt;
+spike_rate_dt = 20*dt;
 tspan_spike_rates = 0:spike_rate_dt:t_simulate;
 
 % voltages is a 3d tensor
@@ -70,7 +70,7 @@ synaptic_resources = zeros(n_total_neurons, 3, t_simulate/dt + 1);
 voltages(11, 10, :) = reshape(voltage_val, 1, 1, length(tspan));
 figure(1)
     plot(tspan, reshape(voltages(11, 10, :), 1, length(tspan)));
-    xlim([0 20]);
+    
     title('c 11 n 10 voltage')
 grid
 
@@ -78,7 +78,7 @@ spikes(11, 10, :) = reshape(voltage_to_spikes(voltages(11, 10, :)) ,1, 1, length
 
 figure(2)
     stem(tspan, reshape(spikes(11, 10, :), 1, length(tspan)));
-    xlim([0 20]);
+    
     title('c 11 n 10 spikes')
 grid
 
@@ -86,8 +86,8 @@ grid
 spike_rates(11, 10, :) = reshape(spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes(11, 10, :)), 1,1,length(tspan_spike_rates));
 
 figure(3)
-    stem(tspan_spike_rates, reshape(spike_rates(11, 10, :),  1,length(tspan_spike_rates)))
-    xlim([0 20]);
+    plot(tspan_spike_rates, reshape(spike_rates(11, 10, :),  1,length(tspan_spike_rates)))
+    
     title('c 11 n 10 spike rate/s')
 grid
 
