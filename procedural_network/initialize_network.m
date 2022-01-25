@@ -82,14 +82,6 @@ figure(2)
     title('c 11 n 10 spikes')
 grid
 
-% debug
-    for i=1:20
-         for j=1:5
-            fprintf("%d-%d ",(i-1)*5 + j + 1, spikes(11, 10, (i-1)*5 + j + 1));
-            
-         end
-         fprintf("\n")
-    end
 
 spike_rates(11, 10, :) = reshape(spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes(11, 10, :)), 1,1,length(tspan_spike_rates));
 
