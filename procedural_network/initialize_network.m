@@ -11,7 +11,7 @@ t_simulate = 1000; % x100 ms = x0.1s
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 5*dt and calculating spike rate
-spike_rate_dt = 5*dt;
+spike_rate_dt = 10*dt;
 tspan_spike_rates = 0:spike_rate_dt:t_simulate;
 
 % voltages is a 3d tensor
