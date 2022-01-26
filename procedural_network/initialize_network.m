@@ -102,8 +102,15 @@ figure(2)
     title('c 3 n 10 spikes')
 grid
 
+% since all are same, i can take any neuron and repeat copies of it
+disp('spike rates')
 
-spike_rates(3, 10, :) = reshape(spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes(3, 10, :)), 1,1,length(tspan_spike_rates));
+spike_rates_single_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes(3, 10, :));
+repeated_spike_rate = repmat(spike_rates_single_neuron, [n_columns  1 n_total_neurons]);
+repeated_spike_rate = reshape(repeated_spike_rate, n_columns, n_total_neurons, length(tspan_spike_rates));
+spike_rates(:, :, :) = repeated_spike_rate;
+
+
 
 figure(3)
     plot(tspan_spike_rates, reshape(spike_rates(3, 10, :),  1,length(tspan_spike_rates)))
@@ -113,19 +120,16 @@ grid
 
 % start simulating using spike rate
 t_simulate_test = t_simulate * 5;
-for i=1:floor(t_simulate_test/spike_rate_dt)
+for i=2:floor(t_simulate_test/spike_rate_dt)
     % for each column
-        for c=1:n_columns
-            neighbour_col_left = c-2;
-            neighbour_col_right = c+2;
-            
-            for n=neighbour_col_left:neighbour_col_right
-                if (n > 1) & (n <= n_columns) & (n ~= c)
-                    
-                end
-            end
-        end
+    for c=1:n_columns
+        % for excitatory neurons
+        
+    
+    end
 
+        
+    break % only for testing one time step
 end
 
 %{
