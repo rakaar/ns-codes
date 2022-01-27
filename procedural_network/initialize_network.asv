@@ -10,6 +10,12 @@ dt = 0.2;  % 20 ms as per paper https://www.izhikevich.org/publications/whichmod
 t_simulate = 1000; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
+% Background input drawn from a uniform distribution (neurons are indexed by input strength):
+bg_low_E  = -9.9; % lowest background input (in Hz) to excitatory population
+bg_high_E = 9.9; % highest background input (in Hz) to excitatory population
+bg_low_I  = bg_low_E; % lowest background input (in Hz) to inhibitory population
+bg_high_I = bg_high_E; % highest background input (in Hz) to inhibitory population
+
 % time constants 
 tau_E     = 0.001; % excitatory neurons' time constant (in seconds)
 tau_I     = 0.001; % inhibitory neurons' time constant (in seconds) 
@@ -151,8 +157,13 @@ for i=2:floor(t_simulate_test/spike_rate_dt)
         
         excitatory_input_from_its_column = (J_ee_0/n_excitatory)*sum(spike_rates(c,1:n_excitatory, i), 'all');
         
+        % external inputs - e in the equation
+        e_step = (bg_high_E - bg_low_E)/(n_excitatory - 1);
+        external_input_to_excitatory = bg_low_E:e_step:bg_high_E;
+        
+        
         excitatory_input_total = excitatory_input_from_its_column + excitatory_input_from_neighbours;
-        excitatory_input_vector = repmat([excitatory_input_total], 1, n_excitatory);
+        excitatory_input_vector = repmat([excitatory_input_total], 1, n_excitatory) + external_input_to_excitatory;
         spike_rates(c, 1:n_excitatory, i) = spike_rates(c, 1:n_excitatory, i) + excitatory_input_vector;
         
       
@@ -174,15 +185,17 @@ for i=2:floor(t_simulate_test/spike_rate_dt)
             excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_1/n_excitatory) * U *sum(spike_rates(c+1, 1:n_excitatory, i), 'all');
         end
         
+        % external input to inhibitory neurons
+        i_step = (bg_high_I - bg_low_I)/( - 1);
+        
         excitatory_input_from_its_column = (J_ie_0/n_excitatory)*sum(spike_rates(c,1:n_excitatory, i), 'all');
         
         excitatory_input_total = excitatory_input_from_its_column + excitatory_input_from_neighbours;
         
-        inhibitory_input_from_its_column = J_ii;
-        
-        excitatory_input_vector = repmat([excitatory_input_total], 1, n_inhibitory);
-        spike_rates(c, n_excitatory+1:n_total_neurons, i) = spike_rates(c, 1:n_excitatory, i) + excitatory_input_vector;
-        
+        inhibitory_input_from_its_column = (J_ii/n_inhibitory)*sum(spike_rates(c, n_excitatory+1:n_total_neurons, i), 'all');
+        input_to_inhibitory = inhibitory_input_from_its_column + excitatory_input_total;
+        input_to_inhibitory_vector = repmat([input_to_inhibitory], 1, n_inhibitory);
+        spike_rates(c, n_excitatory+1:n_total_neurons, i) = spike_rates(c, n_excitatory+1:n_total_neurons, i) + input_to_inhibitory_vector;
     end
 
         
