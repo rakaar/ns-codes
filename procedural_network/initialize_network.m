@@ -18,6 +18,10 @@ tau_ref_I = 0.003; % tau refractory of inhibitory neurons (in seconds)
 tau_rec   = 0.800; % recovery time constant of intracortical synapses (in seconds)
 tau_rec_s = 0.300; % recovery time constant of sensory input synapses (in seconds)
 
+% J
+Jee_0 = 6; J_ie_0 = 0.5;
+J_ei = -4; J_ii = -0.5;
+J_ee_1 = 0.045; J_ie_1 = 0.0035; J_ee_2 = 0.015; J_ie_2 = 0.0015;
 
 % making bins of 100ms = 5*dt and calculating spike rate
 spike_rate_dt = 20*dt;
@@ -123,9 +127,22 @@ t_simulate_test = t_simulate * 5;
 for i=2:floor(t_simulate_test/spike_rate_dt)
     % for each column
     for c=1:n_columns
-        % for excitatory neurons
+        % a)for excitatory neurons
         
-    
+        % a1. input from other columns
+        
+        % get the neighbours
+        n1 = max(c-2, 1);
+        n2 = min(c+2, n_columns);
+        
+        excitatory_input_from_other_neurons = sum(spike_rates(n1:n2, 1:n_excitatory, i), 'all');
+        disp("excit sum")
+        excitatory_input_vec = repmat([excitatory_input_from_other_neurons], 1, n_excitatory);
+        disp(size(excitatory_input_vec)); % 1 x 100
+        
+        spike_rates(c, 1:n_excitatory, i) = spike_rates(c, 1:n_excitatory, i) + excitatory_input_vec;
+        
+        
     end
 
         
