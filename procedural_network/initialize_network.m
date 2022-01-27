@@ -165,7 +165,11 @@ for i=2:floor(t_simulate_test/spike_rate_dt)
         excitatory_input_total = excitatory_input_from_its_column + excitatory_input_from_neighbours;
         excitatory_input_vector = repmat([excitatory_input_total], 1, n_excitatory) + external_input_to_excitatory;
         non_linear_gain_excitatory_input_vector = non_linear_gain_vector(excitatory_input_vector);
-        spike_rates(c, 1:n_excitatory, i) = spike_rates(c, 1:n_excitatory, i) + non_linear_gain_excitatory_input_vector;
+        
+        tau_ref_e_term_vector = 1 - tau_ref_E*spike_rates(c, 1:n_excitatory, i);
+        
+        spike_rates(c, 1:n_excitatory, i) = spike_rates(c, 1:n_excitatory, i-1) ...
+                                            + dt*((1/tau_E)*(-spikes(c, 1:n_excitatory, i) + tau_ref_e_term_vector.*non_linear_gain_excitatory_input_vector));
         
       
         % inhibitory neurons
@@ -198,7 +202,11 @@ for i=2:floor(t_simulate_test/spike_rate_dt)
         input_to_inhibitory = inhibitory_input_from_its_column + excitatory_input_total;
         input_to_inhibitory_vector = repmat([input_to_inhibitory], 1, n_inhibitory) + external_input_to_inhibitory;
         non_linear_gain_input_to_inhibitory_vector = non_linear_gain_vector(input_to_inhibitory_vector);
-        spike_rates(c, n_excitatory+1:n_total_neurons, i) = spike_rates(c, n_excitatory+1:n_total_neurons, i) + non_linear_gain_input_to_inhibitory_vector;
+        
+        tau_ref_i_term_vector = 1 - tau_ref_I*spike_rates(c, n_excitatory+1:n_total_neurons, i);
+        
+        spike_rates(c, n_excitatory+1:n_total_neurons, i) = spike_rates(c, n_excitatory+1:n_total_neurons, i-1) ...
+                                                            + dt* ((1/tau_I)*(-spike_rates(c, n_excitatory+1:n_total_neurons, i) + tau_ref_i_term_vector.*non_linear_gain_input_to_inhibitory_vector));
     end
 
         
