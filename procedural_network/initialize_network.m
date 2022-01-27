@@ -157,12 +157,14 @@ for i=2:floor(t_simulate_test/spike_rate_dt)
         
         excitatory_input_from_its_column = (J_ee_0/n_excitatory)*sum(spike_rates(c,1:n_excitatory, i), 'all');
         
+        inhibitory_input_to_excitatory_own_column = sum((J_ei/n_inhibitory)*U*spike_rates(c, n_excitatory+1:n_total_neurons, i), 'all');
+        
         % external inputs - e in the equation
         e_step = (bg_high_E - bg_low_E)/(n_excitatory - 1);
         external_input_to_excitatory = bg_low_E:e_step:bg_high_E;
         
         
-        excitatory_input_total = excitatory_input_from_its_column + excitatory_input_from_neighbours;
+        excitatory_input_total = excitatory_input_from_its_column + excitatory_input_from_neighbours + inhibitory_input_to_excitatory_own_column;
         excitatory_input_vector = repmat([excitatory_input_total], 1, n_excitatory) + external_input_to_excitatory;
         non_linear_gain_excitatory_input_vector = non_linear_gain_vector(excitatory_input_vector);
         
