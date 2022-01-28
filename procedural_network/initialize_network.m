@@ -171,7 +171,7 @@ for i=2:floor(t_simulate/spike_rate_dt)
         tau_ref_e_term_vector = 1 - tau_ref_E*spike_rates(c, 1:n_excitatory, i);
         
         spike_rates(c, 1:n_excitatory, i) = spike_rates(c, 1:n_excitatory, i-1) ...
-                                            + dt*((1/tau_E)*(-spikes(c, 1:n_excitatory, i) + tau_ref_e_term_vector.*non_linear_gain_excitatory_input_vector));
+                                            + spike_rate_dt*((1/tau_E)*(-spikes(c, 1:n_excitatory, i) + tau_ref_e_term_vector.*non_linear_gain_excitatory_input_vector));
         
       
         % inhibitory neurons
@@ -208,7 +208,17 @@ for i=2:floor(t_simulate/spike_rate_dt)
         tau_ref_i_term_vector = 1 - tau_ref_I*spike_rates(c, n_excitatory+1:n_total_neurons, i);
         
         spike_rates(c, n_excitatory+1:n_total_neurons, i) = spike_rates(c, n_excitatory+1:n_total_neurons, i-1) ...
-                                                            + dt* ((1/tau_I)*(-spike_rates(c, n_excitatory+1:n_total_neurons, i) + tau_ref_i_term_vector.*non_linear_gain_input_to_inhibitory_vector));
+                                                            + spike_rate_dt* ((1/tau_I)*(-spike_rates(c, n_excitatory+1:n_total_neurons, i) + tau_ref_i_term_vector.*non_linear_gain_input_to_inhibitory_vector));
+    
+        
+        % resources update
+        resources_x_or_y(c, 1:n_excitatory, i) = resources_x_or_y(c, 1:n_excitatory, i-1) ...
+                                                   + spike_rate_dt*((1-resources_x_or_y(c,1:n_excitatory,i))/tau_ref_E  - U*resources_x_or_y(c, 1:n_excitatory, i).*spike_rates(c, 1:n_excitatory, i));
+                                               
+       resources_x_or_y(c, n_excitatory+1:n_total_neurons, i) = resources_x_or_y(c, n_excitatory+1:n_total_neurons, i-1) ...
+                                                   + spike_rate_dt*((1-resources_x_or_y(c,n_excitatory+1:n_total_neurons,i))/tau_ref_I  - U*resources_x_or_y(c, n_excitatory+1:n_total_neurons, i).*spike_rates(c, n_excitatory+1:n_total_neurons, i));
+                                               
+        
     end
 
         
@@ -219,87 +229,3 @@ figure(246)
     plot(reshape(spike_rates(3, 99, :)  , 1,length(tspan_spike_rates)))
     title('spike rate of middle colum')
 grid
-%{
-
-%================== testing ======================
-% fire a neuron 10 in column 3
-[voltage_val, ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
-voltages(3, 10, :) = reshape(voltage_val, 1, 1, length(tspan));
-figure(1)
-    plot(tspan, reshape(voltages(3, 10, :), 1, length(tspan)));
-grid
-
-% fire 3 more random neurons for testing purpose
-random_neurons = [94 28 39];
-for i=1:3
-    [voltage_val, ~] = neuron_fire(dt, t_simulate, 20,200,-20, 350,30,2, neuron_params_rb_ss);
-    voltages(3, random_neurons(i), :) = reshape(voltage_val, 1, 1, length(tspan));
-end
-
-% checking for 10
-check_10_xe = [];
-% resources depletion for 94 28 39 10
-for i=1:n_total_neurons
-    for j=1:length(tspan)
-        M = 0;
-        if voltages(3, i, j) == 30
-            M = 1;
-        end 
-       
-        
-        if j==1
-            x_r = 1;
-            x_e = 0;
-            x_i = 0;
-        else
-             x_r = synaptic_resources(i, 1, j-1); 
-             x_e = synaptic_resources(i, 2, j-1);
-             x_i = synaptic_resources(i, 3, j-1);
-        end
-        
-        synaptic_resources(i, 1, j) = x_r + (-M*(x_r/tau_re)) + (x_i/tau_ir);
-        synaptic_resources(i, 2, j) = x_e + (M*(x_r/tau_re)) - (x_e/tau_ei);
-        synaptic_resources(i ,3, j) = x_i + (x_e/tau_ei) - (x_i/tau_ir);
-    
-        if i==94
-            check_10_xe = [check_10_xe, synaptic_resources(i,2,j)];
-        end
-    
-    end
-end
-
-
-figure(12)
-    plot(check_10_xe)
-    title('xe of 94th neuron')
-grid
-
-figure(2)
-    plot(tspan, reshape(voltages(3, 28, :), 1, length(tspan)));
-    title('voltage of 28thn neuron')
-grid
-
-
-% synapse test
-% all neurons add to column 3 neuron 1
-
-for i=2:n_total_neurons
-    x = voltage_to_spikes(reshape(voltages(3, i, :), 1, length(tspan)));
-    g = get_g_t(x);
-    g = g(1,1:length(x));
-    w = weight_matrix(1,i);
-    xe = synaptic_resources(i,2, :);
-    xe = reshape(xe, 1, length(x));
-      
-    voltages(3, 1, :) =  voltages(3, 1, :) + reshape(w*xe.*shift_1(g).*shift_1(x).*shift_1(x), 1, 1, length(tspan));
-   
-end
-
-voltages(3, 1, :) = reshape(voltages(3, 1, :), 1,1,length(tspan));
-% -- what about the rules of decreasing voltage ???
-
-figure(3)
-    plot(tspan, reshape(voltages(3, 1, :), 1, length(tspan)));
-    title('voltage of neuron 1 ')
-grid
-%}
