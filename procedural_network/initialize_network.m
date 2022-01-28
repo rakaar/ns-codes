@@ -132,32 +132,32 @@ figure(3)
 grid
 
 % start simulating using spike rate
-t_simulate_test = t_simulate * 5;
-for i=2:floor(t_simulate_test/spike_rate_dt)
+
+for i=2:floor(t_simulate/spike_rate_dt)
     % for each column
     for c=1:n_columns
         % a)for excitatory neurons
         excitatory_input_from_neighbours = 0;
         % get the neighbours
         if c-2 >= 1
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_2/n_excitatory) * U * sum(spike_rates(c-2, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_2/n_excitatory) * U * sum(resources_x_or_y(c-2, 1:n_excitatory, i).*spike_rates(c-2, 1:n_excitatory, i), 'all');
         end
         
         if c+2 <= n_columns
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_2/n_excitatory) * U * sum(spike_rates(c+2, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_2/n_excitatory) * U * sum(resources_x_or_y(c+2, 1:n_excitatory, i).*spike_rates(c+2, 1:n_excitatory, i), 'all');
         end
         
         if c-1 >= 1
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_1/n_excitatory) * U *sum(spike_rates(c-1, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_1/n_excitatory) * U *sum(resources_x_or_y(c-1, 1:n_excitatory, i).*spike_rates(c-1, 1:n_excitatory, i), 'all');
         end
         
         if c+1 <= n_columns
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_1/n_excitatory) * U *sum(spike_rates(c+1, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_1/n_excitatory) * U *sum(resources_x_or_y(c+1, 1:n_excitatory, i).*spike_rates(c+1, 1:n_excitatory, i), 'all');
         end
         
         excitatory_input_from_its_column = (J_ee_0/n_excitatory)*sum(spike_rates(c,1:n_excitatory, i), 'all');
         
-        inhibitory_input_to_excitatory_own_column = sum((J_ei/n_inhibitory)*U*spike_rates(c, n_excitatory+1:n_total_neurons, i), 'all');
+        inhibitory_input_to_excitatory_own_column = (J_ei/n_inhibitory)*U*sum(resources_x_or_y(c, n_excitatory+1:n_total_neurons, i).*spike_rates(c, n_excitatory+1:n_total_neurons, i), 'all');
         
         % external inputs - e in the equation
         e_step = (bg_high_E - bg_low_E)/(n_excitatory - 1);
@@ -212,9 +212,13 @@ for i=2:floor(t_simulate_test/spike_rate_dt)
     end
 
         
-    break % only for testing one time step
+    % break % only for testing one time step
 end
 
+figure(246)
+    plot(reshape(spike_rates(3, 99, :)  , 1,length(tspan_spike_rates)))
+    title('spike rate of middle colum')
+grid
 %{
 
 %================== testing ======================
