@@ -10,6 +10,11 @@ dt = 0.2;  % 20 ms as per paper https://www.izhikevich.org/publications/whichmod
 t_simulate = 1000; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
+% making bins of 100ms = 20*dt and calculating spike rate
+spike_rate_dt = 20*dt;
+tspan_spike_rates = 0:spike_rate_dt:t_simulate;
+
+
 % Background input drawn from a uniform distribution (neurons are indexed by input strength):
 bg_low_E  = -9.9; % lowest background input (in Hz) to excitatory population
 bg_high_E = 9.9; % highest background input (in Hz) to excitatory population
@@ -32,15 +37,10 @@ J_ee_1 = 0.045; J_ie_1 = 0.0035; J_ee_2 = 0.015; J_ie_2 = 0.0015;
 % utilization fraction
 U = 0.5; Us = 0.7;
 
-% making bins of 100ms = 5*dt and calculating spike rate
-spike_rate_dt = 20*dt;
-tspan_spike_rates = 0:spike_rate_dt:t_simulate;
 
-% voltages is a 3d tensor
+% voltages and terms from it are 3d tensors
 voltages = zeros(n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_columns, n_total_neurons, length(tspan));
-
-% spike rate
 spike_rates = zeros(n_columns, n_total_neurons, length(tspan_spike_rates));
 
 % resources as per paper
@@ -52,68 +52,15 @@ neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -52 0]);
 % for rebound burst and phasic spike
 neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
 
-% weights for all neurons within a column
-weight_matrix = zeros(n_total_neurons, n_total_neurons);
-
-Jee = 6;
-Jie = 0.5;
-Jei = -4;
-Jii = -0.5;
-
-for i=1:1:n_excitatory
-    for j=1:1:n_excitatory
-        weight_matrix(i,j) = Jee;
-    end
-end
-
-for i=1:1:n_inhibitory
-    for j=1:1:n_inhibitory
-        weight_matrix(i,j) = Jii;
-    end
-end
-
-for i=1:1:n_excitatory
-    for j=1:1:n_inhibitory
-        weight_matrix(i,j) = Jei;
-    end
-end
-
-
-for i=1:1:n_inhibitory
-    for j=1:1:n_excitatory
-        weight_matrix(i,j) = Jie;
-    end
-end
-
-% syaptic resources for all neurons - xr, xe, xi
-tau_re = 0.9; tau_ei = 27; tau_ir = 5000;
-synaptic_resources = zeros(n_total_neurons, 3, t_simulate/dt + 1);
-
 disp('firing all neurons')
 % example for firing a neuron, we will fire all with a bacground noise
 [voltage_val, ~] = neuron_fire(dt, t_simulate, 0,0,0,0,0,0, neuron_params_rb_ss);
-
-% testing repmat 
+% reshaping and assining the voltage values 
 repeated_voltage = repmat(voltage_val, [n_columns  1 n_total_neurons]);
 repeated_voltage = reshape(repeated_voltage, n_columns, n_total_neurons, length(tspan));
 
 voltages(:, :, :) = repeated_voltage;
-
-
-
-figure(1)
-    plot(tspan, reshape(voltages(3, 10, :), 1, length(tspan)));
-    
-    title('c 3 n 10 voltage')
-grid
-
 spikes(3, 10, :) = reshape(voltage_to_spikes(voltages(3, 10, :)) ,1, 1, length(tspan));
-
-figure(2)
-    stem(tspan, reshape(spikes(3, 10, :), 1, length(tspan)));
-    
-    title('c 3 n 10 spikes')
-grid
 
 % since all are same, i can take any neuron and repeat copies of it
 disp('spike rates')
@@ -125,14 +72,25 @@ spike_rates(:, :, :) = repeated_spike_rate;
 
 
 
-figure(3)
-    plot(tspan_spike_rates, reshape(spike_rates(3, 10, :),  1,length(tspan_spike_rates)))
+% figure(1)
+%     plot(tspan, reshape(voltages(3, 10, :), 1, length(tspan)));
     
-    title('c 3 n 10 spike rate/s')
-grid
+%     title('c 3 n 10 voltage')
+% grid
+
+% figure(2)
+%     stem(tspan, reshape(spikes(3, 10, :), 1, length(tspan)));
+    
+%     title('c 3 n 10 spikes')
+% grid
+
+% figure(3)
+%     plot(tspan_spike_rates, reshape(spike_rates(3, 10, :),  1,length(tspan_spike_rates)))
+    
+%     title('c 3 n 10 spike rate/s')
+% grid
 
 % start simulating using spike rate
-
 for i=2:floor(t_simulate/spike_rate_dt)
     % for each column
     for c=1:n_columns
@@ -155,7 +113,7 @@ for i=2:floor(t_simulate/spike_rate_dt)
             excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ee_1/n_excitatory) * U *sum(resources_x_or_y(c+1, 1:n_excitatory, i).*spike_rates(c+1, 1:n_excitatory, i), 'all');
         end
         
-        excitatory_input_from_its_column = (J_ee_0/n_excitatory)*sum(spike_rates(c,1:n_excitatory, i), 'all');
+        excitatory_input_from_its_column = (J_ee_0/n_excitatory)*U*sum(resources_x_or_y(c, 1:n_excitatory, i).*spike_rates(c,1:n_excitatory, i), 'all');
         
         inhibitory_input_to_excitatory_own_column = (J_ei/n_inhibitory)*U*sum(resources_x_or_y(c, n_excitatory+1:n_total_neurons, i).*spike_rates(c, n_excitatory+1:n_total_neurons, i), 'all');
         
@@ -174,22 +132,22 @@ for i=2:floor(t_simulate/spike_rate_dt)
                                             + spike_rate_dt*((1/tau_E)*(-spikes(c, 1:n_excitatory, i) + tau_ref_e_term_vector.*non_linear_gain_excitatory_input_vector));
         
       
-        % inhibitory neurons
+        % b) inhibitory neurons
         excitatory_input_from_neighbours = 0;
         if c-2 >= 1
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_2/n_excitatory) * U * sum(spike_rates(c-2, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_2/n_excitatory) *  sum(spike_rates(c-2, 1:n_excitatory, i), 'all');
         end
         
         if c+2 <= n_columns
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_2/n_excitatory) * U * sum(spike_rates(c+2, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_2/n_excitatory) *  sum(spike_rates(c+2, 1:n_excitatory, i), 'all');
         end
         
         if c-1 >= 1
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_1/n_excitatory) * U *sum(spike_rates(c-1, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_1/n_excitatory) * sum(spike_rates(c-1, 1:n_excitatory, i), 'all');
         end
         
         if c+1 <= n_columns
-            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_1/n_excitatory) * U *sum(spike_rates(c+1, 1:n_excitatory, i), 'all');
+            excitatory_input_from_neighbours =  excitatory_input_from_neighbours + (J_ie_1/n_excitatory) * sum(spike_rates(c+1, 1:n_excitatory, i), 'all');
         end
         
         % external input to inhibitory neurons
@@ -225,7 +183,18 @@ for i=2:floor(t_simulate/spike_rate_dt)
     % break % only for testing one time step
 end
 
-figure(246)
+figure(6)
     plot(reshape(spike_rates(3, 99, :)  , 1,length(tspan_spike_rates)))
-    title('spike rate of middle colum')
+    title('3, 99 spike rate')
+grid
+
+figure(3)
+    plot(reshape(spike_rates(2, 124, :)  , 1,length(tspan_spike_rates)))
+    title('2, 124 spike rate')
+grid
+
+
+figure(5)
+    plot(reshape(spike_rates(1, 30, :)  , 1,length(tspan_spike_rates)))
+    title('1, 30 spike rate')
 grid
