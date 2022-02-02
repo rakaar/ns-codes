@@ -72,23 +72,23 @@ spike_rates(:, :, :) = repeated_spike_rate;
 
 
 
-% figure(1)
-%     plot(tspan, reshape(voltages(3, 10, :), 1, length(tspan)));
+figure(1)
+    plot(tspan, reshape(voltages(3, 10, :), 1, length(tspan)));
     
-%     title('c 3 n 10 voltage')
-% grid
+    title('c 3 n 10 voltage')
+grid
 
-% figure(2)
-%     stem(tspan, reshape(spikes(3, 10, :), 1, length(tspan)));
+figure(2)
+    stem(tspan, reshape(spikes(3, 10, :), 1, length(tspan)));
     
-%     title('c 3 n 10 spikes')
-% grid
+    title('c 3 n 10 spikes')
+grid
 
-% figure(3)
-%     plot(tspan_spike_rates, reshape(spike_rates(3, 10, :),  1,length(tspan_spike_rates)))
+figure(3)
+    plot(tspan_spike_rates, reshape(spike_rates(3, 10, :),  1,length(tspan_spike_rates)))
     
-%     title('c 3 n 10 spike rate/s')
-% grid
+    title('c 3 n 10 spike rate/s')
+grid
 
 % start simulating using spike rate
 for i=2:floor(t_simulate/spike_rate_dt)
@@ -183,18 +183,18 @@ for i=2:floor(t_simulate/spike_rate_dt)
     % break % only for testing one time step
 end
 
-figure(6)
+figure(11)
     plot(reshape(spike_rates(3, 99, :)  , 1,length(tspan_spike_rates)))
     title('3, 99 spike rate')
 grid
 
-figure(3)
+figure(12)
     plot(reshape(spike_rates(2, 124, :)  , 1,length(tspan_spike_rates)))
     title('2, 124 spike rate')
 grid
 
 
-figure(5)
+figure(13)
     plot(reshape(spike_rates(1, 30, :)  , 1,length(tspan_spike_rates)))
     title('1, 30 spike rate')
 grid

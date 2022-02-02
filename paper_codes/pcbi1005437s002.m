@@ -2,6 +2,7 @@
 % TY_Loebel_Par_All_Prots_Nevo, according to the specified nev_cond
 tic
 n_stim    = 100; % Total no. of stimuli (Best take a product of 10)
+Probs_F2L = 0.01;
 if Probs_F2L < 0.1
     n_stim = 10/Probs_F2L;
 end
