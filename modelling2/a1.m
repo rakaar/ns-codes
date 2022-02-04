@@ -11,9 +11,12 @@ t_simulate = 1000; % x100 ms = x0.1s
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 50*dt;
+spike_rate_dt = 5*dt;
 tspan_spike_rates = 0:spike_rate_dt:t_simulate;
- 
+
+% currents
+I = 0; I_background = 1;
+
 % connection strength
 J_ee_0 = 6; J_ie_0 = 0.5;
 J_ei = -4; J_ii = -0.5;
@@ -72,23 +75,52 @@ figure(3)
 grid
 
 
-
-reshaped_spike_2d = reshape(spikes(1, 1, :), 1, length(tspan));
-disp('shape shape of reshape 2d')
-disp(size(reshaped_spike_2d ))
-g1 = get_g_t(reshaped_spike_2d);
-g1 = g1(1, 1:length(tspan));
-disp(size(g1));
-return
-for i=2:floor(t_eq/dt)
+for i=2:floor(t_simulate/dt)
 	for c=1:n_columns
-		%----- excitatory neurons
-		for i=1:n_excitatory
-			
-		end
+	
+		for n=1:n_total_neurons
+					
+			% voltage sum from excitatory neighbouring columns, will be useful for inhib and exc neurons
+			excitatory_voltage_sum_from_neighbour = 0;
+			if c-2 >= 1
+				excitatory_voltage_sum_from_neighbour = excitatory_voltage_sum_from_neighbour + sum(voltages(c-2, 1:n_excitatory, i-1), 'all'); 
+			end
 
-		for i=n_excitatory+1:n_total_neurons
+			if c-1 >= 1
+				excitatory_voltage_sum_from_neighbour = excitatory_voltage_sum_from_neighbour + sum(voltages(c-1, 1:n_excitatory, i-1), 'all'); 
+			end
+
 			
+			if c+1 <= n_columns
+				excitatory_voltage_sum_from_neighbour = excitatory_voltage_sum_from_neighbour + sum(voltages(c+1, 1:n_excitatory, i-1), 'all'); 
+			end	
+
+
+			if c+2 <= n_columns
+				excitatory_voltage_sum_from_neighbour = excitatory_voltage_sum_from_neighbour + sum(voltages(c+2, 1:n_excitatory, i-1), 'all'); 
+			end
+
+			excitatory_sum_from_own_column = sum(voltages(c, 1:n_excitatory, i-1), 'all');
+			inhibitory_sum_from_own_column = sum(voltages(c, 1:n_excitatory, i-1), 'all');
+			
+			% remove itself
+			if i<=n_excitatory
+				excitatory_sum_from_own_column = excitatory_sum_from_own_column - voltages(c, n, i-1);
+			else
+				inhibitory_sum_from_own_column = inhibitory_sum_from_own_column - voltages(c, n, i-1);
+			end
+			
+			total_voltage_input = excitatory_voltage_sum_from_neighbour + excitatory_sum_from_own_column + inhibitory_sum_from_own_column;
+
+
+			% calculate voltage using the function
+			[voltages(c, n, i) u_values(c, n, i)] = calculate_v_u(total_voltage_input, u_values(c,n,i-1), dt, neuron_params_rb_ss, I, I_background );
+			
+			if voltages(c, n, i) == 30
+				voltages(c, n, i+1) = neuron_params_rb_ss('c');
+				u_values(c, n, i+1) = u_values(c, n, i) + neuron_params_rb_ss('d');
+			end
+	
 		end
 	end
 	break % for testing only one iteration
