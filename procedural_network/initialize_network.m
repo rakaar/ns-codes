@@ -61,7 +61,8 @@ repeated_voltage = reshape(repeated_voltage, n_columns, n_total_neurons, length(
 
 voltages(:, :, :) = repeated_voltage;
 spikes(3, 10, :) = reshape(voltage_to_spikes(voltages(3, 10, :)) ,1, 1, length(tspan));
-
+spikes = repmat(spikes(3,10,:), [n_columns  1 n_total_neurons]);
+spikes = reshape(spikes, n_columns, n_total_neurons, length(tspan));
 % since all are same, i can take any neuron and repeat copies of it
 disp('spike rates')
 
