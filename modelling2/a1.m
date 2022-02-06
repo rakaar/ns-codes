@@ -43,6 +43,7 @@ neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
 
 % initialize 
 v0 = -64; u0 = neuron_params_rb_ss('b')*v0; 
+% xe(:, :, 1) = 1;
 xr(:, :, 1) = 1;
 voltages(:, :, 1) = v0; % 
 u_values(:, :, 1) = u0; % 
@@ -172,6 +173,7 @@ for i=2:floor(t_simulate/dt)
 						epsc_inh_own_column * J_ii;
 		  end
 
+		  fprintf("total espc %f \n", total_epsc)
 
 			% calculate voltage using the function
 			[voltages(c, n, i) u_values(c, n, i)] = calculate_v_u(voltages(c, n, i-1) ,u_values(c,n,i-1), dt, neuron_params_rb_ss, total_epsc, I_background );
