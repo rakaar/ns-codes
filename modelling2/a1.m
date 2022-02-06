@@ -5,9 +5,9 @@ n_inhibitory = 5;
 n_total_neurons = n_excitatory + n_inhibitory;
     
 % time step
-physical_time_in_ms = 1; %dt time step 
+physical_time_in_ms = 5; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 1000; % x100 ms = x0.1s 
+t_simulate = 1; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -33,6 +33,8 @@ xr = zeros(n_columns, n_total_neurons, length(tspan));
 xe = zeros(n_columns, n_total_neurons, length(tspan));
 xi = zeros(n_columns, n_total_neurons, length(tspan));
 
+% time constant for synaptic resources
+tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
 % izhikevich neuron params
 % for rebound burst and sustained_spike
 neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -52 0]); 
@@ -87,6 +89,7 @@ grid
 %}
 
 for i=2:floor(t_simulate/dt)
+	fprintf("i = %d\n", i);
 	for c=1:n_columns
 	
 		for n=1:n_total_neurons
@@ -173,13 +176,56 @@ for i=2:floor(t_simulate/dt)
 			% calculate voltage using the function
 			[voltages(c, n, i) u_values(c, n, i)] = calculate_v_u(voltages(c, n, i-1) ,u_values(c,n,i-1), dt, neuron_params_rb_ss, total_epsc, I_background );
 			
+			M = 0;
 			if voltages(c, n, i) == 30
+				M = 1;
 				voltages(c, n, i+1) = neuron_params_rb_ss('c');
 				u_values(c, n, i+1) = u_values(c, n, i) + neuron_params_rb_ss('d');
 			end
 	
 		end
 	end
-	break % for testing only one iteration
+
+	% update synaptic resources
+    current_xr = xr(c, n, i-1);
+	current_xe = xe(c, n, i-1);
+	current_xi = xi(c, n, i-1);
+
+	xr(c,n,i) = update_xr(M, current_xr, current_xi, tau_re, tau_ir);
+	xe(c, n, i) = update_xe(M, current_xr, current_xe, tau_re, tau_ei);
+	xi(c, n, i) = update_xi(current_xe, current_xi, tau_ei, tau_ir);
+   
+
+%	break % for testing only one iteration
 end
 
+% calculate mean spike rate of all columns
+for i=1:n_columns
+	mean_spike_rate = 0;
+	for n=1:n_total_neurons
+		voltage_neuron = voltages(c,n,:);
+		spikes_neuron = voltage_to_spikes(voltage_neuron);
+		spike_rate_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes_neuron);
+	len_of_spike_rate = length(spike_rate_neuron);
+	sum_of_spike_rates = sum(spike_rate_neuron, 'all');
+
+	fprintf("mean spike rate of column %d and neuron %d is %f\n", i, n, sum_of_spike_rates/len_of_spike_rate);
+	
+	end
+end
+
+
+%{
+spikes_random_neuron = spikes(3, 5, 7);
+spike_rate_random = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes_random_neuron);
+
+figure(100)
+	plot(spike_rate_random);
+	title('spike rate of random neuron')
+grid
+
+figure(101)
+	plot(spikes_random_neuron);
+	title("spikes of random neuron");
+grid
+%}
