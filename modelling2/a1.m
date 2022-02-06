@@ -1,7 +1,7 @@
 % basic variables
 n_columns = 5;
-n_excitatory = 100; 
-n_inhibitory = 25; 
+n_excitatory = 20; 
+n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
     
 % time step
@@ -111,7 +111,7 @@ for i=2:floor(t_simulate/dt)
 			end
 
 			epsc_ex_neuron_front_c1 = 0;
-			if c+1 >= 1
+			if c+1 <= n_columns
 				for j=1:n_excitatory
 					spike_train_exc = voltage_to_spikes(voltages(c+1,j,:));
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
@@ -121,7 +121,7 @@ for i=2:floor(t_simulate/dt)
 
 
 			epsc_ex_neuron_front_c2 = 0;
-			if c+2 >= 1
+			if c+2 <= n_columns
 				for j=1:n_excitatory
 					spike_train_exc = voltage_to_spikes(voltages(c+2,j,:));
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
