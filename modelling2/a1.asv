@@ -198,26 +198,25 @@ for i=2:floor(t_simulate/dt)
 	xe(c, n, i) = update_xe(M, current_xr, current_xe, tau_re, tau_ei);
 	xi(c, n, i) = update_xi(current_xe, current_xi, tau_ei, tau_ir);
    
-    fprintf("xr %f, xe %f, xi %f\n", xr(c,n,i),xe(c,n,i), xi(c,n,i));
-   % pause(0.4);
+    fprintf("xr is ")
 
 %	break % for testing only one iteration
 end
 
 figure(23111)
-    reshaped_xe = reshape(xe(1,25,:), 1, length(tspan));
+    reshaped_xe = reshape(xe(1,10,:), 1, length(tspan));
     plot(reshaped_xe);
     title('c1 n10 xe');
 grid
 
 figure(23112)
-    reshaped_xr = reshape(xr(1,25,:), 1, length(tspan));
+    reshaped_xr = reshape(xr(1,10,:), 1, length(tspan));
      plot(reshaped_xr);
     title('c1 n10 xr');
 grid
 
 figure(23113)
-    reshaped_xi = reshape(xi(1,25,:), 1, length(tspan));
+    reshaped_xi = reshape(xi(1,10,:), 1, length(tspan));
      plot(reshaped_xi);
     title('c1 n10 xi');
 grid
