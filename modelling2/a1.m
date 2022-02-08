@@ -7,7 +7,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 100; % x100 ms = x0.1s 
+t_simulate = 10; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -170,7 +170,7 @@ for i=2:floor(t_simulate/dt)
 						epsc_inh_own_column * J_ii;
 		  end
 
-		 % fprintf("total espc %f \n", total_epsc)
+		  fprintf("total espc %f \n", total_epsc)
 			
 			v_current = voltages(c,n,i-1);
 			u_current = u_values(c, n, i-1);
@@ -179,7 +179,7 @@ for i=2:floor(t_simulate/dt)
 				u_current = u_current + neuron_params_rb_ss('d');
 			end
 			% calculate voltage using the function
-			[voltages(c, n, i) u_values(c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
+			[voltages(c, n, i), u_values(c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
 						
 			M = 0;
 			if voltages(c, n, i) == 30
@@ -207,12 +207,12 @@ figure(100)
 	plot(tspan, reshaped_voltage);
 	title('voltage of col 1 neuron 10')
 grid
-for i=1:n_total_neurons
-	spikes1 = voltage_to_spikes(voltages(1, i, :));
-	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
-
-	fprintf("mean sprate %d is %f \n", i, sum(spike_rates1)/length(spike_rates1));
-end
+% for i=1:n_total_neurons
+% 	spikes1 = voltage_to_spikes(voltages(1, i, :));
+% 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
+% 
+% 	fprintf("mean sprate %d is %f \n", i, sum(spike_rates1)/length(spike_rates1));
+% end
 
 figure(345)
     spikes1 = voltage_to_spikes(voltages(1, 10, :));
