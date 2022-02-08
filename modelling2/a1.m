@@ -27,7 +27,7 @@ voltages = zeros(n_columns, n_total_neurons, length(tspan));
 u_values = zeros(n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_columns, n_total_neurons, length(tspan_spike_rates));
-
+epsc_tensor = zeros(n_columns, n_total_neurons, length(tspan)-1);
 % synaptic resources
 xr = zeros(n_columns, n_total_neurons, length(tspan));
 xe = zeros(n_columns, n_total_neurons, length(tspan));
@@ -168,8 +168,8 @@ for i=2:floor(t_simulate/dt)
 						epsc_ex_neuron_front_c2 * J_ie_2 + ...
 						epsc_ex_own_column * J_ie_0 + ...
 						epsc_inh_own_column * J_ii;
-		  end
-
+          end
+          epsc_tensor(c, n, i-1) = total_epsc;
 		  fprintf("total espc %f \n", total_epsc)
 			
 			v_current = voltages(c,n,i-1);
@@ -204,28 +204,33 @@ for i=2:floor(t_simulate/dt)
 %	break % for testing only one iteration
 end
 
+figure(1991)
+    reshaped_epsc = reshape(epsc_tensor(1, 25, :), 1, length(tspan)-1);
+    plot(reshaped_epsc);
+    title('epsc c1 n10');
+grid
 figure(23111)
     reshaped_xe = reshape(xe(1,25,:), 1, length(tspan));
     plot(reshaped_xe);
-    title('c1 n10 xe');
+    title('c1 n25 xe');
 grid
 
 figure(23112)
     reshaped_xr = reshape(xr(1,25,:), 1, length(tspan));
      plot(reshaped_xr);
-    title('c1 n10 xr');
+    title('c1 n25 xr');
 grid
 
 figure(23113)
     reshaped_xi = reshape(xi(1,25,:), 1, length(tspan));
      plot(reshaped_xi);
-    title('c1 n10 xi');
+    title('c1 n25 xi');
 grid
 
 figure(100)
-	reshaped_voltage = reshape(voltages(1, 10, :), 1, length(tspan));
+	reshaped_voltage = reshape(voltages(1, 25, :), 1, length(tspan));
 	plot(tspan, reshaped_voltage);
-	title('voltage of col 1 neuron 10')
+	title('voltage of col 1 neuron 25')
 grid
 % for i=1:n_total_neurons
 % 	spikes1 = voltage_to_spikes(voltages(1, i, :));
@@ -235,16 +240,16 @@ grid
 % end
 
 figure(345)
-    spikes1 = voltage_to_spikes(voltages(1, 10, :));
+    spikes1 = voltage_to_spikes(voltages(1, 25, :));
     stem(tspan, spikes1);
-    title('spikes c 1 n 10')
+    title('spikes c 1 n 25')
 grid
 
 figure(1234)
-    spikes1 = voltage_to_spikes(voltages(1, 10, :));
+    spikes1 = voltage_to_spikes(voltages(1, 25, :));
 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
     stem(tspan_spike_rates, spike_rates1);
-    title('spike rate c 1 n 10')
+    title('spike rate c 1 n 25')
 grid
 % calculate mean spike rate of all columns
 %{
