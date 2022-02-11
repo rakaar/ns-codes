@@ -42,9 +42,23 @@ mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 
 % generate inhomo poisson spikes for thalamic neurons
 thalamic_poisson_spikes = zeros(n_thalamic, length(tspan));
-lamda_s = 4 + 20; % tweaked so that a1 neurons have 4-5 spikes/s
+lamda = zeros(1, length(tspan));
+% 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
+% WARNING: FOR NOW THIS STIMULS IS HARD CODED
+lamda_s = 3; lamda_i = 20;
+for i=1:100
+    lamda(1,i) = lamda_s;
+end
+for i=101:200
+    lamda(1,i) = lamda_s+lamda_i;
+end
+for i=201:length(tspan)
+    lamda(1,i) = lamda_s;
+end
+% lamda_s = 3+25 ; % tweaked so that a1 neurons have 3-4 spikes/s
+
 for i=1:n_thalamic
-    thalamic_poisson_spikes(i, :) = poisson_generator(lamda_s, dt, length(tspan));
+    thalamic_poisson_spikes(i, :) = poisson_generator(lamda, dt, length(tspan));
 end
 
 % time constant for synaptic resources
@@ -114,9 +128,9 @@ for i=2:floor(t_simulate/dt)
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(c-2,j,i-1); 
                     
-                    if (g_t*xe(c-2,j,i-1) ~= 0)
-                        fprintf("non0 epscontri %f, c %d, j %d", g_t*xe(c-2,j,i-1),c,j);
-                    end
+%                     if (g_t*xe(c-2,j,i-1) ~= 0)
+%                         fprintf("non0 epscontri %f, c %d, j %d", g_t*xe(c-2,j,i-1),c,j);
+%                     end
                     
                     
 				end
@@ -129,9 +143,9 @@ for i=2:floor(t_simulate/dt)
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(c-1,j,i-1); 
                     
-                     if (g_t*xe(c-1,j,i-1) ~= 0)
-                        fprintf("non0 epscontri %f, c %d, j %d", g_t*xe(c-1,j,i-1),c,j);
-                    end
+%                      if (g_t*xe(c-1,j,i-1) ~= 0)
+%                         fprintf("non0 epscontri %f, c %d, j %d", g_t*xe(c-1,j,i-1),c,j);
+%                     end
 				end
 			end
 
@@ -142,9 +156,9 @@ for i=2:floor(t_simulate/dt)
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(c+1,j,i-1);
                     
-                    if (g_t*xe(c+1,j,i-1) ~= 0)
-                        fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c+1,j,i-1),c,j);
-                    end
+%                     if (g_t*xe(c+1,j,i-1) ~= 0)
+%                         fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c+1,j,i-1),c,j);
+%                     end
                     
 				end
 			end	
@@ -157,9 +171,9 @@ for i=2:floor(t_simulate/dt)
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(c+2,j,i-1);
                     
-                    if (g_t*xe(c+2,j,i-1) ~= 0)
-                        fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c+2,j,i-1),c,j);
-                    end
+%                     if (g_t*xe(c+2,j,i-1) ~= 0)
+%                         fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c+2,j,i-1),c,j);
+%                     end
 				end
 			end	
 
@@ -173,9 +187,9 @@ for i=2:floor(t_simulate/dt)
 				g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 				epsc_ex_own_column	= epsc_ex_own_column + g_t*xe(c,j,i-1); 
                 
-                if (g_t*xe(c,j,i-1) ~= 0)
-                        fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c,j,i-1),c,j);
-                end
+%                 if (g_t*xe(c,j,i-1) ~= 0)
+%                         fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c,j,i-1),c,j);
+%                 end
 			end
 
 			epsc_inh_own_column = 0;
@@ -187,9 +201,9 @@ for i=2:floor(t_simulate/dt)
 				g_t = get_g_t(spike_train_inh, dt, i-1, tspan);
 				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(c,j,i-1);
                 
-                if (g_t*xe(c,j,i-1) ~= 0)
-                        fprintf("non0 epscontri %f, c %d, j %d\n", g_t*xe(c,j,i-1),c,j);
-                end
+%                 if (g_t*xe(c,j,i-1) ~= 0)
+%                         fprintf("non0 epscontri %f, c %d, j %d\n", g_t*xe(c,j,i-1),c,j);
+%                 end
                 
             end
 		
@@ -204,7 +218,6 @@ for i=2:floor(t_simulate/dt)
           end
           
           
-		  total_epsc = 0;
 		  if n <= n_excitatory
 			total_epsc = epsc_ex_neuron_back_c2 * J_ee_2 + ...
 						epsc_ex_neuron_back_c1 * J_ee_1 + ...
@@ -226,8 +239,8 @@ for i=2:floor(t_simulate/dt)
           epsc_tensor(c, n, i-1) = total_epsc;
           epsc_thalamic(c, n, i-1) = epsc_from_thalamic;
           
-		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
-			
+% 		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
+% 			
 			v_current = voltages(c,n,i-1);
 			u_current = u_values(c, n, i-1);
 			if v_current == 30
@@ -255,7 +268,7 @@ for i=2:floor(t_simulate/dt)
         end
     
    
-    fprintf("xr %f, xe %f, xi %f\n", xr(c,n,i),xe(c,n,i), xi(c,n,i));
+%     fprintf("xr %f, xe %f, xi %f\n", xr(c,n,i),xe(c,n,i), xi(c,n,i));
    % pause(0.4);
     
     end
@@ -265,7 +278,57 @@ for i=2:floor(t_simulate/dt)
 end
 
 testing_column = 1;
-testing_neuron = 8;
+testing_neuron = 5;
+
+figure(36894)
+    stem(thalamic_poisson_spikes(5,:));
+    title(' 5 thalamic poisson spikes')
+grid
+
+% epsc due to 5th thalamic neuron
+epsc_thalamic_5 = zeros(1, length(tspan));
+thalamic_testing_neuron = 5;
+ for i=2:floor(t_simulate/dt)
+    g_t = get_g_t(thalamic_poisson_spikes(thalamic_testing_neuron, :), dt, i-1, tspan);
+    epsc_thalamic_5(1,i) = epsc_thalamic_5(1,i) + g_t*weight_thalamic_to_a1*xe_thalamic;
+end
+figure(53643)
+   plot(epsc_thalamic_5)
+   title('5 epsc thalamic')
+grid
+
+% population behaviour - mean spike rate of column with time
+allneurons_spike_rates = zeros(n_total_neurons, length(tspan_spike_rates));
+for i=1:n_total_neurons
+     spikes1 = voltage_to_spikes(voltages(1, i, :));
+     spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
+     allneurons_spike_rates(i,:) = spike_rates1;
+end
+population_psth = zeros(1, length(tspan_spike_rates));
+for i=1:length(tspan_spike_rates)
+    population_psth(1,i) = sum(allneurons_spike_rates(:,i))/n_total_neurons;
+end
+figure(4546)
+    plot( population_psth);
+    title('population psth');
+grid
+
+% thalamic neurons - mean spike rate
+thalamic_neurons_spikes_rates = zeros(n_thalamic, length(tspan_spike_rates));
+for i=1:n_thalamic
+   spikes11 = poisson_generator(lamda, dt, length(tspan));
+   spike_rates11 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes11);
+   thalamic_neurons_spikes_rates(i,:) = spike_rates11;
+end
+thalamic_population_psth = zeros(1, length(tspan_spike_rates));
+for i=1:length(tspan_spike_rates)
+    thalamic_population_psth(1,i) = sum(thalamic_neurons_spikes_rates(:,i))/n_thalamic;
+end
+figure(46578)
+    plot(thalamic_population_psth);
+    title('thalamic populaton psth')
+grid
+
 
 figure(1991)
     reshaped_epsc = reshape(epsc_tensor(testing_column, testing_neuron, :), 1, length(tspan)-1);
@@ -323,7 +386,7 @@ grid
 figure(1234)
     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
-    stem(tspan_spike_rates, spike_rates1);
+    plot(tspan_spike_rates, spike_rates1);
     title('spike rate')
 grid
 

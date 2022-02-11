@@ -1,10 +1,10 @@
-function poisson_spike_train = poisson_generator(lambda_s, dt, period)
+function poisson_spike_train = poisson_generator(lambda, dt, period)
     % lambda_s is spontaneous spike rate
     poisson_spike_train = zeros(1, period);
     rng('shuffle');
     for i=1:period
         x = rand;
-        if x <= 1 - exp(-(lambda_s*dt))
+        if x <= 1 - exp(-(lambda(1,i)*dt))
             poisson_spike_train(1,i) = 1;
         end
     end
