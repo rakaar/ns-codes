@@ -29,15 +29,23 @@ u_values = zeros(n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_columns, n_total_neurons, length(tspan_spike_rates));
 epsc_tensor = zeros(n_columns, n_total_neurons, length(tspan)-1);
+epsc_thalamic = zeros(n_columns, n_total_neurons, length(tspan)-1);
+
 % synaptic resources
 xr = zeros(n_columns, n_total_neurons, length(tspan));
 xe = zeros(n_columns, n_total_neurons, length(tspan));
 xi = zeros(n_columns, n_total_neurons, length(tspan));
 
 % mapping from input thalamic neurons to a1 column neurons
-rng(0); % seed 
-mapping_matrix_thalamic_to_a1 = randi([1 n_thalamic], [n_total_neurons num_of_input_giving_thalamic]);   
+all_combinations = nchoosek(1:n_thalamic, num_of_input_giving_thalamic);
+mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 
+% generate inhomo poisson spikes for thalamic neurons
+thalamic_poisson_spikes = zeros(n_thalamic, length(tspan));
+lamda_s = 5; % tweaked so that a1 neurons have 3-4 spikes/s
+for i=1:n_thalamic
+    thalamic_poisson_spikes(i, :) = poisson_generator(lamda_s, dt, length(tspan));
+end
 
 % time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
@@ -183,8 +191,19 @@ for i=2:floor(t_simulate/dt)
                         fprintf("non0 epscontri %f, c %d, j %d\n", g_t*xe(c,j,i-1),c,j);
                 end
                 
-			end
+            end
 		
+          % epsc from thalamic neurons
+          weight_thalamic_to_a1 = 0.2; xe_thalamic = 1;
+          epsc_from_thalamic = 0;
+          
+          for ttt=1:num_of_input_giving_thalamic
+             thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
+             g_t = get_g_t(thalamic_poisson_spikes(thalamic_neuron_num, :), dt, i-1, tspan);
+             epsc_from_thalamic = epsc_from_thalamic + g_t*weight_thalamic_to_a1*xe_thalamic;
+          end
+          
+          
 		  total_epsc = 0;
 		  if n <= n_excitatory
 			total_epsc = epsc_ex_neuron_back_c2 * J_ee_2 + ...
@@ -203,8 +222,10 @@ for i=2:floor(t_simulate/dt)
 						epsc_ex_own_column * J_ie_0 + ...
 						epsc_inh_own_column * J_ii;
           end
+          total_epsc = total_epsc + epsc_from_thalamic;
           epsc_tensor(c, n, i-1) = total_epsc;
-         
+          epsc_thalamic(c, n, i-1) = epsc_from_thalamic;
+          
 		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
 			
 			v_current = voltages(c,n,i-1);
@@ -250,6 +271,12 @@ figure(1991)
     reshaped_epsc = reshape(epsc_tensor(testing_column, testing_neuron, :), 1, length(tspan)-1);
     plot(reshaped_epsc);
     title('epsc');
+grid
+
+figure(199374)
+    reshaped_epsc_thalamic = reshape(epsc_thalamic(testing_column, testing_neuron, :), 1, length(tspan)-1);
+    plot(reshaped_epsc_thalamic);
+    title('epsc thalamic');
 grid
 figure(23111)
     reshaped_xe = reshape(xe(testing_column,testing_neuron,:), 1, length(tspan));
