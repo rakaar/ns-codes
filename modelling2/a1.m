@@ -238,7 +238,7 @@ for i=2:floor(t_simulate/dt)
 end
 
 testing_column = 1;
-testing_neuron = 25;
+testing_neuron = 12;
 
 figure(1991)
     reshaped_epsc = reshape(epsc_tensor(testing_column, testing_neuron, :), 1, length(tspan)-1);
