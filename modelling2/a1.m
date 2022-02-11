@@ -42,7 +42,7 @@ mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 
 % generate inhomo poisson spikes for thalamic neurons
 thalamic_poisson_spikes = zeros(n_thalamic, length(tspan));
-lamda_s = 5; % tweaked so that a1 neurons have 3-4 spikes/s
+lamda_s = 10; % tweaked so that a1 neurons have 3-4 spikes/s
 for i=1:n_thalamic
     thalamic_poisson_spikes(i, :) = poisson_generator(lamda_s, dt, length(tspan));
 end
@@ -194,7 +194,7 @@ for i=2:floor(t_simulate/dt)
             end
 		
           % epsc from thalamic neurons
-          weight_thalamic_to_a1 = 0.2; xe_thalamic = 1;
+          weight_thalamic_to_a1 = 0.02; xe_thalamic = 1;
           epsc_from_thalamic = 0;
           
           for ttt=1:num_of_input_giving_thalamic
@@ -338,20 +338,18 @@ grid
 % calculate mean spike rate of all columns
 
 
-	mean_spike_rates = zeros(1, n_total_neurons);
-    for i=1:n_total_neurons
-        voltage_neuron = voltages(1, n, :);
-        spikes_neuron = voltage_to_spikes(voltage_neuron);
-        %spike_rate_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes_neuron);
-        %len_of_spike_rate = length(spike_rate_neuron);
-        %sum_of_spike_rates = sum(spike_rate_neuron, 'all');
-        mean_spike_rates(1,n) = sum(spikes_neuron);
-    end
-    
-    figure(12)
-         stem(1:n_total_neurons, mean_spike_rates);
-        title("neurons-x, mean spikerate - y")
-    grid
+x = zeros(1,25);	
+for i=1:25
+     v = voltages(1,i,:);
+    s = voltage_to_spikes(v);
+    sss = sum(s);
+    x(1,i) = sss;
+end
+figure(34)
+    stem(1:25, x)
+grid
+   
+   
     
 % 	for n=1:n_total_neurons
 %         voltage_neuron = voltages(1,n,:);
