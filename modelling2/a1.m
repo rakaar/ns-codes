@@ -42,7 +42,7 @@ mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 
 % generate inhomo poisson spikes for thalamic neurons
 thalamic_poisson_spikes = zeros(n_thalamic, length(tspan));
-lamda_s = 4; % tweaked so that a1 neurons have 3-4 spikes/s
+lamda_s = 4 + 20; % tweaked so that a1 neurons have 4-5 spikes/s
 for i=1:n_thalamic
     thalamic_poisson_spikes(i, :) = poisson_generator(lamda_s, dt, length(tspan));
 end
