@@ -3,6 +3,7 @@ n_columns = 1;
 n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
+n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
 physical_time_in_ms = 1; %dt time step 
@@ -32,6 +33,14 @@ epsc_tensor = zeros(n_columns, n_total_neurons, length(tspan)-1);
 xr = zeros(n_columns, n_total_neurons, length(tspan));
 xe = zeros(n_columns, n_total_neurons, length(tspan));
 xi = zeros(n_columns, n_total_neurons, length(tspan));
+
+% mapping from input thalamic neurons to a1 column neurons
+rng(0); % seed 
+mapping_matrix_thalamic_to_a1 = randi([1 ], [n_total_neurons num_of_input_giving_thalamic]);   
+for i=1:n_total_neurons
+    
+end
+
 
 % time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
@@ -198,12 +207,8 @@ for i=2:floor(t_simulate/dt)
 						epsc_inh_own_column * J_ii;
           end
           epsc_tensor(c, n, i-1) = total_epsc;
-          if (1000000*total_epsc ~= 0)
-            fprintf("+++++++++++++++++++++++++++=")
-            fprintf("c=%d n=%d i-1=%d",c,n,i-1)
-            fprintf("+++++++++++++++++++++++++++=")
-          end
-		  fprintf("c,n - %d %d total espc %f \n", c,100000*n,total_epsc);
+         
+		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
 			
 			v_current = voltages(c,n,i-1);
 			u_current = u_values(c, n, i-1);
@@ -220,14 +225,14 @@ for i=2:floor(t_simulate/dt)
 			end
 		%	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
     
-        % update synaptic resources
-        current_xr = xr(c, n, i-1);
-        current_xe = xe(c, n, i-1);
-        current_xi = xi(c, n, i-1);
+            % update synaptic resources
+            current_xr = xr(c, n, i-1);
+            current_xe = xe(c, n, i-1);
+            current_xi = xi(c, n, i-1);
 
-        xr(c,n,i) = update_xr(M, current_xr, current_xi, tau_re, tau_ir);
-        xe(c, n, i) = update_xe(M, current_xr, current_xe, tau_re, tau_ei);
-        xi(c, n, i) = update_xi(current_xe, current_xi, tau_ei, tau_ir);
+            xr(c,n,i) = update_xr(M, current_xr, current_xi, tau_re, tau_ir);
+            xe(c, n, i) = update_xe(M, current_xr, current_xe, tau_re, tau_ei);
+            xi(c, n, i) = update_xi(current_xe, current_xi, tau_ei, tau_ir);
         
         end
     

@@ -3,6 +3,7 @@ n_columns = 1;
 n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
+n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
 physical_time_in_ms = 1; %dt time step 
@@ -32,6 +33,11 @@ epsc_tensor = zeros(n_columns, n_total_neurons, length(tspan)-1);
 xr = zeros(n_columns, n_total_neurons, length(tspan));
 xe = zeros(n_columns, n_total_neurons, length(tspan));
 xi = zeros(n_columns, n_total_neurons, length(tspan));
+
+% mapping from input thalamic neurons to a1 column neurons
+rng(0); % seed 
+mapping_matrix_thalamic_to_a1 = randi([1 n_thalamic], [n_total_neurons num_of_input_giving_thalamic]);   
+
 
 % time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
