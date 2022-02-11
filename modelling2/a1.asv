@@ -339,29 +339,16 @@ grid
 
 
 	mean_spike_rates = zeros(1, n_total_neurons);
-    for i=1:n_total_neurons
-        voltage_neuron = voltages(1, n, :);
-        spikes_neuron = voltage_to_spikes(voltage_neuron);
-        %spike_rate_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes_neuron);
-        %len_of_spike_rate = length(spike_rate_neuron);
-        %sum_of_spike_rates = sum(spike_rate_neuron, 'all');
-        mean_spike_rates(1,n) = sum(spikes_neuron);
-    end
-    
-    figure(12)
-         stem(1:n_total_neurons, mean_spike_rates);
-        title("neurons-x, mean spikerate - y")
-    grid
-    
+    for n=1:
 % 	for n=1:n_total_neurons
-%         voltage_neuron = voltages(1,n,:);
+%         voltage_neuron = voltages(c,n,:);
 % 		spikes_neuron = voltage_to_spikes(voltage_neuron);
 % 		spike_rate_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes_neuron);
 %         len_of_spike_rate = length(spike_rate_neuron);
 %         sum_of_spike_rates = sum(spike_rate_neuron, 'all');
 %         mean_spike_rates(1,n) = sum_of_spike_rates/len_of_spike_rate;
 %     end
-		
+% 		
     
 %     
 %     figure(12)
