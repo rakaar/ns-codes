@@ -114,7 +114,7 @@ u_values(:, :, 1) = u0; %
 %     title('c 3 n 10 spike rate/s')
 % grid
 
-for i=2:floor(t_simulate/dt)
+for i=2:length(tspan)
 	fprintf("i = %d\n", i);
 	for c=1:n_columns
 	
@@ -278,16 +278,16 @@ for i=2:floor(t_simulate/dt)
 end
 
 testing_column = 1;
-testing_neuron = 5;
+testing_neuron = 8;
 
 figure(36894)
-    stem(thalamic_poisson_spikes(5,:));
+    stem(thalamic_poisson_spikes(testing_neuron,:));
     title(' 5 thalamic poisson spikes')
 grid
 
 % epsc due to 5th thalamic neuron
 epsc_thalamic_5 = zeros(1, length(tspan));
-thalamic_testing_neuron = 5;
+thalamic_testing_neuron = 8;
  for i=2:floor(t_simulate/dt)
     g_t = get_g_t(thalamic_poisson_spikes(thalamic_testing_neuron, :), dt, i-1, tspan);
     epsc_thalamic_5(1,i) = epsc_thalamic_5(1,i) + g_t*weight_thalamic_to_a1*xe_thalamic;
