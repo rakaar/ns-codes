@@ -94,13 +94,7 @@ for i=2:length(tspan)
 					spike_train_exc = voltage_to_spikes(voltages(c-2,j,:));
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(c-2,j,i-1); 
-                    
-%                     if (g_t*xe(c-2,j,i-1) ~= 0)
-%                         fprintf("non0 epscontri %f, c %d, j %d", g_t*xe(c-2,j,i-1),c,j);
-%                     end
-                    
-                    
-				end
+                 end
 			end
 
 			epsc_ex_neuron_back_c1 = 0;
@@ -109,10 +103,6 @@ for i=2:length(tspan)
 					spike_train_exc = voltage_to_spikes(voltages(c-1,j,:));
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(c-1,j,i-1); 
-                    
-%                      if (g_t*xe(c-1,j,i-1) ~= 0)
-%                         fprintf("non0 epscontri %f, c %d, j %d", g_t*xe(c-1,j,i-1),c,j);
-%                     end
 				end
 			end
 
@@ -122,11 +112,6 @@ for i=2:length(tspan)
 					spike_train_exc = voltage_to_spikes(voltages(c+1,j,:));
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(c+1,j,i-1);
-                    
-%                     if (g_t*xe(c+1,j,i-1) ~= 0)
-%                         fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c+1,j,i-1),c,j);
-%                     end
-                    
 				end
 			end	
 
@@ -137,10 +122,6 @@ for i=2:length(tspan)
 					spike_train_exc = voltage_to_spikes(voltages(c+2,j,:));
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(c+2,j,i-1);
-                    
-%                     if (g_t*xe(c+2,j,i-1) ~= 0)
-%                         fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c+2,j,i-1),c,j);
-%                     end
 				end
 			end	
 
@@ -153,10 +134,6 @@ for i=2:length(tspan)
 				spike_train_exc = voltage_to_spikes(voltages(c,j,:));
 				g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 				epsc_ex_own_column	= epsc_ex_own_column + g_t*xe(c,j,i-1); 
-                
-%                 if (g_t*xe(c,j,i-1) ~= 0)
-%                         fprintf("non0 epscontri %f, c %d, j %d ", g_t*xe(c,j,i-1),c,j);
-%                 end
 			end
 
 			epsc_inh_own_column = 0;
@@ -167,21 +144,13 @@ for i=2:length(tspan)
 				spike_train_inh = voltage_to_spikes(voltages(c,j,:));
 				g_t = get_g_t(spike_train_inh, dt, i-1, tspan);
 				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(c,j,i-1);
-                
-%                 if (g_t*xe(c,j,i-1) ~= 0)
-%                         fprintf("non0 epscontri %f, c %d, j %d\n", g_t*xe(c,j,i-1),c,j);
-%                 end
-                
             end
 		
           % epsc from thalamic neurons
-          weight_thalamic_to_a1 = 15; xe_thalamic = 1;
           epsc_from_thalamic = 0;
-          
           for ttt=1:num_of_input_giving_thalamic
              thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
-             g_t = get_g_t(thalamic_poisson_spikes(thalamic_neuron_num, :), dt, i-1, tspan);
-             epsc_from_thalamic = epsc_from_thalamic + g_t*weight_thalamic_to_a1*xe_thalamic;
+             epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(thalamic_neuron_num, i-1);
           end
           
           
