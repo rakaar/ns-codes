@@ -298,14 +298,6 @@ figure(53643)
    title('5 epsc thalamic')
 grid
 
-figure(355343)
-    hold on
-        stem(thalamic_poisson_spikes(thalamic_testing_neuron,:));
-        plot(epsc_thalamic_5);
-    hold off
-grid
-
-
 % population behaviour - mean spike rate of column with time
 allneurons_spike_rates = zeros(n_total_neurons, length(tspan_spike_rates));
 for i=1:n_total_neurons
@@ -401,8 +393,8 @@ grid
 
 figure(87556)
     spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, thalamic_poisson_spikes(thalamic_testing_neuron,:));
-    plot(spike_rates1);
-    title('spike rate thal')
+    plot(tspan_spike_rates, spike_rates1);
+    title('spike rate tha')
 grid
 
 % for i=1:n_total_neurons
