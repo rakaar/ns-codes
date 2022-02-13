@@ -208,7 +208,7 @@ for i=2:length(tspan)
             end
 		
           % epsc from thalamic neurons
-          weight_thalamic_to_a1 = 0.2; xe_thalamic = 1;
+          weight_thalamic_to_a1 = 15; xe_thalamic = 1;
           epsc_from_thalamic = 0;
           
           for ttt=1:num_of_input_giving_thalamic
@@ -288,7 +288,7 @@ grid
 
 % epsc due to 5th thalamic neuron
 epsc_thalamic_5 = zeros(1, length(tspan));
-
+weight_thalamic_to_a1 = 2;
  for i=2:floor(t_simulate/dt)
     g_t = get_g_t(thalamic_poisson_spikes(thalamic_testing_neuron, :), dt, i-1, tspan);
     epsc_thalamic_5(1,i) = epsc_thalamic_5(1,i) + g_t*weight_thalamic_to_a1*xe_thalamic;
@@ -339,47 +339,47 @@ figure(46578)
 grid
 
 
-figure(1991)
-    reshaped_epsc = reshape(epsc_tensor(testing_column, testing_neuron, :), 1, length(tspan)-1);
-    plot(reshaped_epsc);
-    title('epsc');
-grid
-
-figure(199374)
-    reshaped_epsc_thalamic = reshape(epsc_thalamic(testing_column, testing_neuron, :), 1, length(tspan)-1);
-    plot(reshaped_epsc_thalamic);
-    title('epsc thalamic');
-grid
-
-%checking if epsc of all neurons is same or not
-epsc_neurons_sum = zeros(1,n_total_neurons);
-for i=1:n_total_neurons
-    epsc_neurons_sum(1,i) = sum(epsc_thalamic(1, i, :));
-end
-
-figure(46753)
-    stem(1:n_total_neurons, epsc_neurons_sum);
-    title('epsc thalamic of all neurons 1-ntotal')
-grid
-
-figure(23111)
-    reshaped_xe = reshape(xe(testing_column,testing_neuron,:), 1, length(tspan));
-    plot(reshaped_xe);
-    title('xe');
-grid
-
-figure(23112)
-    reshaped_xr = reshape(xr(testing_column,testing_neuron,:), 1, length(tspan));
-     plot(reshaped_xr);
-    title('xr');
-grid
-
-figure(23113)
-    reshaped_xi = reshape(xi(testing_column,testing_neuron,:), 1, length(tspan));
-     plot(reshaped_xi);
-    title('xi');
-grid
-
+% figure(1991)
+%     reshaped_epsc = reshape(epsc_tensor(testing_column, testing_neuron, :), 1, length(tspan)-1);
+%     plot(reshaped_epsc);
+%     title('epsc');
+% grid
+% 
+% figure(199374)
+%     reshaped_epsc_thalamic = reshape(epsc_thalamic(testing_column, testing_neuron, :), 1, length(tspan)-1);
+%     plot(reshaped_epsc_thalamic);
+%     title('epsc thalamic');
+% grid
+% 
+% %checking if epsc of all neurons is same or not
+% epsc_neurons_sum = zeros(1,n_total_neurons);
+% for i=1:n_total_neurons
+%     epsc_neurons_sum(1,i) = sum(epsc_thalamic(1, i, :));
+% end
+% 
+% figure(46753)
+%     stem(1:n_total_neurons, epsc_neurons_sum);
+%     title('epsc thalamic of all neurons 1-ntotal')
+% grid
+% 
+% figure(23111)
+%     reshaped_xe = reshape(xe(testing_column,testing_neuron,:), 1, length(tspan));
+%     plot(reshaped_xe);
+%     title('xe');
+% grid
+% 
+% figure(23112)
+%     reshaped_xr = reshape(xr(testing_column,testing_neuron,:), 1, length(tspan));
+%      plot(reshaped_xr);
+%     title('xr');
+% grid
+% 
+% figure(23113)
+%     reshaped_xi = reshape(xi(testing_column,testing_neuron,:), 1, length(tspan));
+%      plot(reshaped_xi);
+%     title('xi');
+% grid
+% 
 figure(100)
 	reshaped_voltage = reshape(voltages(testing_column, testing_neuron, :), 1, length(tspan));
 	plot(tspan, reshaped_voltage);
@@ -405,27 +405,27 @@ figure(87556)
     title('spike rate thal')
 grid
 
-% for i=1:n_total_neurons
-% 	spikes1 = voltage_to_spikes(voltages(1, i, :));
-% 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
+% % for i=1:n_total_neurons
+% % 	spikes1 = voltage_to_spikes(voltages(1, i, :));
+% % 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
+% % 
+% % 	fprintf("mean sprate %d is %f \n", i, sum(spike_rates1)/length(spike_rates1));
+% % end
 % 
-% 	fprintf("mean sprate %d is %f \n", i, sum(spike_rates1)/length(spike_rates1));
+% 
+% % calculate mean spike rate of all columns
+% 
+% 
+% x = zeros(1,25);	
+% for i=1:25
+%      v = voltages(1,i,:);
+%     s = voltage_to_spikes(v);
+%     sss = sum(s);
+%     x(1,i) = sss;
 % end
-
-
-% calculate mean spike rate of all columns
-
-
-x = zeros(1,25);	
-for i=1:25
-     v = voltages(1,i,:);
-    s = voltage_to_spikes(v);
-    sss = sum(s);
-    x(1,i) = sss;
-end
-figure(34)
-    stem(1:25, x)
-grid
+% figure(34)
+%     stem(1:25, x)
+% grid
    
    
     
