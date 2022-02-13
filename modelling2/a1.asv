@@ -44,7 +44,7 @@ mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 thalamic_poisson_spikes = zeros(n_thalamic, length(tspan));
 lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
-% WARNING: FOR NOW THIS STIMULS IS HARD CODED
+% WARNING: FOR NOW THIS STIMULS IS HARD CODED from t=100 to 200
 lamda_s = 3; lamda_i = 20;
 for i=1:100
     lamda(1,i) = lamda_s;
@@ -55,11 +55,17 @@ end
 for i=201:length(tspan)
     lamda(1,i) = lamda_s;
 end
-% lamda_s = 3+25 ; % tweaked so that a1 neurons have 3-4 spikes/s
-
 for i=1:n_thalamic
     thalamic_poisson_spikes(i, :) = poisson_generator(lamda, dt, length(tspan));
 end
+% calculating epsc of each thalamic neuron
+weight_thalamic_to_a1 = 15; xe_thalamic = 1; epsc_from_thalamic = 0;
+epsc_thalamic = zeros(n_thalamic, length(tspan));
+for i=1:n_thalamic
+    epsc(i,:) = get_;
+end
+g_t = get_g_t(thalamic_poisson_spikes(thalamic_neuron_num, :), dt, i-1, tspan);
+epsc_from_thalamic = epsc_from_thalamic + g_t*weight_thalamic_to_a1*xe_thalamic;
 
 % time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
@@ -75,44 +81,7 @@ xr(:, :, 1) = 1;
 voltages(:, :, 1) = v0; % 
 u_values(:, :, 1) = u0; % 
 
-% disp('firing all neurons')
-% % example for firing a neuron, we will fire all with a bacground noise
-% [voltage_val, ~] = neuron_fire(dt, t_simulate, 0,0,0,0,0,0, neuron_params_rb_ss);
-% % reshaping and assining the voltage values 
-% repeated_voltage = repmat(voltage_val, [n_columns  1 n_total_neurons]);
-% repeated_voltage = reshape(repeated_voltage, n_columns, n_total_neurons, length(tspan));
-% 
-% voltages(:, :, :) = repeated_voltage;
-% spikes(3, 10, :) = reshape(voltage_to_spikes(voltages(3, 10, :)) ,1, 1, length(tspan));
-% spikes = repmat(spikes(3,10,:), [n_columns  1 n_total_neurons]);
-% spikes = reshape(spikes, n_columns, n_total_neurons, length(tspan));
-% % since all are same, i can take any neuron and repeat copies of it
-% disp('spike rates')
-% 
-% spike_rates_single_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes(3, 10, :));
-% repeated_spike_rate = repmat(spike_rates_single_neuron, [n_columns  1 n_total_neurons]);
-% repeated_spike_rate = reshape(repeated_spike_rate, n_columns, n_total_neurons, length(tspan_spike_rates));
-% spike_rates(:, :, :) = repeated_spike_rate;
 
-
-
-% figure(1)
-%      plot(tspan, reshape(voltages(3, 10, :), 1, length(tspan)));
-%     
-%     title('c 3 n 10 voltage')
-%  grid
-% 
-% figure(2)
-%     stem(tspan, reshape(spikes(3, 10, :), 1, length(tspan)));
-%     
-%     title('c 3 n 10 spikes')
-% grid
-% 
-% figure(3)
-%     plot(tspan_spike_rates, reshape(spike_rates(3, 10, :),  1,length(tspan_spike_rates)))
-%     
-%     title('c 3 n 10 spike rate/s')
-% grid
 
 for i=2:length(tspan)
 	fprintf("i = %d\n", i);
@@ -208,7 +177,7 @@ for i=2:length(tspan)
             end
 		
           % epsc from thalamic neurons
-          weight_thalamic_to_a1 = 4; xe_thalamic = 1;
+          weight_thalamic_to_a1 = 15; xe_thalamic = 1;
           epsc_from_thalamic = 0;
           
           for ttt=1:num_of_input_giving_thalamic
