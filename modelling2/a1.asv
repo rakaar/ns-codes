@@ -10,11 +10,11 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 20; % x100 ms = x0.1s 
+t_simulate = 30; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 5*dt;
+spike_rate_dt = 100*dt;
 tspan_spike_rates = 0:spike_rate_dt:t_simulate;
 
 % currents
@@ -242,7 +242,10 @@ grid
 
 
 % population behaviour - mean spike rate of column with time
-allneurons_spike_rates = zeros(n_total_neurons, length(tspan_spike_rates));
+n_bins = spike_rate_dt/dt;
+original_length_spikes = length(tspan);
+
+allneurons_spike_rates = zeros(n_total_neurons, (original_length_spikes)/n_bins);
 for i=1:n_total_neurons
      spikes1 = voltage_to_spikes(voltages(1, i, :));
      spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
@@ -322,9 +325,8 @@ grid
 % 
 figure(7)
     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
-	spike_rates1 = spikes_to_spike_rate_neat();
-    %spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
-    stem(tspan_spike_rates, spike_rates1);
+	spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
+    plot(spike_rates1);
     title('spike rate')
 grid
 % 

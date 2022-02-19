@@ -14,7 +14,7 @@ t_simulate = 30; % x100 ms = x0.1s
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 50*dt;
+spike_rate_dt = 5*dt;
 tspan_spike_rates = 0:spike_rate_dt:t_simulate;
 
 % currents
@@ -53,7 +53,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 500; lamda_i = 1;
+lamda_s = 200; lamda_i = 1;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -67,7 +67,7 @@ for i=1:n_thalamic
     thalamic_poisson_spikes(i, :) = poisson_generator(lamda, dt, length(tspan));
 end
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 50; xe_thalamic = 1;
+weight_thalamic_to_a1 = 60; xe_thalamic = 1;
 epsc_thalamic = zeros(n_thalamic, length(tspan));
 for i=1:n_thalamic
     epsc_thalamic(i,:) = get_g_t_vector(thalamic_poisson_spikes(i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic;
@@ -242,26 +242,34 @@ grid
 
 
 % population behaviour - mean spike rate of column with time
-allneurons_spike_rates = zeros(n_total_neurons, length(tspan_spike_rates));
+n_bins = spike_rate_dt/dt;
+original_length_spikes = length(tspan);
+
+allneurons_spike_rates = zeros(n_total_neurons, (original_length_spikes-1)/n_bins);
 for i=1:n_total_neurons
      spikes1 = voltage_to_spikes(voltages(1, i, :));
-     spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
+     spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
      allneurons_spike_rates(i,:) = spike_rates1;
 end
-population_psth = zeros(1, length(tspan_spike_rates));
-for i=1:length(tspan_spike_rates)
+population_psth = zeros(1, (original_length_spikes-1)/n_bins);
+for i=1:(original_length_spikes-1)/n_bins
     population_psth(1,i) = sum(allneurons_spike_rates(:,i))/n_total_neurons;
 end
 
+figure(9)
+    plot(population_psth);
+    title('psth of all neurons in column')
+grid
+
 % thalamic neurons - mean spike rate
-thalamic_neurons_spikes_rates = zeros(n_thalamic, length(tspan_spike_rates));
+thalamic_neurons_spikes_rates = zeros(n_thalamic, (original_length_spikes-1)/n_bins);
 for i=1:n_thalamic
    spikes11 = poisson_generator(lamda, dt, length(tspan));
-   spike_rates11 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes11);
+    spike_rates11 = spikes_to_spike_rate_neat(spikes11, physical_time_in_ms, dt, spike_rate_dt);
    thalamic_neurons_spikes_rates(i,:) = spike_rates11;
 end
-thalamic_population_psth = zeros(1, length(tspan_spike_rates));
-for i=1:length(tspan_spike_rates)
+thalamic_population_psth = zeros(1, (original_length_spikes-1)/n_bins);
+for i=1:(original_length_spikes-1)/n_bins
     thalamic_population_psth(1,i) = sum(thalamic_neurons_spikes_rates(:,i))/n_thalamic;
 end
 
@@ -323,7 +331,7 @@ grid
 figure(7)
     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
 	spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
-    stem(spike_rates1);
+    plot(spike_rates1);
     title('spike rate')
 grid
 % 
