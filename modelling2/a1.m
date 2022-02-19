@@ -1,3 +1,5 @@
+close all;
+
 % basic variables
 n_columns = 1;
 n_excitatory = 20; 
@@ -8,20 +10,26 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 10; % x100 ms = x0.1s 
+t_simulate = 30; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 5*dt;
+spike_rate_dt = 50*dt;
 tspan_spike_rates = 0:spike_rate_dt:t_simulate;
 
 % currents
-I = 0; I_background = 2;
+I_background = 8.0;
 
 % connection strength
-J_ee_0 = 6; J_ie_0 = 0.5;
-J_ei = -4; J_ii = -0.5;
-J_ee_1 = 0.045; J_ie_1 = 0.0035; J_ee_2 = 0.015; J_ie_2 = 0.0015;
+weight_reducing_l4 = 5; % for now all weights reduced by factor of 0.2
+J_ee_0 = 6*weight_reducing_l4; 
+J_ie_0 = 0.5*weight_reducing_l4;
+J_ei = -4*weight_reducing_l4; 
+J_ii = -0.5*weight_reducing_l4;
+J_ee_1 = 0.045*weight_reducing_l4; 
+J_ie_1 = 0.0035*weight_reducing_l4; 
+J_ee_2 = 0.015*weight_reducing_l4; 
+J_ie_2 = 0.0015*weight_reducing_l4;
 
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_columns, n_total_neurons, length(tspan));
@@ -39,36 +47,39 @@ xi = zeros(n_columns, n_total_neurons, length(tspan));
 all_combinations = nchoosek(1:n_thalamic, num_of_input_giving_thalamic);
 mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 
-% generate inhomo poisson spikes for thalamic neurons
+%% generate inhomo poisson spikes for thalamic neurons
 thalamic_poisson_spikes = zeros(n_thalamic, length(tspan));
 lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
-% WARNING: FOR NOW THIS STIMULS IS HARD CODED from t=100 to 200
-lamda_s = 3; lamda_i = 20;
-for i=1:100
-    lamda(1,i) = lamda_s;
+% WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
+% t_simulate
+lamda_s = 500; lamda_i = 1;
+for i=1:500
+    lamda(1,i) = lamda_i;
 end
-for i=101:200
+for i=501:1500
     lamda(1,i) = lamda_s+lamda_i;
 end
-for i=201:length(tspan)
-    lamda(1,i) = lamda_s;
+for i=1501:length(tspan)
+    lamda(1,i) = lamda_i;
 end
 for i=1:n_thalamic
     thalamic_poisson_spikes(i, :) = poisson_generator(lamda, dt, length(tspan));
 end
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 0.2; xe_thalamic = 1;
+weight_thalamic_to_a1 = 50; xe_thalamic = 1;
 epsc_thalamic = zeros(n_thalamic, length(tspan));
 for i=1:n_thalamic
     epsc_thalamic(i,:) = get_g_t_vector(thalamic_poisson_spikes(i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic;
 end
 
-% time constant for synaptic resources
+%% time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
 % izhikevich neuron params
 % for rebound burst and sustained_spike
 neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -52 0]); 
+% neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -48 0]); 
+
 % for rebound burst and phasic spike
 neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
 
@@ -77,7 +88,6 @@ v0 = -64; u0 = neuron_params_rb_ss('b')*v0;
 xr(:, :, 1) = 1;
 voltages(:, :, 1) = v0; % 
 u_values(:, :, 1) = u0; % 
-
 
 
 for i=2:length(tspan)
@@ -174,11 +184,11 @@ for i=2:length(tspan)
           epsc_tensor(c, n, i-1) = total_epsc;
           
 % 		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
-% 			
+
 			v_current = voltages(c,n,i-1);
 			u_current = u_values(c, n, i-1);
 			if v_current == 30
-				v_current = neuron_params_rb_ss('c');
+                v_current = neuron_params_rb_ss('c');
 				u_current = u_current + neuron_params_rb_ss('d');
 			end
 			% calculate voltage using the function
@@ -212,8 +222,23 @@ for i=2:length(tspan)
 end
 
 testing_column = 1;
-testing_neuron = 6;
+testing_neuron = 15;
 thalamic_testing_neuron = 6;
+
+figure(1)
+    vvv = reshape(voltages(1, testing_neuron, :),1, length(tspan));
+    plot(vvv);
+    title('voltage of neuron')
+grid
+
+figure(2)
+    eee = reshape(epsc_tensor(1, testing_neuron, :),1, length(tspan)-1);
+    eee = eee + I_background;
+    plot(eee);
+    title('total curret')
+grid
+
+
 
 
 % population behaviour - mean spike rate of column with time
@@ -289,18 +314,18 @@ end
 % 	title('voltage')
 % grid
 % 
-% figure(345)
-%     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
-%     stem(tspan, spikes1);
-%     title('spikes')
-% grid
+figure(3)
+    spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
+    stem(tspan, spikes1);
+    title('spikes')
+grid
 % 
-% figure(1234)
-%     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
-% 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
-%     plot(tspan_spike_rates, spike_rates1);
-%     title('spike rate')
-% grid
+figure(7)
+    spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
+	spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
+    stem(spike_rates1);
+    title('spike rate')
+grid
 % 
 % figure(87556)
 %     spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, thalamic_poisson_spikes(thalamic_testing_neuron,:));

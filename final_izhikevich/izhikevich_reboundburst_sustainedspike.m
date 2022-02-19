@@ -2,7 +2,9 @@ tic
 a=0.03; b=0.25; c=-52;  d=0;
 V=-64;  u=b*V;
 T_end = 700;
-tau = 0.2;  tspan = 0:tau:T_end;
+%tau = 0.2;
+tau = 0.01;
+tspan = 0:tau:T_end;
 T1=20;
 current_span = 200;
 
@@ -15,7 +17,7 @@ for t=tspan
     if (t>T1) & (t < T1+current_span) 
         I=-20;
     elseif (t>T2) & (t < T2+current_span2)
-        I=2;
+        I=1.8 + sin(t);
     else
         I=0;
     end;

@@ -7,7 +7,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 1000; % x100 ms = x0.1s 
+t_simulate = 20; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate

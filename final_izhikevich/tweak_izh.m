@@ -1,21 +1,22 @@
 tic
-a=0.03; b=0.25; c=-55;  d=0;
+a=0.03; b=0.25; c=-52;  d=0;
 V=-64;  u=b*V;
-T_end = 30;
-tau = 0.01;  tspan = 0:tau:T_end;
-disp(tau)
-T1=20;
+T_end = 800;
+%tau = 0.2;
+tau = 0.01;
+tspan = 0:tau:T_end;
+T1=25;
 current_span = 200;
 
 VV=zeros(1, length(tspan));  
 uu=zeros(1, length(tspan));
 
-T2 = 5;
-current_span2 = 20;
+T2 = 350;
+current_span2 = 380;
 for t=tspan
     if (t>T1) & (t < T1+current_span) 
         I=0;
-    elseif (t>T2) & (t < T2+current_span2)
+    elseif (t>T2) & (t < current_span2)
         I=2;
     else
         I=0;
