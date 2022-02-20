@@ -296,60 +296,13 @@ for i=1:(original_length_spikes-1)/n_bins
 end
 
 
-% figure(1991)
-%     reshaped_epsc = reshape(epsc_tensor(testing_column, testing_neuron, :), 1, length(tspan)-1);
-%     plot(reshaped_epsc);
-%     title('epsc');
-% grid
-% 
-% figure(199374)
-%     reshaped_epsc_thalamic = reshape(epsc_thalamic(testing_column, testing_neuron, :), 1, length(tspan)-1);
-%     plot(reshaped_epsc_thalamic);
-%     title('epsc thalamic');
-% grid
-% 
-% %checking if epsc of all neurons is same or not
-% epsc_neurons_sum = zeros(1,n_total_neurons);
-% for i=1:n_total_neurons
-%     epsc_neurons_sum(1,i) = sum(epsc_thalamic(1, i, :));
-% end
-% 
-% figure(46753)
-%     stem(1:n_total_neurons, epsc_neurons_sum);
-%     title('epsc thalamic of all neurons 1-ntotal')
-% grid
-% 
-% figure(23111)
-%     reshaped_xe = reshape(xe(testing_column,testing_neuron,:), 1, length(tspan));
-%     plot(reshaped_xe);
-%     title('xe');
-% grid
-% 
-% figure(23112)
-%     reshaped_xr = reshape(xr(testing_column,testing_neuron,:), 1, length(tspan));
-%      plot(reshaped_xr);
-%     title('xr');
-% grid
-% 
-% figure(23113)
-%     reshaped_xi = reshape(xi(testing_column,testing_neuron,:), 1, length(tspan));
-%      plot(reshaped_xi);
-%     title('xi');
-% grid
-% 
 
-% figure(100)
-% 	reshaped_voltage = reshape(voltages(testing_column, testing_neuron, :), 1, length(tspan));
-% 	plot(tspan, reshaped_voltage);
-% 	title('voltage')
-% grid
-% 
 figure(3)
     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
     stem(tspan, spikes1);
     title('spikes')
 grid
-% 
+
 figure(7)
     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
 	spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
@@ -374,68 +327,3 @@ figure(75)
     imagesc(thalamic_poisson_spikes);
     title('raster of thalamic')
 grid
-
-
-% 
-% figure(87556)
-%     spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, thalamic_poisson_spikes(thalamic_testing_neuron,:));
-%     plot(spike_rates1);
-%     title('spike rate thal')
-% grid
-
-% % for i=1:n_total_neurons
-% % 	spikes1 = voltage_to_spikes(voltages(1, i, :));
-% % 	spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes1);
-% % 
-% % 	fprintf("mean sprate %d is %f \n", i, sum(spike_rates1)/length(spike_rates1));
-% % end
-% 
-% 
-% % calculate mean spike rate of all columns
-% 
-% 
-% x = zeros(1,25);	
-% for i=1:25
-%      v = voltages(1,i,:);
-%     s = voltage_to_spikes(v);
-%     sss = sum(s);
-%     x(1,i) = sss;
-% end
-% figure(34)
-%     stem(1:25, x)
-% grid
-   
-   
-    
-% 	for n=1:n_total_neurons
-%         voltage_neuron = voltages(1,n,:);
-% 		spikes_neuron = voltage_to_spikes(voltage_neuron);
-% 		spike_rate_neuron = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate,physical_time_in_ms, spikes_neuron);
-%         len_of_spike_rate = length(spike_rate_neuron);
-%         sum_of_spike_rates = sum(spike_rate_neuron, 'all');
-%         mean_spike_rates(1,n) = sum_of_spike_rates/len_of_spike_rate;
-%     end
-		
-    
-%     
-%     figure(12)
-%         plot(1:n_total_neurons, ,mean_spike_rates);
-%         title("neurons-x, mean spikerate - y")
-%     grid
-
-
-
-%{
-spikes_random_neuron = spikes(3, 5, 7);
-spike_rate_random = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, spikes_random_neuron);
-
-figure(100)
-	plot(spike_rate_random);
-	title('spike rate of random neuron')
-grid
-
-figure(101)
-	plot(spikes_random_neuron);
-	title("spikes of random neuron");
-grid
-%}
