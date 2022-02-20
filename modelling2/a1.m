@@ -10,7 +10,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 30; % x100 ms = x0.1s 
+t_simulate = 20; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -53,7 +53,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 200; lamda_i = 1;
+lamda_s = 200; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -67,7 +67,7 @@ for i=1:n_thalamic
     thalamic_poisson_spikes(i, :) = poisson_generator(lamda, dt, length(tspan));
 end
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 60; xe_thalamic = 1;
+weight_thalamic_to_a1 = 250; xe_thalamic = 1;
 epsc_thalamic = zeros(n_thalamic, length(tspan));
 for i=1:n_thalamic
     epsc_thalamic(i,:) = get_g_t_vector(thalamic_poisson_spikes(i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic;
@@ -256,6 +256,28 @@ for i=1:(original_length_spikes-1)/n_bins
     population_psth(1,i) = sum(allneurons_spike_rates(:,i))/n_total_neurons;
 end
 
+
+% psth of l4 neurons
+ff=[];
+for ii=1:25
+    qw=spikes_2d_matrix_l4(ii,1:2500);
+    ff=[ff;mean(reshape(qw,5,500))];
+end
+figure(457)
+    plot(mean(ff))
+    title('psth of l4')
+grid
+
+
+% spikes of l4 neurons
+spikes_2d_matrix_l4 = zeros(n_total_neurons, length(tspan));
+for i=1:n_total_neurons
+    spikes_2d_matrix_l4(i,:) = voltage_to_spikes(voltages(1,i,:));
+end
+figure(770)
+    imagesc(spikes_2d_matrix_l4);
+grid
+
 figure(9)
     plot(population_psth);
     title('psth of all neurons in column')
@@ -334,6 +356,26 @@ figure(7)
     plot(spike_rates1);
     title('spike rate')
 grid
+
+figure(57)
+    % for a single column
+   reshaped_spikes =  zeros(n_total_neurons, length(tspan));
+    for i=1:n_total_neurons
+        reshaped_voltage = reshape(voltages(1,i,:), 1, length(tspan));
+        reshaped_spikes(i,:) = voltage_to_spikes(reshaped_voltage);
+    end
+    imagesc(reshaped_spikes);
+    title('raster of l4')
+grid
+
+
+figure(75)
+    reshaped_spikes = reshape(spikes, n_total_neurons, length(tspan));
+    imagesc(thalamic_poisson_spikes);
+    title('raster of thalamic')
+grid
+
+
 % 
 % figure(87556)
 %     spike_rates1 = spikes_to_spike_rate(dt, spike_rate_dt, t_simulate, physical_time_in_ms, thalamic_poisson_spikes(thalamic_testing_neuron,:));
