@@ -17,7 +17,7 @@ tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
 spike_rate_dt = 5*dt;
-tspan_spike_rates = 0:spike_rate_dt:t_simulate;
+spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % currents
 I_background = 8.0;
@@ -37,7 +37,7 @@ J_ie_2 = 0.0015*weight_reducing_l4;
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 u_values = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
-spike_rates = zeros(n_iters, n_columns, n_total_neurons, length(tspan_spike_rates));
+spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 
 % synaptic resources
@@ -256,22 +256,61 @@ end
 
 figure
     plot(thalamic_all_neurons_spike_rate_avg)
-    title('this shld work')
+    title('thalamic neurons spike rate avg')
 grid
 
 
-
-
-
-mean_spikes = zeros(n_total_neurons, length(tspan));
-for i=1:length(tspan)
-    for j=1:n_total_neurons
-        voltage_arr = voltages(:, 1, j, i);
-        voltage_arr = reshape(voltage_arr, 1, n_iters);
-        spikes_arr = voltage_to_spikes(voltage_arr);
-        mean_spikes(j,i) = sum(spikes_arr)/25;
+%--- l4 neurons
+% fill the spikes tensor --
+for i=1:n_iters
+    for n=1:n_total_neurons
+        voltage1 = voltages(i, 1, n, :);
+        voltage1_reshaped = reshape(voltage1, 1, length(tspan));
+        spikes1 = voltage_to_spikes(voltage1_reshaped);
+        spikes1 = reshape(spikes1, 1, 1, 1,length(tspan));
+        spikes(i,1,n,:) = spikes1;
     end
 end
+
+% fill the spike rates tensor
+for i=1:n_iters
+    for n=1:n_total_neurons
+        spikes1 = spikes(i, 1, n, :);
+        spikes1_reshaped = reshape(spikes1, 1,length(tspan));
+        spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt);
+        spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length);
+        spike_rates(i,1,n,:) = spikes_rate1; 
+    end
+end
+
+% get a mean of all spikes
+spike_rate_l4 = zeros(n_total_neurons, spike_rate_length);
+for i=1:spike_rate_length
+    for n=1:n_total_neurons
+        spike_rate_l4(n, i) = sum(spike_rates(:,1,n,i))/n_iters;
+    end
+end
+
+% mean psth of all neurons
+spike_rate_l4_all = zeros(1, spike_rate_length);
+for i=1:spike_rate_length
+    spike_rate_l4_all(1, i) = sum(spike_rate_l4(:, i))/n_total_neurons;
+end
+
+figure
+    plot(spike_rate_l4_all);
+    title('spiker rate l4 of all neurons')
+grid
+
+% mean_spikes = zeros(n_total_neurons, length(tspan));
+% for i=1:length(tspan)
+%     for j=1:n_total_neurons
+%         voltage_arr = voltages(:, 1, j, i);
+%         voltage_arr = reshape(voltage_arr, 1, n_iters);
+%         spikes_arr = voltage_to_spikes(voltage_arr);
+%         mean_spikes(j,i) = sum(spikes_arr)/n_total_neurons;
+%     end
+% end
 
 ff=[];
 for ii=1:25
