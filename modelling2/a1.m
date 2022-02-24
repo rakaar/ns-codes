@@ -4,7 +4,7 @@ n_iters = 1;
 
 % basic variables
 n_columns = 1;
-n_excitatory = 20; 
+n_excita    tory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
@@ -233,35 +233,9 @@ end
 end
 
 
-% --- thalamic mean spikes
-thalamic_spikes = zeros(n_thalamic, length(tspan));
-for t=1:length(tspan)
-    for n=1:n_thalamic
-        thalamic_spikes(n, t) = sum(thalamic_poisson_spikes(:, n, t))/n_iters;
-    end
-end
-n_bins = spike_rate_dt/dt;
-spike_rate_length = (length(tspan)-1)/n_bins;
 
-thalamic_spike_rate = zeros(n_thalamic, spike_rate_length);
-for i=1:n_thalamic
-    thalamic_spike_rate(i, :) = spikes_to_spike_rate_neat(thalamic_spikes(i, :), physical_time_in_ms, dt, spike_rate_dt);
-end
-
-% average all thalamic neurons
-thalamic_all_neurons_spike_rate_avg = zeros(1, spike_rate_length);
-for i=1:spike_rate_length
-    thalamic_all_neurons_spike_rate_avg(1, i) = sum(thalamic_spike_rate(:, i))/n_thalamic;
-end
-
-figure
-    plot(thalamic_all_neurons_spike_rate_avg)
-    title('thalamic neurons spike rate avg')
-grid
-
-
-%--- l4 neurons
-% fill the spikes tensor --
+%------ l4 neurons------
+% fill the spikes tensor
 for i=1:n_iters
     for n=1:n_total_neurons
         voltage1 = voltages(i, 1, n, :);
@@ -272,7 +246,7 @@ for i=1:n_iters
     end
 end
 
-% fill the spike rates tensor
+% fill the spike rates tensor - re run
 for i=1:n_iters
     for n=1:n_total_neurons
         spikes1 = spikes(i, 1, n, :);
@@ -299,58 +273,59 @@ end
 
 figure
     plot(spike_rate_l4_all);
-    title('spiker rate l4 of all neurons')
+    title('psth of l4  all neurons')
 grid
 
-% mean_spikes = zeros(n_total_neurons, length(tspan));
-% for i=1:length(tspan)
-%     for j=1:n_total_neurons
-%         voltage_arr = voltages(:, 1, j, i);
-%         voltage_arr = reshape(voltage_arr, 1, n_iters);
-%         spikes_arr = voltage_to_spikes(voltage_arr);
-%         mean_spikes(j,i) = sum(spikes_arr)/n_total_neurons;
-%     end
-% end
-
-ff=[];
-for ii=1:25
-    qw=mean_spikes(ii,1:2000);
-    ff=[ff;mean(reshape(qw,5,400))];
-end
-figure(457)
-    plot(mean(ff))
-    title('psth of l4')
-grid
-
-
-thalamic_mean_spikes = zeros(n_thalamic, length(tspan));
-for i=1:length(tspan)
-    for j=1:n_thalamic
-        voltage_arr = thalamic_poisson_spikes(:, j, i);
-        voltage_arr = reshape(voltage_arr, 1, n_iters);
-        spikes_arr = voltage_to_spikes(voltage_arr);
-        thalamic_mean_spikes(j,i) = sum(spikes_arr)/25;
+% ---- thalamic neurons ------
+thalamic_spike_rates = zeros(n_iters, n_thalamic, spike_rate_length);
+for i=1:n_iters
+    for n=1:n_thalamic
+        spikes1 = thalamic_poisson_spikes(i,n,:);
+        spike_rate1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
+        spike_rate1 = reshape(spike_rate1, 1,1,spike_rate_length);
+        thalamic_spike_rates(i,n,:) = spike_rate1;
     end
 end
 
-ff=[];
-for ii=1:9
-    qw=thalamic_mean_spikes(ii,1:2000);
-    ff=[ff;mean(reshape(qw,5,400))];
+thalamic_spike_rate_avg = zeros(n_thalamic, spike_rate_length);
+for i=1:spike_rate_length
+    for n=1:n_thalamic
+        thalamic_spike_rate_avg(n,i) = sum(thalamic_spike_rates(:,n,i))/n_iters;
+    end
 end
-figure(754)
-    plot(mean(ff))
-    title('psth of thalmic')
-grid
+
+thalamic_spike_rate_all_avg = zeros(1, spike_rate_length);
+for i=1:spike_rate_length
+    thalamic_spike_rate_all_avg(1, i) = sum(thalamic_spike_rate_avg(:,i))/n_thalamic;
+end
 
 figure
-    imagesc(thalamic_mean_spikes)
+    plot(thalamic_spike_rate_all_avg);
+    title('psth of all thalamic neurons')
 grid
-% reshaped_mean_spikes = reshape(mean_spikes, )
-figure
-    imagesc(mean_spikes)
-    title('mean spikes')
-grid
+% ========== remove later after checking =============
+
+% ff=[];
+% for ii=1:25
+%     qw=mean_spikes(ii,1:2000);
+%     ff=[ff;mean(reshape(qw,5,400))];
+% end
+% figure(457)
+%     plot(mean(ff))
+%     title('psth of l4')
+% grid
+
+% ff=[];
+% for ii=1:9
+%     qw=thalamic_mean_spikes(ii,1:2000);
+%     ff=[ff;mean(reshape(qw,5,400))];
+% end
+% figure(754)
+%     plot(mean(ff))
+%     title('psth of thalmic')
+% grid
+
+
 %{ 
 % see later
 
@@ -467,3 +442,8 @@ figure(75)
     title('raster of thalamic')
 grid
 %}
+
+
+
+%--- most probably useless in multiple iterations -----
+% --- thalamic mean spikes

@@ -221,24 +221,20 @@ for i=2:length(tspan)
 %	break % for testing only one iteration
 end
 
-testing_column = 1;
-testing_neuron = 15;
-thalamic_testing_neuron = 6;
+testing_column = 1;testing_neuron = 15;thalamic_testing_neuron = 6;
 
-figure(1)
+figure
     vvv = reshape(voltages(1, testing_neuron, :),1, length(tspan));
     plot(vvv);
     title('voltage of neuron')
 grid
 
-figure(2)
+figure
     eee = reshape(epsc_tensor(1, testing_neuron, :),1, length(tspan)-1);
     eee = eee + I_background;
     plot(eee);
     title('total curret')
 grid
-
-
 
 
 % population behaviour - mean spike rate of column with time
@@ -269,20 +265,13 @@ for i=1:(original_length_spikes-1)/n_bins
     thalamic_population_psth(1,i) = sum(thalamic_neurons_spikes_rates(:,i))/n_thalamic;
 end
 
-figure(754)
+figure
     stem(thalamic_population_psth)
     title('psth of thalmic')
 grid
 
-
-% psth of l4 neurons
-ff=[];
-for ii=1:25
-    qw=spikes_2d_matrix_l4(ii,1:2500);
-    ff=[ff;mean(reshape(qw,5,500))];
-end
-figure(457)
-    plot(mean(ff))
+figure
+    plot(population_psth);
     title('psth of l4')
 grid
 
@@ -292,59 +281,42 @@ spikes_2d_matrix_l4 = zeros(n_total_neurons, length(tspan));
 for i=1:n_total_neurons
     spikes_2d_matrix_l4(i,:) = voltage_to_spikes(voltages(1,i,:));
 end
-figure(770)
+
+figure
     imagesc(spikes_2d_matrix_l4);
+    title('raster l4')
 grid
 
-figure(9)
-    plot(population_psth);
-    title('psth of all neurons in column')
-grid
-
-% thalamic neurons - mean spike rate
-thalamic_neurons_spikes_rates = zeros(n_thalamic, (original_length_spikes-1)/n_bins);
-for i=1:n_thalamic
-   spikes11 = poisson_generator(lamda, dt, length(tspan));
-    spike_rates11 = spikes_to_spike_rate_neat(spikes11, physical_time_in_ms, dt, spike_rate_dt);
-   thalamic_neurons_spikes_rates(i,:) = spike_rates11;
-end
-thalamic_population_psth = zeros(1, (original_length_spikes-1)/n_bins);
-for i=1:(original_length_spikes-1)/n_bins
-    thalamic_population_psth(1,i) = sum(thalamic_neurons_spikes_rates(:,i))/n_thalamic;
-end
-
-
- 
- 
-figure(3)
-    spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
-    stem(tspan, spikes1);
-    title('spikes')
-grid
- 
-figure(7)
-    spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
-	spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
-    plot(spike_rates1);
-    title('spike rate')
-grid
-
-figure(57)
-    % for a single column
-   reshaped_spikes =  zeros(n_total_neurons, length(tspan));
-    for i=1:n_total_neurons
-        reshaped_voltage = reshape(voltages(1,i,:), 1, length(tspan));
-        reshaped_spikes(i,:) = voltage_to_spikes(reshaped_voltage);
-    end
-    imagesc(reshaped_spikes);
-    title('raster of l4')
-grid
-
-
-figure(75)
-    reshaped_spikes = reshape(spikes, n_total_neurons, length(tspan));
+figure
     imagesc(thalamic_poisson_spikes);
     title('raster of thalamic')
 grid
+
+
+% figure
+%     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
+%     stem(tspan, spikes1);
+%     title('spikes')
+% grid
+%  
+% figure
+%     spikes1 = voltage_to_spikes(voltages(testing_column, testing_neuron, :));
+% 	spike_rates1 = spikes_to_spike_rate_neat(spikes1, physical_time_in_ms, dt, spike_rate_dt);
+%     plot(spike_rates1);
+%     title('spike rate')
+% grid
+
+% psth of l4 neurons
+% ff=[];
+% for ii=1:25
+%     qw=spikes_2d_matrix_l4(ii,1:2500);
+%     ff=[ff;mean(reshape(qw,5,500))];
+% end
+% figure
+%     plot(mean(ff))
+%     title('psth of l4')
+% grid
+
+
 
 
