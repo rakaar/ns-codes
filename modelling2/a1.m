@@ -1,10 +1,10 @@
 close all;
 
-n_iters = 1;
+n_iters = 20;
 
 % basic variables
 n_columns = 1;
-n_excita    tory = 20; 
+n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
@@ -190,6 +190,10 @@ for iter=1:n_iters
 						epsc_inh_own_column * J_ii;
           end
           total_epsc = total_epsc + epsc_from_thalamic;
+          % a temporary statement to check if backcurrent is strong enough
+          % to produce current
+          total_epsc = 0;
+          
           epsc_tensor(iter, c, n, i-1) = total_epsc;
           
 % 		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
@@ -257,6 +261,8 @@ for i=1:n_iters
     end
 end
 
+% TODO raster plot
+
 % get a mean of all spikes
 spike_rate_l4 = zeros(n_total_neurons, spike_rate_length);
 for i=1:spike_rate_length
@@ -264,6 +270,27 @@ for i=1:spike_rate_length
         spike_rate_l4(n, i) = sum(spike_rates(:,1,n,i))/n_iters;
     end
 end
+
+% check spike rate of some random l4 neuron
+figure
+    test_neuron = 10;
+    spike_rate_test_l4 = spike_rate_l4(test_neuron, :);
+    plot(spike_rate_test_l4);
+grid
+
+% checking spikes of same random neuron
+figure
+    spike_test_l4 = voltages(10, 1, test_neuron, :);
+    spike_test_reshape = reshape(spike_test_l4, 1, length(tspan));
+    plot(spike_test_reshape);
+grid
+
+% input to test neuron
+figure
+    current = reshape(epsc_tensor(10,1,test_neuron, :), 1,length(epsc_tensor(10,1,test_neuron, :)));
+    plot(current);
+    title('epsc to test')
+grid
 
 % mean psth of all neurons
 spike_rate_l4_all = zeros(1, spike_rate_length);
