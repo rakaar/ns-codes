@@ -1,6 +1,6 @@
 close all;
 
-n_iters = 20;
+n_iters = 1;
 
 % basic variables
 n_columns = 1;
@@ -261,7 +261,6 @@ for i=1:n_iters
     end
 end
 
-% TODO raster plot
 
 % get a mean of all spikes
 spike_rate_l4 = zeros(n_total_neurons, spike_rate_length);
@@ -278,16 +277,18 @@ figure
     plot(spike_rate_test_l4);
 grid
 
-% checking spikes of same random neuron
+
+%  raster plot
+raster_all = [];
 figure
-    spike_test_l4 = voltages(10, 1, test_neuron, :);
-    spike_test_reshape = reshape(spike_test_l4, 1, length(tspan));
-    plot(spike_test_reshape);
+    spikes_test = reshape(spikes(:, 1, n, :), n_iters,length(spikes(:, 1, n, :)));
+    imagesc(spikes_test)
+    title('raster of l4 all neuron')
 grid
 
 % input to test neuron
 figure
-    current = reshape(epsc_tensor(10,1,test_neuron, :), 1,length(epsc_tensor(10,1,test_neuron, :)));
+    current = reshape(epsc_tensor(1,1,test_neuron, :), 1,length(epsc_tensor(10,1,test_neuron, :)));
     plot(current);
     title('epsc to test')
 grid
