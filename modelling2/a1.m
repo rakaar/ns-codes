@@ -1,6 +1,6 @@
 close all;
 
-n_iters = 1;
+n_iters = 10;
 
 % basic variables
 n_columns = 1;
@@ -37,7 +37,7 @@ u_values = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
-I_background_tensor = zeros(n_iters, length(tspan)-1);
+I_background_tensor = zeros(n_iters, length(tspan));
 
 % synaptic resources
 xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -237,6 +237,9 @@ end
 
 end
 
+return
+
+
 % testing if really thalamic inputs vary
 figure
 hold on
@@ -265,8 +268,8 @@ figure
          thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
          epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(10,thalamic_neuron_num, :);
         end
-        epsc_from_thalamic = epsc_from_thalamic + I_background;
         ee = reshape(epsc_from_thalamic,1,2001);
+        ef = ee + I_background_tensor(10, :);
         plot(ee);
     hold off
 grid
@@ -286,7 +289,7 @@ end
 
 % testing spikes of all 25 neurons
 x = squeeze(spikes);
-x1 = reshape(x, 25, 2001);
+x1 = reshape(x, 250, 2001);
 figure
     imagesc(x1)
 grid
