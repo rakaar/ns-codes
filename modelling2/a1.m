@@ -19,11 +19,9 @@ tspan = 0:dt:t_simulate;
 spike_rate_dt = 5*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
-% currents
-I_background = 8.0;
 
 % connection strength
-weight_reducing_l4 = 5; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 5.0; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -39,6 +37,7 @@ u_values = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+I_background_tensor = zeros(n_iters, length(tspan)-1);
 
 % synaptic resources
 xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -192,7 +191,7 @@ for iter=1:n_iters
           total_epsc = total_epsc + epsc_from_thalamic;
           % a temporary statement to check if backcurrent is strong enough
           % to produce current
-          total_epsc = 0;
+%           total_epsc = 0;
           
           epsc_tensor(iter, c, n, i-1) = total_epsc;
           
@@ -203,7 +202,9 @@ for iter=1:n_iters
 			if v_current == 30
                 v_current = neuron_params_rb_ss('c');
 				u_current = u_current + neuron_params_rb_ss('d');
-			end
+            end
+            I_background = rand * 8;
+            I_background_tensor(iter, i) = I_background;
 			% calculate voltage using the function
 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
 						
@@ -236,6 +237,39 @@ end
 
 end
 
+% testing if really thalamic inputs vary
+figure
+hold on
+for n=1:n_total_neurons
+        epsc_from_thalamic = 0;
+        for ttt=1:num_of_input_giving_thalamic
+         thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
+         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(1,thalamic_neuron_num, :);
+        end
+        plot(reshape(epsc_from_thalamic, 1, length(tspan)));
+
+end
+hold off
+grid
+
+% 
+figure
+    hold on
+        voltage1 = voltages(10,1,10,:);
+        v1 = reshape(voltage1, 1,2001);
+        plot(v1);
+        
+        epsc_from_thalamic = 0;
+        n=10;
+        for ttt=1:num_of_input_giving_thalamic
+         thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
+         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(10,thalamic_neuron_num, :);
+        end
+        epsc_from_thalamic = epsc_from_thalamic + I_background;
+        ee = reshape(epsc_from_thalamic,1,2001);
+        plot(ee);
+    hold off
+grid
 
 
 %------ l4 neurons------
@@ -250,6 +284,20 @@ for i=1:n_iters
     end
 end
 
+% testing spikes of all 25 neurons
+x = squeeze(spikes);
+x1 = reshape(x, 25, 2001);
+figure
+    imagesc(x1)
+grid
+
+% x = reshape(spikes, 25, 2001);
+% figure
+%     imagesc(x)
+%     title('l4')
+% grid
+
+return
 % fill the spike rates tensor - re run
 for i=1:n_iters
     for n=1:n_total_neurons
