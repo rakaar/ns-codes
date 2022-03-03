@@ -21,7 +21,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 5.0; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 30.0; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -54,7 +54,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 400; lamda_i = 4;
+lamda_s = 500; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -66,7 +66,7 @@ for i=1501:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 250; xe_thalamic = 1;
+weight_thalamic_to_a1 = 2500; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
@@ -243,7 +243,7 @@ end
 end
 
 
-return
+
 
 % hold on - epsc and voltage of random neuron
 figure
@@ -264,6 +264,26 @@ figure
     hold off
 grid
 
+%------ l4 neurons------
+% fill the spikes tensor
+for i=1:n_iters
+    for n=1:n_total_neurons
+        voltage1 = voltages(i, 1, n, :);
+        voltage1_reshaped = reshape(voltage1, 1, length(tspan));
+        spikes1 = voltage_to_spikes(voltage1_reshaped);
+        spikes1 = reshape(spikes1, 1, 1, 1,length(tspan));
+        spikes(i,1,n,:) = spikes1;
+    end
+end
+
+% testing spikes of all 25 neurons
+x = squeeze(spikes);
+x1 = reshape(x, n_iters*n_total_neurons, length(tspan));
+figure
+    imagesc(x1)
+grid
+
+return
 
 % epsc input average 
 epsc_squeeze = squeeze(epsc_tensor);
@@ -339,24 +359,7 @@ grid
 % 
 
 
-%------ l4 neurons------
-% fill the spikes tensor
-for i=1:n_iters
-    for n=1:n_total_neurons
-        voltage1 = voltages(i, 1, n, :);
-        voltage1_reshaped = reshape(voltage1, 1, length(tspan));
-        spikes1 = voltage_to_spikes(voltage1_reshaped);
-        spikes1 = reshape(spikes1, 1, 1, 1,length(tspan));
-        spikes(i,1,n,:) = spikes1;
-    end
-end
 
-% testing spikes of all 25 neurons
-x = squeeze(spikes);
-x1 = reshape(x, n_iters*n_total_neurons, length(tspan));
-figure
-    imagesc(x1)
-grid
 
 
 x = squeeze(spikes);
