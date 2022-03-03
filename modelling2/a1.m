@@ -1,6 +1,6 @@
 close all;
 
-n_iters = 1;
+n_iters = 20;
 
 % basic variables
 n_columns = 1;
@@ -12,7 +12,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 25; % x100 ms = x0.1s 
+t_simulate = 20; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -242,6 +242,9 @@ end
 
 end
 
+
+return
+
 figure
     hold on
         voltage1 = voltages(1,1,10,:);
@@ -261,7 +264,6 @@ figure
 grid
 
 
-return
 
 
 % testing if really thalamic inputs vary
@@ -315,7 +317,7 @@ end
 
 % testing spikes of all 25 neurons
 x = squeeze(spikes);
-x1 = reshape(x, 25, length(tspan));
+x1 = reshape(x, n_iters*n_total_neurons, length(tspan));
 figure
     imagesc(x1)
 grid
