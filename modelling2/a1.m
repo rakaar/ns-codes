@@ -1,6 +1,6 @@
 close all;
 
-n_iters = 10;
+n_iters = 1;
 
 % basic variables
 n_columns = 1;
@@ -12,7 +12,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 20; % x100 ms = x0.1s 
+t_simulate = 25; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -73,12 +73,14 @@ epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
 % izhikevich neuron params
 % for rebound burst and sustained_spike
-neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -52 0]); 
+neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]); 
+% a=0.02; b=0.25; c=-70;  d=0; % this should also cause disinhibition
+% a=0.02; b=0.25; c=-55;  d=0.05; % used this on party day in lab
 % neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -48 0]); 
 
 % for rebound burst and phasic spike
 neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
-
+    
 % initialize
 v0 = -64; u0 = neuron_params_rb_ss('b')*v0; 
 xr(:, :, :, 1) = 1;
@@ -203,7 +205,10 @@ for iter=1:n_iters
                 v_current = neuron_params_rb_ss('c');
 				u_current = u_current + neuron_params_rb_ss('d');
             end
-            I_background = rand * 8;
+            I_background = rand * (5);
+%             if i<501 | i >1500
+%                 I_background = 0;
+%             end
             I_background_tensor(iter, i) = I_background;
 			% calculate voltage using the function
 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
@@ -237,6 +242,25 @@ end
 
 end
 
+figure
+    hold on
+        voltage1 = voltages(1,1,10,:);
+        v1 = reshape(voltage1, 1,length(tspan));
+        plot(v1);
+        
+        epsc_from_thalamic = 0;
+        n=10;
+        for ttt=1:num_of_input_giving_thalamic
+         thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
+         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(1,thalamic_neuron_num, :);
+        end
+        ee = reshape(epsc_from_thalamic,1,length(tspan));
+        ef = ee + I_background_tensor(1, :);
+        plot(ee);
+    hold off
+grid
+
+
 return
 
 
@@ -255,24 +279,26 @@ end
 hold off
 grid
 
-% 
 figure
     hold on
-        voltage1 = voltages(10,1,10,:);
-        v1 = reshape(voltage1, 1,2001);
+        voltage1 = voltages(1,1,10,:);
+        v1 = reshape(voltage1, 1,length(tspan));
         plot(v1);
         
         epsc_from_thalamic = 0;
         n=10;
         for ttt=1:num_of_input_giving_thalamic
          thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
-         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(10,thalamic_neuron_num, :);
+         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(1,thalamic_neuron_num, :);
         end
-        ee = reshape(epsc_from_thalamic,1,2001);
-        ef = ee + I_background_tensor(10, :);
+        ee = reshape(epsc_from_thalamic,1,length(tspan));
+        ef = ee + I_background_tensor(1, :);
         plot(ee);
     hold off
 grid
+
+
+% 
 
 
 %------ l4 neurons------
@@ -289,7 +315,14 @@ end
 
 % testing spikes of all 25 neurons
 x = squeeze(spikes);
-x1 = reshape(x, 250, 2001);
+x1 = reshape(x, 25, length(tspan));
+figure
+    imagesc(x1)
+grid
+
+
+x = squeeze(spikes);
+x1 = reshape(x, 25, 2001);
 figure
     imagesc(x1)
 grid
@@ -301,6 +334,8 @@ grid
 % grid
 
 return
+
+
 % fill the spike rates tensor - re run
 for i=1:n_iters
     for n=1:n_total_neurons
