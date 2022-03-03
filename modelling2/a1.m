@@ -1,6 +1,6 @@
 close all;
 
-n_iters = 20;
+n_iters = 1;
 
 % basic variables
 n_columns = 1;
@@ -54,7 +54,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 200; lamda_i = 4;
+lamda_s = 400; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -205,7 +205,7 @@ for iter=1:n_iters
                 v_current = neuron_params_rb_ss('c');
 				u_current = u_current + neuron_params_rb_ss('d');
             end
-            I_background = rand * (5);
+            I_background = rand * (2);
 %             if i<501 | i >1500
 %                 I_background = 0;
 %             end
@@ -245,6 +245,7 @@ end
 
 return
 
+% hold on - epsc and voltage of random neuron
 figure
     hold on
         voltage1 = voltages(1,1,10,:);
@@ -264,7 +265,42 @@ figure
 grid
 
 
+% epsc input average 
+epsc_squeeze = squeeze(epsc_tensor);
+epsc_average = zeros(n_total_neurons, length(tspan)-1);
+for n=1:n_total_neurons
+    for t=2:length(tspan)-1
+        epsc_average(n, t) = sum(epsc_squeeze(n,t))/n_iters + I_background_tensor(1,t);
+    end
+end
 
+% random neuron epsc and avg voltage
+voltage_avg = zeros(n_total_neurons, length(tspan)-1);
+voltages_squeeze = squeeze(voltages);
+for n=1:n_total_neurons
+    for t=2:length(tspan)
+        voltage_avg(n,t) = sum(voltages_squeeze(:,n,t))/n_iters;
+    end
+end
+
+
+figure
+    hold on
+        plot(epsc_average(10,:))
+        title('random neuron epsc')
+        v_avg = voltage_avg(10,:);
+        plot(v_avg);
+    hold off
+grid
+
+epsc_avg_l4 = zeros(1,length(tspan)-1);
+for t=1:length(tspan)-1
+    epsc_avg_l4(1,t) = sum(epsc_average(:,t))/n_total_neurons;
+end
+figure
+    plot(epsc_avg_l4);
+    title('epsc avg l4')
+grid
 
 % testing if really thalamic inputs vary
 figure
