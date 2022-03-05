@@ -2,8 +2,8 @@ close all;
 
 n_iters = 1;
 
-% basic variables
-n_columns = 1;
+% basic variables;
+n_columns = 1
 n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
@@ -11,8 +11,8 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
 physical_time_in_ms = 1; %dt time step 
-dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 12; % x100 ms = x0.1s 
+dt = 1;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
+t_simulate = 1500; 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -21,7 +21,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 3; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 0.5; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -33,7 +33,9 @@ J_ie_2 = 0.0015*weight_reducing_l4;
 
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
-u_values = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
+i1_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
+i2_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
+theta_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
@@ -54,7 +56,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 500; lamda_i = 4;
+lamda_s = 400; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -66,7 +68,7 @@ for i=1001:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 12; xe_thalamic = 1;
+weight_thalamic_to_a1 = 10; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
@@ -82,13 +84,15 @@ neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]);
 neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
     
 % initialize
-v0 = -64; u0 = neuron_params_rb_ss('b')*v0; 
+v0 = -70;  
 xr(:, :, :, 1) = 1;
 voltages(:, :, :, 1) = v0; % 
-u_values(:, :, :, 1) = u0; % 
+i1_tensor(:, :, :, 1) = 0.01;
+i2_tensor(:, :, :, 1) = 0.001;
+theta_tensor(:, :, :, 1) = -50.0;
 
 for iter=1:n_iters
-    v0 = -64; u0 = neuron_params_rb_ss('b')*v0; 
+    
     fprintf("------iter numm %d -----", iter);
 
     % thalamic
@@ -199,25 +203,26 @@ for iter=1:n_iters
           
 % 		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
 
-			v_current = voltages(iter,c,n,i-1);
-			u_current = u_values(iter,c, n, i-1);
-			if v_current == 30
-                v_current = neuron_params_rb_ss('c');
-				u_current = u_current + neuron_params_rb_ss('d');
-            end
-            I_background = rand * (3);
+			
+            I_background = rand * (1);
 %             if i<501 | i >1500
 %                 I_background = 0;
 %             end
             I_background_tensor(iter, i) = I_background;
-			% calculate voltage using the function
-			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
-						
+			
+            
+            % calculate voltage using the function
+% 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
+			[voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
+
 			M = 0;
 			if voltages(iter,c, n, i) == 30
 				M = 1;
 			end
-		%	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
+		
+            
+            
+            %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
     
             % update synaptic resources
             current_xr = xr(iter,c, n, i-1);
@@ -243,8 +248,6 @@ end
 end
 
 
-
-
 % hold on - epsc and voltage of random neuron
 figure
     hold on
@@ -262,7 +265,59 @@ figure
         ef = ee + I_background_tensor(1, :);
         plot(ee);
     hold off
+
+    title('voltage and epsc')
 grid
+
+% testing spikes of all 25 neurons
+x = squeeze(spikes);
+x1 = reshape(x, n_iters*n_total_neurons, length(tspan));
+figure
+    imagesc(x1)
+grid
+
+% fill the spike rates tensor - re run
+for i=1:n_iters
+    for n=1:n_total_neurons
+        spikes1 = spikes(i, 1, n, :);
+        spikes1_reshaped = reshape(spikes1, 1,length(tspan));
+        spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt);
+        spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length);
+        spike_rates(i,1,n,:) = spikes_rate1; 
+    end
+end
+
+
+% get a mean of all spikes
+spike_rate_l4 = zeros(n_total_neurons, spike_rate_length);
+for i=1:spike_rate_length
+    for n=1:n_total_neurons
+        spike_rate_l4(n, i) = sum(spike_rates(:,1,n,i))/n_iters;
+    end
+end
+
+% mean psth of all neurons
+spike_rate_l4_all = zeros(1, spike_rate_length);
+for i=1:spike_rate_length
+    spike_rate_l4_all(1, i) = sum(spike_rate_l4(:, i))/n_total_neurons;
+end
+
+figure
+    plot(spike_rate_l4_all);
+    title('psth of l4  all neurons')
+grid
+
+return
+
+
+
+
+
+
+
+
+
+
 
 %------ l4 neurons------
 % fill the spikes tensor
