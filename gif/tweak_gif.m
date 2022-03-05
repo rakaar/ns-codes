@@ -19,7 +19,7 @@ close all;
 k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
 El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-t_simulate = 10000;
+t_simulate = 20000;
 dt = 1; % may be 1ms
 tspan = 0:dt:t_simulate;
 
@@ -29,11 +29,11 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-% iext(1000:6000) = -3.5;
-iext(1000:6000) = 1.5;
+iext(1000:2000) = -65;
+% iext(1000:1500) = 5;
 
 % params for phasic burst and rebound burst
-a = 0.005; A1 = 10; A2 = -0.6; 
+a = 0.009; A1 = 15; A2 = -0.6; 
 
 % params fo tonic spike through spike for +ve current
 % a = 0; A1 = 0; A2 = 0; 
@@ -45,6 +45,8 @@ i2(1) = 0.001;
 v(1) =-70.0 ;
 theta(1) = -50.0;
 
+% temporrary
+x = [];
 for t=2:length(tspan)
     i1(t) = i1(t-1) + dt*(-k1*i1(t-1));
     i2(t) = i2(t-1) + dt*(-k2*i2(t-1));
@@ -58,6 +60,7 @@ for t=2:length(tspan)
         theta(t) = max(Thetar, theta(t));
 
         spikes(t) = 1;
+       x = [x, t];
     end
 end
 
@@ -66,7 +69,7 @@ figure
     title('voltage')
 grid
 
-figure
-    plot(spikes)
-    title('spikes')
-grid
+a = x(1);b = length(x);c=x(end);
+disp(a)
+disp(c)
+disp(b)
