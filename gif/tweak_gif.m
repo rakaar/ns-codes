@@ -29,8 +29,8 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-iext(1000:2000) = -65;
-% iext(1000:1500) = 5;
+% iext(1000:2000) = -65;
+iext(1000:1500) = 5;
 
 % params for phasic burst and rebound burst
 a = 0.009; A1 = 15; A2 = -0.6; 
