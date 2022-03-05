@@ -12,7 +12,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 1;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 1500; 
+t_simulate = 1000; 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -60,10 +60,10 @@ lamda_s = 400; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
-for i=501:1000
+for i=501:600
     lamda(1,i) = lamda_s+lamda_i;
 end
-for i=1001:length(tspan)
+for i=601:length(tspan)
     lamda(1,i) = lamda_i;
 end
 
