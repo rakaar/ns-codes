@@ -12,7 +12,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 0.01;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 20; % x100 ms = x0.1s 
+t_simulate = 12; % x100 ms = x0.1s 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -21,7 +21,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 30.0; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 3; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -58,15 +58,15 @@ lamda_s = 500; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
-for i=501:1500
+for i=501:1000
     lamda(1,i) = lamda_s+lamda_i;
 end
-for i=1501:length(tspan)
+for i=1001:length(tspan)
     lamda(1,i) = lamda_i;
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 2500; xe_thalamic = 1;
+weight_thalamic_to_a1 = 12; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
@@ -205,7 +205,7 @@ for iter=1:n_iters
                 v_current = neuron_params_rb_ss('c');
 				u_current = u_current + neuron_params_rb_ss('d');
             end
-            I_background = rand * (2);
+            I_background = rand * (3);
 %             if i<501 | i >1500
 %                 I_background = 0;
 %             end
@@ -283,6 +283,27 @@ figure
     imagesc(x1)
 grid
 
+% epsc thalamic
+epsc_thalamic_squeezed = squeeze(epsc_thalamic);
+epsc_thalamic_avg = zeros(1, length(tspan));
+for t=1:length(tspan)
+    epsc_thalamic_avg(1, t) = sum(epsc_thalamic_squeezed(:, t))/n_thalamic;
+end
+figure
+    plot(epsc_thalamic_avg)
+    title('epsc thalamic avg')
+grid
+
+% epsc weight
+epsc_tensor_squeeze = squeeze(epsc_tensor);
+epsc_all_avg = zeros(1, length(tspan)-1);
+for i=1:length(tspan)-1
+    epsc_all_avg(1, i) = sum(epsc_tensor_squeeze(:, i))/n_total_neurons;
+end
+figure
+    plot(epsc_all_avg)
+    title('epsc all neurons avg')
+grid
 return
 
 % epsc input average 
