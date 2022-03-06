@@ -1,4 +1,5 @@
 close all;
+clear all;
 
 n_iters = 1;
 
@@ -21,7 +22,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 0.5; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 5; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -38,6 +39,7 @@ i2_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 theta_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
+recurrence_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 I_background_tensor = zeros(n_iters, length(tspan));
 
@@ -114,8 +116,8 @@ for iter=1:n_iters
 			epsc_ex_neuron_back_c2 = 0;
 			if c-2 >= 1
 				for j=1:n_excitatory
-					spike_train_exc = voltage_to_spikes(voltages(iter,c-2,j,:));
-					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
+					spike_train_exc = spikes(iter,c-2,j,:);
+                    g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-1); 
                  end
 			end
@@ -123,7 +125,7 @@ for iter=1:n_iters
 			epsc_ex_neuron_back_c1 = 0;
 			if c-1 >= 1
 				for j=1:n_excitatory
-					spike_train_exc = voltage_to_spikes(voltages(iter,c-1,j,:));
+					spike_train_exc = spikes(iter,c-1,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-1); 
 				end
@@ -132,7 +134,7 @@ for iter=1:n_iters
 			epsc_ex_neuron_front_c1 = 0;
 			if c+1 <= n_columns
 				for j=1:n_excitatory
-					spike_train_exc = voltage_to_spikes(voltages(iter,c+1,j,:));
+				    spike_train_exc = spikes(iter,c+1,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-1);
 				end
@@ -142,7 +144,7 @@ for iter=1:n_iters
 			epsc_ex_neuron_front_c2 = 0;
 			if c+2 <= n_columns
 				for j=1:n_excitatory
-					spike_train_exc = voltage_to_spikes(voltages(iter,c+2,j,:));
+					spike_train_exc = spikes(iter,c+2,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-1);
 				end
@@ -154,7 +156,7 @@ for iter=1:n_iters
 				if j == n
 					continue;
 				end
-				spike_train_exc = voltage_to_spikes(voltages(iter,c,j,:));
+				spike_train_exc = spikes(iter,c,j,:);
 				g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
 				epsc_ex_own_column	= epsc_ex_own_column + g_t*xe(iter,c,j,i-1); 
 			end
@@ -163,8 +165,8 @@ for iter=1:n_iters
 			for j=n_excitatory+1:n_total_neurons
 				if j == n
 					continue;
-				end
-				spike_train_inh = voltage_to_spikes(voltages(iter,c,j,:));
+                end
+                spike_train_inh = spikes(iter,c,j,:);
 				g_t = get_g_t(spike_train_inh, dt, i-1, tspan);
 				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(iter,c,j,i-1);
             end
@@ -194,6 +196,7 @@ for iter=1:n_iters
 						epsc_ex_own_column * J_ie_0 + ...
 						epsc_inh_own_column * J_ii;
           end
+          recurrence_epsc_tensor(iter, c, n, i-1) = total_epsc ;
           total_epsc = total_epsc + epsc_from_thalamic;
           % a temporary statement to check if backcurrent is strong enough
           % to produce current
@@ -216,7 +219,7 @@ for iter=1:n_iters
 			[voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
 
 			M = 0;
-			if voltages(iter,c, n, i) == 30
+			if spikes(iter,c,n,i) == 1
 				M = 1;
 			end
 		
@@ -247,28 +250,7 @@ end
 
 end
 
-
-% hold on - epsc and voltage of random neuron
-figure
-    hold on
-        voltage1 = voltages(1,1,10,:);
-        v1 = reshape(voltage1, 1,length(tspan));
-        plot(v1);
-        
-        epsc_from_thalamic = 0;
-        n=10;
-        for ttt=1:num_of_input_giving_thalamic
-         thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
-         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(1,thalamic_neuron_num, :);
-        end
-        ee = reshape(epsc_from_thalamic,1,length(tspan));
-        ef = ee + I_background_tensor(1, :);
-        plot(ee);
-    hold off
-
-    title('voltage and epsc')
-grid
-
+% --------- raster plot ---- 
 % testing spikes of all 25 neurons
 x = squeeze(spikes);
 x1 = reshape(x, n_iters*n_total_neurons, length(tspan));
@@ -276,6 +258,28 @@ figure
     imagesc(x1)
 grid
 
+
+xx = squeeze(recurrence_epsc_tensor);
+yy = zeros(1, length(tspan)-1);
+for i=1:length(tspan)-1
+    yy(1,i) = sum(xx(:, i))/n_total_neurons;
+end
+figure
+    plot(yy)
+    title('recurrence epsc avg')
+grid
+
+xx = squeeze(xe);
+yy = zeros(1, length(tspan)-1);
+for i=1:length(tspan)-1
+    yy(1,i) = sum(xx(:, i))/n_total_neurons;
+end
+figure
+    plot(yy)
+    title('xe')
+grid
+% -------------------------------
+% -------- psth -------------
 % fill the spike rates tensor - re run
 for i=1:n_iters
     for n=1:n_total_neurons
@@ -306,7 +310,98 @@ figure
     plot(spike_rate_l4_all);
     title('psth of l4  all neurons')
 grid
+% -------- psth end -------------
 
+return
+
+
+
+% hold on - epsc and voltage of random neuron
+figure
+    hold on
+        voltage1 = voltages(1,1,10,:);
+        v1 = reshape(voltage1, 1,length(tspan));
+        plot(v1);
+        
+        epsc_from_thalamic = 0;
+        n=10;
+        for ttt=1:num_of_input_giving_thalamic
+         thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
+         epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(1,thalamic_neuron_num, :);
+        end
+        ee = reshape(epsc_from_thalamic,1,length(tspan));
+        ef = ee + I_background_tensor(1, :);
+        plot(ee);
+    hold off
+
+    title('voltage and epsc')
+grid
+
+
+
+
+%------- excitatory and inhibitory------
+% spike_rate_l4 - 25 x spike_rate_length
+psth_exc_avg = zeros(1, spike_rate_length);
+for i=1:spike_rate_length
+    psth_exc_avg(1,i) = sum(spike_rate_l4(1:n_excitatory,i))/n_excitatory;
+end
+
+
+psth_inh_avg = zeros(1, spike_rate_length);
+for i=1:spike_rate_length
+    psth_inh_avg(1,i) = sum(spike_rate_l4(n_excitatory+1:n_total_neurons,i))/n_inhibitory;
+end
+
+figure
+    hold on
+        plot(spike_rate_l4_all);
+        plot(psth_exc_avg);
+        plot(psth_inh_avg);
+        legend('all', 'exc', 'inh')
+    hold off
+grid
+% --------------------------------------
+
+% ------ an excitatory input and psth -----
+random_exc = 10;
+random_neuron_psth = spike_rate_l4(random_exc, :);
+epsc_tensor_for_random = zeros(1,spike_rate_length);
+epsc_squeeze = squeeze(epsc_tensor);
+x = zeros(1, length(tspan));
+y = zeros(1, length(tspan)-1);
+for i=2:length(tspan)-1
+    x(1,i) = sum(epsc_squeeze(:,random_exc, i))/n_iters;
+end
+
+for k=2:length(tspan)
+    y(k) = sum(I_background_tensor(:, k))/n_iters;
+end
+
+x1 = spikes_to_spike_rate_neat(x,physical_time_in_ms, dt, spike_rate_dt);
+y1 = spikes_to_spike_rate_neat(y,physical_time_in_ms, dt, spike_rate_dt);
+z1 = x1 + y1;
+figure
+    hold on
+         plot(z1);
+     plot(random_neuron_psth);
+     legend('input curent', 'psth of random neuron')
+
+    hold off
+grid
+% ---------------------
+
+% ------ epsc thalamic-----
+epsc_thalamic_squeezed = squeeze(epsc_thalamic);
+epsc_thalamic_avg = zeros(1, length(tspan));
+for t=1:length(tspan)
+    epsc_thalamic_avg(1, t) = sum(epsc_thalamic_squeezed(:, t))/n_thalamic;
+end
+figure
+    plot(epsc_thalamic_avg)
+    title('epsc thalamic avg')
+grid
+% ---- epsc thalamic end ----
 return
 
 

@@ -1,15 +1,16 @@
 function [v, i1, i2, theta, is_spike] = calculate_new_state(v_old, i1_old, i2_old, theta_old,total_epsc, I_background,dt)
      is_spike = 0;
     
-     % background element causing spike
-     if rand <= 0.0020
-        is_spike = 1;
-     end
+%      background element causing spike
+% some how adding this background element results prevents disinhibtion
+%      if rand <= 0.0020
+%         is_spike = 1;
+%      end
 
     k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
     El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-    a = 0.009; A1 = 15; A2 = -0.6; 
+    a = 0.009; A1 = 10; A2 = -0.6; 
     
     iext = total_epsc + I_background;
 
