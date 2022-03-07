@@ -1,5 +1,6 @@
-close all;
 clear all;
+close all;
+
 
 n_iters = 1;
 
@@ -22,7 +23,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 5; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 10; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -250,6 +251,26 @@ end
 
 end
 
+%% ---- random neuron voltage plot
+nnn = 7;
+x = voltages(1,1,nnn,:);
+t = theta_tensor(1,1,nnn,:);
+x = squeeze(x);
+t = squeeze(t);
+ s = spikes(1,1,nnn,:);
+s = squeeze(s)*-10;
+
+figure
+    hold on
+    plot(x)
+    plot(t)
+    plot(s);
+    title('voltage and threshold of random neuron')
+    legend('voltage', 'threshold','spikes')
+    hold off
+grid
+%% ---- graph end
+
 % --------- raster plot ---- 
 % testing spikes of all 25 neurons
 x = squeeze(spikes);
@@ -311,6 +332,19 @@ figure
     title('psth of l4  all neurons')
 grid
 % -------- psth end -------------
+
+% ------ epsc thalamic-----
+epsc_thalamic_squeezed = squeeze(epsc_thalamic);
+epsc_thalamic_avg = zeros(1, length(tspan));
+for t=1:length(tspan)
+    epsc_thalamic_avg(1, t) = sum(epsc_thalamic_squeezed(:, t))/n_thalamic;
+end
+figure
+    plot(epsc_thalamic_avg)
+    title('epsc thalamic avg')
+grid
+% ---- epsc thalamic end ----
+
 
 return
 
