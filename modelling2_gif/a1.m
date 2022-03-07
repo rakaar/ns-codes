@@ -59,7 +59,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 400; lamda_i = 4;
+lamda_s = 200; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -217,7 +217,12 @@ for iter=1:n_iters
             
             % calculate voltage using the function
 % 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
-			[voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
+		   
+            [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
+          
+            if spikes(iter,c,n,i-1) == 1
+				spikes(iter,c,n,i) = 0;
+ 			end
 
 			M = 0;
 			if spikes(iter,c,n,i) == 1
