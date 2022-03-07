@@ -15,6 +15,7 @@
 %           'C': 1.0,              # Membrane capacitance
 %           'ThetaInf': -50.0}       # Reverse threshold
 close all;
+clear all;
 
 k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
 El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
@@ -30,7 +31,7 @@ theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
 % iext(1000:2000) = -65;
-iext(1000:1500) = 5;
+iext(1000:1500) = 10;
 
 % params for phasic burst and rebound burst
 a = 0.009; A1 = 15; A2 = -0.6; 

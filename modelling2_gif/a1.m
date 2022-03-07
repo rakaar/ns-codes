@@ -23,7 +23,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 10; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 0.6; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -42,7 +42,9 @@ spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 recurrence_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+epsc_with_background_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 I_background_tensor = zeros(n_iters, length(tspan));
+feedforward_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 
 % synaptic resources
 xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -59,7 +61,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 200; lamda_i = 4;
+lamda_s = 800; lamda_i = 2;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -71,7 +73,7 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 10; xe_thalamic = 1;
+weight_thalamic_to_a1 = 100; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
@@ -198,23 +200,28 @@ for iter=1:n_iters
 						epsc_inh_own_column * J_ii;
           end
           recurrence_epsc_tensor(iter, c, n, i-1) = total_epsc ;
-          total_epsc = total_epsc + epsc_from_thalamic;
+          total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
           % a temporary statement to check if backcurrent is strong enough
           % to produce current
 %           total_epsc = 0;
           
           epsc_tensor(iter, c, n, i-1) = total_epsc;
+            
           
 % 		  fprintf("c,n - %d %d total espc %f \n", c,n,total_epsc);
 
 			
-            I_background = rand * (1);
+%             I_background = rand * (1);
+                % to see only effect of thalamic in feedforward
+                I_background = 0;
 %             if i<501 | i >1500
 %                 I_background = 0;
 %             end
             I_background_tensor(iter, i) = I_background;
-			
             
+            feedforward_epsc_tensor(iter,c,n,i-1) = I_background + epsc_from_thalamic;
+          epsc_with_background_tensor(iter, c, n, i-1) = total_epsc + I_background;
+    
             % calculate voltage using the function
 % 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
 		   
@@ -257,6 +264,18 @@ end
 end
 
 %% ---- random neuron voltage plot
+x2 = squeeze(feedforward_epsc_tensor);
+figure
+    imagesc(x2);
+    title('feedforward epsc tensor')
+grid
+
+x1 = squeeze(recurrence_epsc_tensor);
+figure
+    imagesc(x1);
+    title('epsc recurrence of 25 neurons')
+grid
+
 nnn = 7;
 x = voltages(1,1,nnn,:);
 t = theta_tensor(1,1,nnn,:);
@@ -349,6 +368,19 @@ figure
     title('epsc thalamic avg')
 grid
 % ---- epsc thalamic end ----
+
+
+% ------ epsc thalamic-----
+e1 = squeeze(epsc_with_background_tensor);
+e_avg = zeros(1, length(tspan)-1);
+for t=1:length(tspan)-1
+    e_avg(1, t) = sum(e1(:, t))/n_total_neurons;
+end
+figure
+    plot(e_avg)
+    title('epsc with background')
+grid
+% ---- epsc end ----
 
 
 return
