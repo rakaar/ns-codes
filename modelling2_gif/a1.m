@@ -61,7 +61,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 800; lamda_i = 2;
+lamda_s = 200; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -266,6 +266,12 @@ end
 
 
 %% ---- random neuron voltage plot
+figure
+    x = squeeze(thalamic_poisson_spikes);
+    imagesc(x);
+    title('thalamic poision spikes')
+grid
+
 x2 = squeeze(feedforward_epsc_tensor);
 figure
     imagesc(x2);
