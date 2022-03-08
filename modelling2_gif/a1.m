@@ -18,12 +18,12 @@ t_simulate = 1000;
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 5*dt;
+spike_rate_dt = 25*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 0.6; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 0.3; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -263,6 +263,8 @@ end
 
 end
 
+
+
 %% ---- random neuron voltage plot
 x2 = squeeze(feedforward_epsc_tensor);
 figure
@@ -357,16 +359,46 @@ figure
 grid
 % -------- psth end -------------
 
-% ------ epsc thalamic-----
-epsc_thalamic_squeezed = squeeze(epsc_thalamic);
-epsc_thalamic_avg = zeros(1, length(tspan));
-for t=1:length(tspan)
-    epsc_thalamic_avg(1, t) = sum(epsc_thalamic_squeezed(:, t))/n_thalamic;
+% -------- recurence ------------
+% get a mean of all spikes
+recurrence_avg = zeros(n_total_neurons, length(tspan)-1);
+for i=1:length(tspan)-1
+    for n=1:n_total_neurons
+        recurrence_avg(n, i) = sum(recurrence_epsc_tensor(:,1,n,i))/n_iters;
+    end
 end
+
+% mean psth of all neurons
+recurrence_avg_all = zeros(1, length(tspan)-1);
+for i=1:length(tspan)-1
+    recurrence_avg_all(1, i) = sum(recurrence_avg(:, i))/n_total_neurons;
+end
+
 figure
-    plot(epsc_thalamic_avg)
-    title('epsc thalamic avg')
+    plot(recurrence_avg_all);
+    title('recurrence of l4  all neurons')
 grid
+
+% -------------------------------
+
+% ------ epsc thalamic-----
+epsc_thalamic_avg = zeros(n_thalamic, length(tspan)-1);
+for n=1:n_thalamic
+    for t=1:length(tspan)-1
+        epsc_thalamic_avg(n,t) = sum(epsc_thalamic(:, n, t))/n_iters;
+    end
+end
+
+epsc_thalamic_avg_all = zeros(1, length(tspan)-1);
+for t=1:length(tspan)-1
+    epsc_thalamic_avg_all(1,t) = sum(epsc_thalamic_avg(:,t))/n_thalamic;
+end
+
+figure
+    plot(epsc_thalamic_avg_all);
+    title('epsc thalamic avg all')
+grid
+
 % ---- epsc thalamic end ----
 
 
