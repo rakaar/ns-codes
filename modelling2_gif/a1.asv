@@ -23,7 +23,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 0.6; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 0.3; % for now all weights reduced by factor of 0.2
 J_ee_0 = 6*weight_reducing_l4; 
 J_ie_0 = 0.5*weight_reducing_l4;
 J_ei = -4*weight_reducing_l4; 
@@ -61,7 +61,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 800; lamda_i = 2;
+lamda_s = 200; lamda_i = 4;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -73,7 +73,7 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 100; xe_thalamic = 1;
+weight_thalamic_to_a1 = 80; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
@@ -263,9 +263,15 @@ end
 
 end
 
-return
+
 
 %% ---- random neuron voltage plot
+figure
+    x = squeeze(n_iters*thalamic_poisson_spikes);
+    imagesc(x);
+    title('thalamic poision spikes')
+grid
+
 x2 = squeeze(feedforward_epsc_tensor);
 figure
     imagesc(x2);
@@ -390,9 +396,14 @@ for n=1:n_thalamic
 end
 
 epsc_thalamic_avg_all = zeros(1, length(tspan)-1);
-for n=1:n_thalamic
-    
+for t=1:length(tspan)-1
+    epsc_thalamic_avg_all(1,t) = sum(epsc_thalamic_avg(:,t))/n_thalamic;
 end
+
+figure
+    plot(epsc_thalamic_avg_all);
+    title('epsc thalamic avg all')
+grid
 
 % ---- epsc thalamic end ----
 
