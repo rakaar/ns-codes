@@ -18,7 +18,7 @@ t_simulate = 2780;
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 25*dt;
+spike_rate_dt = 20*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
@@ -55,23 +55,10 @@ xi = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 all_combinations = nchoosek(1:n_thalamic, num_of_input_giving_thalamic);
 mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 
-%% generate inhomo poisson spikes for thalamic neurons
-thalamic_poisson_spikes = zeros(n_iters, n_thalamic, length(tspan));
-lamda = zeros(1, length(tspan));
-% 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
-% WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
-% t_simulate
-lamda_s = 200; lamda_i = 4;
-for i=1:500
-    lamda(1,i) = lamda_i;
-end
-for i=501:600
-    lamda(1,i) = lamda_s+lamda_i;
-end
-for i=601:length(tspan)
-    lamda(1,i) = lamda_i;
-end
 
+thalamic_poisson_spikes_std = zeros(n_iters, n_thalamic, length(tspan));
+thalamic_poisson_spikes_dev = zeros(n_iters, n_thalamic, length(tspan));
+thalamic_poisson_spikes_common = zeros(n_iters, n_thalamic, length(tspan));
 
 % protochol basic params
 pre_stimulus_time = 500; post_stimulus_time = 480; 
@@ -93,10 +80,9 @@ lamda_post_stimulus = lamda_i*ones(1, post_stimulus_time);
 % --- standard protochol -----
 lamda_std = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
 
-
 for tok=1:n_tokens
    
-    if rand <= prob
+    if randi([1,100]) <= prob*100
         stim = freq_stim_in_std;
     else
         stim = unfreq_stim_in_std;
@@ -119,12 +105,11 @@ lamda_std_protochol = [lamda_std_protochol, lamda_std];
 lamda_std_protochol = [lamda_std_protochol, lamda_post_stimulus];
 
 % --- deviant protochol -----
-% ---- TODO - lamda dev complete ------
 lamda_dev = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
 
 for tok=1:n_tokens
    
-        if rand <= prob
+        if randi([1,100]) <= prob*100
             stim = freq_stim_in_dev;
         else
             stim = unfreq_stim_in_dev;
@@ -145,23 +130,20 @@ for tok=1:n_tokens
     lamda_dev_protochol = [lamda_dev_protochol, lamda_pre_stimulus];
     lamda_dev_protochol = [lamda_dev_protochol, lamda_dev];
     lamda_dev_protochol = [lamda_dev_protochol, lamda_post_stimulus];
+    lamda_dev_protochol = [lamda]
 
+
+% ---- common protochol ---- thalamic poisson input other than std and dev
+lamda_common = lamda_i*ones(1, length(tspan));
 
 % calculating epsc of each thalamic neuron
 weight_thalamic_to_a1 = 80; xe_thalamic = 1;
-epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
+epsc_thalamic_std = zeros(n_iters,n_thalamic, length(tspan));
+epsc_thalamic_dev = zeros(n_iters,n_thalamic, length(tspan));
+epsc_thalamic_common = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
-% izhikevich neuron params
-% for rebound burst and sustained_spike
-neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]); 
-% a=0.02; b=0.25; c=-70;  d=0; % this should also cause disinhibition
-% a=0.02; b=0.25; c=-55;  d=0.05; % used this on party day in lab
-% neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.03 0.25 -48 0]); 
-
-% for rebound burst and phasic spike
-neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
     
 % initialize
 v0 = -70;  
@@ -175,19 +157,43 @@ for iter=1:n_iters
     
     fprintf("------iter numm %d -----", iter);
 
-    % thalamic
+    % std - thalamic
     for i=1:n_thalamic
-         thalamic_poisson_spikes(iter,i, :) = reshape(poisson_generator(lamda, dt, length(tspan)), 1, 1, length(tspan));
+         thalamic_poisson_spikes_std(iter,i, :) = reshape(poisson_generator(lamda_std_protochol, dt), 1, 1, length(tspan));
     end
     for i=1:n_thalamic
-        epsc_thalamic(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes(iter,i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic,  1,1,length(tspan));
+        epsc_thalamic_std(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes_std(iter,i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic,  1,1,length(tspan));
+    end
+
+    % dev - thalamic
+    for i=1:n_thalamic
+         thalamic_poisson_spikes_dev(iter,i, :) = reshape(poisson_generator(lamda_dev_protochol, dt), 1, 1, length(tspan));
+    end
+    for i=1:n_thalamic
+        epsc_thalamic_dev(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes_dev(iter,i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic,  1,1,length(tspan));
+    end
+
+    % common - thalamic
+    for i=1:n_thalamic
+         thalamic_poisson_spikes_common(iter,i, :) = reshape(poisson_generator(lamda_common, dt), 1, 1, length(tspan));
+    end
+    for i=1:n_thalamic
+        epsc_thalamic_common(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes_common(iter,i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic,  1,1,length(tspan));
     end
 
     % simulation
     for i=2:length(tspan)
-	fprintf("i = %d\n", i);
+% 	fprintf("i = %d\n", i);
 	for c=1:n_columns
-	
+	     fprintf("+++++iter numm %d, column %d +++++++\n", iter, c);
+        if c == 2
+                epsc_thalamic = epsc_thalamic_std;
+        elseif c == 4
+                epsc_thalamic = epsc_thalamic_dev;
+        else
+                epsc_thalamic = epsc_thalamic_common;
+        end
+
 		for n=1:n_total_neurons
 					
 			% voltage sum from excitatory neighbouring columns, will be useful for inhib and exc neurons
@@ -339,7 +345,7 @@ end
 end
 
 
-
+return
 %% ---- random neuron voltage plot
 figure
     x = squeeze(thalamic_poisson_spikes);
