@@ -2,10 +2,10 @@ clear all;
 close all;
 
 
-n_iters = 10;
+n_iters = 1;
 
 % basic variables;
-n_columns = 1
+n_columns = 5;
 n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
@@ -14,7 +14,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 1;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 1000; 
+t_simulate = 2780; 
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
@@ -71,6 +71,81 @@ end
 for i=601:length(tspan)
     lamda(1,i) = lamda_i;
 end
+
+
+% protochol basic params
+pre_stimulus_time = 500; post_stimulus_time = 480; 
+single_stimulus_duration = 100; gap_duration = 20;
+n_tokens = 15;
+lamda_i = 4;
+
+prob = 0.9;
+
+freq_stim_in_std = 200;
+unfreq_stim_in_std = 20;
+
+freq_stim_in_dev = unfreq_stim_in_std;
+unfreq_stim_in_dev = freq_stim_in_std;
+
+lamda_pre_stimulus = lamda_i*ones(1, pre_stimulus_time);
+lamda_post_stimulus = lamda_i*ones(1, post_stimulus_time);
+
+% --- standard protochol -----
+lamda_std = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
+
+
+for tok=1:n_tokens
+   
+    if rand <= prob
+        stim = freq_stim_in_std;
+    else
+        stim = unfreq_stim_in_std;
+    end
+
+    ind = (tok-1)*(single_stimulus_duration+gap_duration) + 1;
+    
+    for i=ind:ind+99
+        lamda_std(1,i) = stim;
+    end
+    for i=ind+100:ind+119
+        lamda_std(1,i) = lamda_i;
+    end
+end
+
+% merging pre-stim, stim, post sim
+lamda_std_protochol = [];
+lamda_std_protochol = [lamda_std_protochol, lamda_pre_stimulus];
+lamda_std_protochol = [lamda_std_protochol, lamda_std];
+lamda_std_protochol = [lamda_std_protochol, lamda_post_stimulus];
+
+% --- deviant protochol -----
+% ---- TODO - lamda dev complete ------
+lamda_dev = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
+
+for tok=1:n_tokens
+   
+        if rand <= prob
+            stim = freq_stim_in_dev;
+        else
+            stim = unfreq_stim_in_dev;
+        end
+    
+        ind = (tok-1)*(single_stimulus_duration+gap_duration) + 1;
+        
+        for i=ind:ind+99
+            lamda_dev(1,i) = stim;
+        end
+        for i=ind+100:ind+119
+            lamda_dev(1,i) = lamda_i;
+        end
+    end
+    
+    % merging pre-stim, stim, post sim
+    lamda_dev_protochol = [];
+    lamda_dev_protochol = [lamda_dev_protochol, lamda_pre_stimulus];
+    lamda_dev_protochol = [lamda_dev_protochol, lamda_dev];
+    lamda_dev_protochol = [lamda_dev_protochol, lamda_post_stimulus];
+
 
 % calculating epsc of each thalamic neuron
 weight_thalamic_to_a1 = 80; xe_thalamic = 1;
@@ -267,7 +342,7 @@ end
 
 %% ---- random neuron voltage plot
 figure
-    x = squeeze(n_iters*thalamic_poisson_spikes);
+    x = squeeze(thalamic_poisson_spikes);
     imagesc(x);
     title('thalamic poision spikes')
 grid
