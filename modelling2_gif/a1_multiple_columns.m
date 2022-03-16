@@ -2,7 +2,7 @@ clear all;
 close all;
 
 
-n_iters = 1;
+n_iters = 10;
 
 % basic variables;
 n_columns = 5;
@@ -184,7 +184,6 @@ for iter=1:n_iters
 
     % simulation
     for i=2:length(tspan)
-	fprintf("t=%d, ", i);
 	for c=1:n_columns
 	     fprintf("\n +++++iter numm %d, column %d +++++++\n", iter, c);
         if c == 2
