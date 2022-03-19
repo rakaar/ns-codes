@@ -77,61 +77,46 @@ unfreq_stim_in_dev = freq_stim_in_std;
 lamda_pre_stimulus = lamda_i*ones(1, pre_stimulus_time);
 lamda_post_stimulus = lamda_i*ones(1, post_stimulus_time);
 
-% --- standard protochol -----
+% ---  protochols -----
 lamda_std = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
+lamda_dev = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
 
 for tok=1:n_tokens
    
     if randi([1,100]) <= prob*100
-        stim = freq_stim_in_std;
+        stim_s = freq_stim_in_std;
+        stim_d = freq_stim_in_dev;
     else
-        stim = unfreq_stim_in_std;
+        stim_s = unfreq_stim_in_std;
+        stim_d = unfreq_stim_in_dev;
     end
 
     ind = (tok-1)*(single_stimulus_duration+gap_duration) + 1;
     
     for i=ind:ind+99
-        lamda_std(1,i) = stim;
+        lamda_std(1,i) = stim_s;
+        lamda_dev(1,i) = stim_d;
     end
     for i=ind+100:ind+119
         lamda_std(1,i) = lamda_i;
+        lamda_dev(1,i) = lamda_i;
     end
 end
 
-% merging pre-stim, stim, post sim
+% ----merging pre-stim, stim, post sim
+% std
 lamda_std_protochol = [];
 lamda_std_protochol = [lamda_std_protochol, lamda_pre_stimulus];
 lamda_std_protochol = [lamda_std_protochol, lamda_std];
 lamda_std_protochol = [lamda_std_protochol, lamda_post_stimulus];
 lamda_std_protochol = [lamda_std_protochol, lamda_i];
-
-% --- deviant protochol -----
-lamda_dev = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
-
-for tok=1:n_tokens
-   
-        if randi([1,100]) <= prob*100
-            stim = freq_stim_in_dev;
-        else
-            stim = unfreq_stim_in_dev;
-        end
-    
-        ind = (tok-1)*(single_stimulus_duration+gap_duration) + 1;
-        
-        for i=ind:ind+99
-            lamda_dev(1,i) = stim;
-        end
-        for i=ind+100:ind+119
-            lamda_dev(1,i) = lamda_i;
-        end
-    end
-    
-    % merging pre-stim, stim, post sim
-    lamda_dev_protochol = [];
-    lamda_dev_protochol = [lamda_dev_protochol, lamda_pre_stimulus];
-    lamda_dev_protochol = [lamda_dev_protochol, lamda_dev];
-    lamda_dev_protochol = [lamda_dev_protochol, lamda_post_stimulus];
-    lamda_dev_protochol = [lamda_dev_protochol, lamda_i];
+% dev
+% merging pre-stim, stim, post sim
+lamda_dev_protochol = [];
+lamda_dev_protochol = [lamda_dev_protochol, lamda_pre_stimulus];
+lamda_dev_protochol = [lamda_dev_protochol, lamda_dev];
+lamda_dev_protochol = [lamda_dev_protochol, lamda_post_stimulus];
+lamda_dev_protochol = [lamda_dev_protochol, lamda_i];
 
 
 % ---- common protochol ---- thalamic poisson input other than std and dev
