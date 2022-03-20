@@ -2,7 +2,7 @@ clear all;
 close all;
 
 
-n_iters = 1;
+n_iters = 10;
 
 % basic variables;
 n_columns = 1
