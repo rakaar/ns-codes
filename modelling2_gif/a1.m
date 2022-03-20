@@ -2,7 +2,7 @@ clear all;
 close all;
 
 
-n_iters = 10;
+n_iters = 1;
 
 % basic variables;
 n_columns = 1
@@ -102,7 +102,7 @@ for iter=1:n_iters
 
     % thalamic
     for i=1:n_thalamic
-         thalamic_poisson_spikes(iter,i, :) = reshape(poisson_generator(lamda, dt, length(tspan)), 1, 1, length(tspan));
+         thalamic_poisson_spikes(iter,i, :) = reshape(poisson_generator(lamda, dt), 1, 1, length(tspan));
     end
     for i=1:n_thalamic
         epsc_thalamic(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes(iter,i,:), length(tspan)) * weight_thalamic_to_a1 * xe_thalamic,  1,1,length(tspan));
@@ -225,7 +225,7 @@ for iter=1:n_iters
             % calculate voltage using the function
 % 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
 		   
-            [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
+            [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_exp(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
           
             if spikes(iter,c,n,i-1) == 1
 				spikes(iter,c,n,i) = 0;
@@ -359,9 +359,16 @@ for i=1:spike_rate_length
     spike_rate_l4_all(1, i) = sum(spike_rate_l4(:, i))/n_total_neurons;
 end
 
+
 figure
     plot(spike_rate_l4_all);
     title('psth of l4  all neurons')
+grid
+
+figure
+    n_bins = spike_rate_dt/dt;
+    plot(spike_rate_l4_all*(n_bins*physical_time_in_ms*0.001));
+    title('num of spikes of l4  all neurons')
 grid
 % -------- psth end -------------
 

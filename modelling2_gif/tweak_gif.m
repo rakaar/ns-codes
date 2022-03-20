@@ -30,11 +30,11 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-% iext(1000:2000) = -65;
-iext(1000:1500) = 10;
+iext(1000:2000) = -30;
+% iext(1000:1500) = 1.5;
 
 % params for phasic burst and rebound burst
-a = 0.009; A1 = 15; A2 = -0.6; 
+a = 0.009; A1 = 10; A2 = -0.6; 
 
 % params fo tonic spike through spike for +ve current
 % a = 0; A1 = 0; A2 = 0; 
@@ -65,10 +65,10 @@ for t=2:length(tspan)
     end
 end
 
-figure
-    plot(v)
-    title('voltage')
-grid
+% figure
+%     plot(v)
+%     title('voltage')
+% grid
 
 a = x(1);b = length(x);c=x(end);
 disp(a)

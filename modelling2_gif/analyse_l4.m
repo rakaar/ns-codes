@@ -68,12 +68,14 @@ figure
     plot(psth_stim) 
     
     c = 2;
-    spike_rate_per_column = zeros(1, spike_rate_length);
+    spike_rate_per_column_std = zeros(1, spike_rate_length);
      for t=1:spike_rate_length
-        spike_rate_per_column(1,t) = sum(spike_rate_l4(c,:,t))/n_total_neurons;
+        spike_rate_per_column_std(1,t) = sum(spike_rate_l4(c,:,t))/n_total_neurons;
       end
 
-        plot(spike_rate_per_column);
+        plot(spike_rate_per_column_std);
+        title('col 2 psth with input')
+        legend('stim','psth')
 
 %% dev
 figure
@@ -88,6 +90,8 @@ figure
       end
 
         plot(spike_rate_per_column);
+        title('col 4 psth with input')
+        legend('stim','psth')
 
 
 %%  raster plot
@@ -100,3 +104,56 @@ for c=1:n_columns
         title('raster of col', num2str(c));
     grid
 end
+
+%% time constant by fitting exponential
+num_bins = spike_rate_dt/dt;
+t_offset = (pre_stimulus_time/num_bins);
+psth_during_stim = spike_rate_per_column_std(1, pre_stimulus_time/num_bins:(pre_stimulus_time + (single_stimulus_duration+gap_duration)*n_tokens)/num_bins);
+period_stimulus = (pre_stimulus_time/num_bins)-t_offset:((pre_stimulus_time + (single_stimulus_duration+gap_duration)*n_tokens)/num_bins) - t_offset;
+f = fit(period_stimulus',psth_during_stim','exp1');
+coeffs = coeffvalues(f);
+time_const = 1/coeffs(2)
+figure
+  hold on
+    plot(psth_during_stim)
+    plot(f)
+  hold off
+grid
+
+%% inhibitory and excitatory of std and dev
+% -- std --
+c = 2;
+    spike_rate_per_column_std_exc = zeros(1, spike_rate_length);
+    spike_rate_per_column_std_inh = zeros(1, spike_rate_length);
+     for t=1:spike_rate_length
+        spike_rate_per_column_std_exc(1,t) = sum(spike_rate_l4(c,1:n_excitatory,t))/n_excitatory;
+     end
+     for t=1:spike_rate_length
+        spike_rate_per_column_std_inh(1,t) = sum(spike_rate_l4(c,n_excitatory+1:n_total_neurons,t))/n_inhibitory;
+      end
+figure
+hold on
+        plot(spike_rate_per_column_std_exc);
+        plot(spike_rate_per_column_std_inh)
+        title('exc inh std col -2')
+        legend('exc', 'inh')
+hold off
+grid
+% --- dev ---
+c = 4;
+    spike_rate_per_column_dev_exc = zeros(1, spike_rate_length);
+    spike_rate_per_column_dev_inh = zeros(1, spike_rate_length);
+     for t=1:spike_rate_length
+        spike_rate_per_column_dev_exc(1,t) = sum(spike_rate_l4(c,1:n_excitatory,t))/n_excitatory;
+     end
+     for t=1:spike_rate_length
+        spike_rate_per_column_dev_inh(1,t) = sum(spike_rate_l4(c,n_excitatory+1:n_total_neurons,t))/n_inhibitory;
+      end
+figure
+hold on
+        plot(spike_rate_per_column_dev_exc);
+        plot(spike_rate_per_column_dev_inh)
+        title('exc inh std col -4')
+        legend('exc', 'inh')
+hold off
+grid
