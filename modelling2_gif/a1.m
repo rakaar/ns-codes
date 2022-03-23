@@ -2,7 +2,7 @@ clear all;
 close all;
 
 
-n_iters = 10;
+n_iters = 1;
 
 % basic variables;
 n_columns = 1
@@ -24,14 +24,16 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 0.3; % for now all weights reduced by factor of 0.2
-J_ee_0 = 6*weight_reducing_l4; 
-J_ie_0 = 0.5*weight_reducing_l4;
-J_ei = -4*weight_reducing_l4; 
-J_ii = -0.5*weight_reducing_l4;
-J_ee_1 = 0.045*weight_reducing_l4; 
-J_ie_1 = 0.0035*weight_reducing_l4; 
-J_ee_2 = 0.015*weight_reducing_l4; 
-J_ie_2 = 0.0015*weight_reducing_l4;
+increase_inhibitory_factor = 12;
+weight_exc_factor = 1;
+J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
+J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
+J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
+J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
+J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
+J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
+J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
+J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
 
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -45,6 +47,8 @@ epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 epsc_with_background_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 I_background_tensor = zeros(n_iters, length(tspan));
 feedforward_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+epsc_exc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+epsc_inh_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 
 % synaptic resources
 xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -189,7 +193,12 @@ for iter=1:n_iters
 						epsc_ex_neuron_front_c2 * J_ee_2 + ...
 						epsc_ex_own_column * J_ee_0 + ...
 						epsc_inh_own_column * J_ei;
-					
+	        epsc_exc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 * J_ee_2 + ...
+                                            epsc_ex_neuron_back_c1 * J_ee_1 + ...
+                                            epsc_ex_neuron_front_c1 * J_ee_1 + ...
+                                            epsc_ex_neuron_front_c2 * J_ee_2 + ...
+                                            epsc_ex_own_column * J_ee_0;
+            epsc_inh_tensor(iter,c,n,i-1) = epsc_inh_own_column * J_ei;
 		  else
 
 			total_epsc = epsc_ex_neuron_back_c2 * J_ie_2 + ...
@@ -198,6 +207,15 @@ for iter=1:n_iters
 						epsc_ex_neuron_front_c2 * J_ie_2 + ...
 						epsc_ex_own_column * J_ie_0 + ...
 						epsc_inh_own_column * J_ii;
+            
+            	 epsc_exc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 * J_ie_2 + ...
+						epsc_ex_neuron_back_c1 * J_ie_1 + ...
+						epsc_ex_neuron_front_c1 * J_ie_1 + ...
+						epsc_ex_neuron_front_c2 * J_ie_2 + ...
+						epsc_ex_own_column * J_ie_0;
+
+      
+                epsc_inh_tensor(iter,c,n,i-1) = epsc_inh_own_column * J_ii;
           end
           recurrence_epsc_tensor(iter, c, n, i-1) = total_epsc ;
           total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
@@ -267,18 +285,18 @@ end
 
 %% ---- random neuron voltage plot
 figure
-    x = squeeze(thalamic_poisson_spikes);
+    x = reshape(thalamic_poisson_spikes, n_iters*n_thalamic, length(tspan));
     imagesc(x);
     title('thalamic poision spikes')
 grid
 
-x2 = squeeze(feedforward_epsc_tensor);
+x2 = reshape(feedforward_epsc_tensor, n_iters*n_total_neurons, length(tspan)-1);
 figure
     imagesc(x2);
     title('feedforward epsc tensor')
 grid
 
-x1 = squeeze(recurrence_epsc_tensor);
+x1 = reshape(recurrence_epsc_tensor, n_iters*n_total_neurons, length(tspan)-1);
 figure
     imagesc(x1);
     title('epsc recurrence of 25 neurons')
@@ -334,6 +352,10 @@ grid
 % -------------------------------
 % -------- psth -------------
 % fill the spike rates tensor - re run
+% spike_rate_dt = 5*dt;
+% spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
+% spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
+
 for i=1:n_iters
     for n=1:n_total_neurons
         spikes1 = spikes(i, 1, n, :);
@@ -353,6 +375,11 @@ for i=1:spike_rate_length
     end
 end
 
+% raster psth
+figure
+    imagesc(spike_rate_l4);
+    title('raster psth')
+grid
 % mean psth of all neurons
 spike_rate_l4_all = zeros(1, spike_rate_length);
 for i=1:spike_rate_length
@@ -425,7 +452,55 @@ figure
     plot(e_avg)
     title('epsc with background')
 grid
+
+% raster of epsc with background
+e_squezed = squeeze(epsc_with_background_tensor);
+e_squeezed_reshaped = reshape(e_squezed, n_iters*n_total_neurons, length(tspan)-1);
+figure
+    imagesc(e_squeezed_reshaped)
+    title('raster of epsc with background')
+grid
+
 % ---- epsc end ----
+
+% ------ epsc excitatory -------
+% for 1 column
+c=1
+epsc_exc_avged_iters = zeros(n_total_neurons, length(tspan)-1);
+for t=1:length(tspan)-1
+    for n=1:n_total_neurons
+        epsc_exc_avged_iters(n,t) = sum(epsc_exc_tensor(:,c,n,t))/n_iters;
+    end
+end
+
+% avg for all neurons
+epsc_exc_aveg_neurons = zeros(1, length(tspan)-1);
+for t=1:length(tspan)-1
+    epsc_exc_aveg_neurons(1,t) = sum(epsc_exc_avged_iters(:,t))/n_total_neurons;
+end
+
+figure
+    plot(epsc_exc_aveg_neurons);
+    title('recurrence exc epsc avg l4 neurons')
+grid
+% --- - epsc inhi ----
+epsc_inh_avged_iters = zeros(n_total_neurons, length(tspan)-1);
+for t=1:length(tspan)-1
+    for n=1:n_total_neurons
+        epsc_inh_avged_iters(n,t) = sum(epsc_inh_tensor(:,c,n,t))/n_iters;
+    end
+end
+
+% avg for all neurons
+epsc_inh_aveg_neurons = zeros(1, length(tspan)-1);
+for t=1:length(tspan)-1
+    epsc_inh_aveg_neurons(1,t) = sum(epsc_inh_avged_iters(:,t))/n_total_neurons;
+end
+
+figure
+    plot(epsc_inh_aveg_neurons);
+    title('recurrence inh epsc avg l4 neurons')
+grid
 
 
 return
