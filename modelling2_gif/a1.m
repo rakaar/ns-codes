@@ -276,6 +276,15 @@ end
 figure
     plot(mean_spike_rate_for_neurons);
 grid
+
+total_input_epsc = thalamic_epsc_tensor ...
+                    + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
+                    + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
+
+[mean_input_epsc_for_iters, mean_input_epsc_for_neurons] = get_mean(total_input_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
+figure
+    plot(mean_input_epsc_for_neurons)
+grid
 % var_tensor, n_iters, n_neurons, time_length,column_index
 return 
 % -------------------------------
