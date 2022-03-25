@@ -2,7 +2,7 @@ clear all;
 close all;
 
 
-n_iters = 1;
+n_iters = 5;
 
 % basic variables;
 n_columns = 1
@@ -272,19 +272,96 @@ end
 
 end
 
-[mean_spike_rate_for_iters, mean_spike_rate_for_neurons] = get_mean(spike_rates, n_iters, n_total_neurons, spike_rate_length,1);
-figure
-    plot(mean_spike_rate_for_neurons);
-grid
+% fill the spike rates tensor
+for i=1:n_iters
+    for n=1:n_total_neurons
+        spikes1 = spikes(i, 1, n, :);
+        spikes1_reshaped = reshape(spikes1, 1,length(tspan));
+        spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt);
+        spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length);
+        spike_rates(i,1,n,:) = spikes_rate1; 
+    end
+end
 
+% -- plot total input epsc to l4 (leave I_background)
 total_input_epsc = thalamic_epsc_tensor ...
                     + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
                     + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
 
-[mean_input_epsc_for_iters, mean_input_epsc_for_neurons] = get_mean(total_input_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
+[mean_input_epsc_exc_for_iters, mean_input_epsc_exc_for_neurons] = get_mean(total_input_epsc(:,:,1:n_excitatory,:), n_iters, n_excitatory, length(tspan)-1, 1);
+[mean_input_epsc_inh_for_iters, mean_input_epsc_inh_for_neurons] = get_mean(total_input_epsc(:,:,n_excitatory+1:n_total_neurons,:), n_iters, n_inhibitory, length(tspan)-1, 1);
+[mean_input_epsc_all_for_iters, mean_input_epsc_all_for_neurons] = get_mean(total_input_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
 figure
-    plot(mean_input_epsc_for_neurons)
+     hold on
+         plot(mean_input_epsc_exc_for_neurons)
+         plot(mean_input_epsc_inh_for_neurons)
+         plot(mean_input_epsc_all_for_neurons)
+         legend('total input to exc l4', 'total input to inh l4', 'total input to l4 all')
+        title('l4 - total input epsc')
+    hold off
 grid
+
+% -- plot psth of l4 exc, inh, all
+figure
+    hold on
+        [mean_spike_rate_exc_for_iters, mean_spike_rate_exc_for_neurons] = get_mean(spike_rates(:,:,1:n_excitatory,:), n_iters, n_excitatory, spike_rate_length,1);
+        [mean_spike_rate_inh_for_iters, mean_spike_rate_inh_for_neurons] = get_mean(spike_rates(:,:,n_excitatory+1:n_total_neurons,:), n_iters, n_inhibitory, spike_rate_length,1);
+        [mean_spike_rate_for_iters, mean_spike_rate_for_neurons] = get_mean(spike_rates, n_iters, n_total_neurons, spike_rate_length,1);
+       
+       n_bins = spike_rate_dt/dt;
+       
+       plot(mean_spike_rate_exc_for_neurons*(n_bins*physical_time_in_ms*0.001))
+       plot(mean_spike_rate_inh_for_neurons*(n_bins*physical_time_in_ms*0.001))
+       plot(mean_spike_rate_for_neurons*(n_bins*physical_time_in_ms*0.001));
+       legend('psth l4 exc', 'psth l4 inh','psth l4 all')
+    hold off
+grid
+
+% recurrence_exc_epsc = recurrence_exc_self_column_epsc_tensor + recurrence_exc_neighbour_column_epsc_tensor;
+% recurrence_inh_epsc = recurrence_inh_self_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor;
+% recurrence_epsc = recurrence_exc_epsc + recurrence_inh_epsc;
+% 
+% figure
+%     hold on
+%         
+%         
+%         plot(recurrence_exc_epsc)
+%         plot(recurrence_inh_epsc)
+%         legend('exc epsc to all l4', 'inh epsc to all l4')
+%         title('epscs')
+%     hold off
+% grid
+figure
+    hold on
+        [mean_recurrence_epsc_exc_for_iters, mean_recurrence_epsc_exc_for_neurons] = get_mean(recurrence_epsc(:,:,1:n_excitatory,:), n_iters, n_excitatory, length(tspan)-1,1);
+        [mean_recurrence_epsc_inh_for_iters, mean_recurrence_epsc_inh_for_neurons] = get_mean(recurrence_epsc(:,:,n_excitatory+1:n_total_neurons,:), n_iters, n_inhibitory, length(tspan)-1,1);
+        [mean_recurrence_epsc_all_for_iters, mean_recurrence_epsc_all_for_neurons] = get_mean(recurrence_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
+    
+        plot(mean_recurrence_epsc_exc_for_neurons)
+        plot(mean_recurrence_epsc_inh_for_neurons)
+        plot(mean_recurrence_epsc_all_for_neurons)
+        legend('recurrence epsc exc', 'recurrence epsc inh', 'recurrence epsc all')
+        title('recurrrence epscs')
+    hold off
+
+
+grid
+
+% --- thalamic epsc to l4 --
+[mean_thalamic_epsc_for_iters, mean_thalamic_epsc_for_neurons] = get_mean(thalamic_epsc_tensor, n_iters, n_total_neurons, length(tspan)-1, 1);
+figure
+    plot(mean_thalamic_epsc_for_neurons)
+    title('thalamic epsc to l4 all')
+grid
+
+% raster of l4
+figure
+    c = 1;
+    spike_reshaped = reshape(spikes(:,c,:,:),  n_iters*n_total_neurons, length(tspan));
+    imagesc(spike_reshaped);
+    title('raster l4')
+grid
+
 % var_tensor, n_iters, n_neurons, time_length,column_index
 return 
 % -------------------------------
