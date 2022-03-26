@@ -24,8 +24,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 0.3; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 12;
-weight_exc_factor = 1;
+increase_inhibitory_factor = 10;
+weight_exc_factor = 0.5;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
@@ -68,7 +68,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 200; lamda_i = 4;
+lamda_s = 100; lamda_i = 2;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -317,20 +317,21 @@ figure
     hold off
 grid
 
-% recurrence_exc_epsc = recurrence_exc_self_column_epsc_tensor + recurrence_exc_neighbour_column_epsc_tensor;
-% recurrence_inh_epsc = recurrence_inh_self_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor;
-% recurrence_epsc = recurrence_exc_epsc + recurrence_inh_epsc;
-% 
-% figure
-%     hold on
-%         
-%         
-%         plot(recurrence_exc_epsc)
-%         plot(recurrence_inh_epsc)
-%         legend('exc epsc to all l4', 'inh epsc to all l4')
-%         title('epscs')
-%     hold off
-% grid
+recurrence_exc_epsc = recurrence_exc_self_column_epsc_tensor + recurrence_exc_neighbour_column_epsc_tensor;
+recurrence_inh_epsc = recurrence_inh_self_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor;
+recurrence_epsc = recurrence_exc_epsc + recurrence_inh_epsc;
+
+figure
+    hold on
+        [mean_epsc_exc_recurrence_for_iters, mean_epsc_exc_reccurence_for_neurons] = get_mean(recurrence_exc_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
+        [mean_epsc_inh_recurrence_for_iters, mean_epsc_inh_reccurence_for_neurons] = get_mean(recurrence_inh_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
+        
+        plot(mean_epsc_exc_reccurence_for_neurons)
+        plot(mean_epsc_inh_reccurence_for_neurons)
+        legend('exc epsc to all l4', 'inh epsc to all l4')
+        title('epscs-exc and inh')
+    hold off
+grid
 figure
     hold on
         [mean_recurrence_epsc_exc_for_iters, mean_recurrence_epsc_exc_for_neurons] = get_mean(recurrence_epsc(:,:,1:n_excitatory,:), n_iters, n_excitatory, length(tspan)-1,1);
@@ -340,7 +341,7 @@ figure
         plot(mean_recurrence_epsc_exc_for_neurons)
         plot(mean_recurrence_epsc_inh_for_neurons)
         plot(mean_recurrence_epsc_all_for_neurons)
-        legend('recurrence epsc exc', 'recurrence epsc inh', 'recurrence epsc all')
+        legend('recurrence epsc input to exc in l4', 'recurrence epsc to inh in l4', 'recurrence epsc to all in l4')
         title('recurrrence epscs')
     hold off
 

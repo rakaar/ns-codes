@@ -30,8 +30,8 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-iext(1000:2000) = -65;
-% iext(1000:1500) = 1.5;
+% iext(1000:2000) = -2;
+iext(1000:1500) = 5;
 
 % params for phasic burst and rebound burst
 a = 0.009; A1 = 10; A2 = -0.6; 
@@ -40,7 +40,7 @@ a = 0.009; A1 = 10; A2 = -0.6;
 % a = 0; A1 = 0; A2 = 0; 
 
 % testing if these show rebound burst
- a = 0.009; A1 = 5; A2 = -0.6;
+%  a = 0.009; A1 = 5; A2 = -0.6;
 
 % IC=(0.01, 0.001, -70.0, -50.0)
 % initial conditions
