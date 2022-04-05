@@ -3,7 +3,7 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
     
 %      background element causing spike
 % some how adding this background element results prevents disinhibtion
-     if rand <= 0.001
+     if rand <= 0.005
         is_spike = 1;
      end
 
@@ -11,7 +11,9 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
     El=-70.0;Vr=-70.0;Thetar=-40.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
 %     a = 0.009; A1 = 10; A2 = -0.6; 
-    a = 0.009; A1 = 10; A2 = -0.6;
+%     a = 0.020; A1 = 10; A2 = -0.6;
+%     a = 0.090; A1 = 15; A2 = -0.6; % to get rebound burst very soon
+      a = 0.2; A1 = 25; A2 = -0.6; % to get rebound burst for a small period of negative current 
     iext = total_epsc + I_background;
 
      i1 = i1_old + dt*(-k1*i1_old);
