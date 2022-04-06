@@ -18,7 +18,7 @@ t_simulate = 1500;
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 25*dt;
+spike_rate_dt = 5*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
