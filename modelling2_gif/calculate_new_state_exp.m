@@ -14,8 +14,11 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
 %     a = 0.020; A1 = 10; A2 = -0.6;
 %     a = 0.090; A1 = 15; A2 = -0.6; % to get rebound burst very soon
 %       a = 0.2; A1 = 25; A2 = -0.6; % to get rebound burst for a small period of negative current 
-    a = 0.01; A1 = 25; A2 = -0.6; % with the above params, we get only in the beginning spike
-    
+%     a = 0.01; A1 = 25; A2 = -0.6; % with the above params, we get only in the beginning spike
+%      a = 0.01; A1 = 12; A2 = -0.6;
+% a = 0.01; A1 = 25; A2 = -0.6;
+  a = 0.019; A1 = 5; A2 = -0.6;
+  
 iext = total_epsc + I_background;
 
      i1 = i1_old + dt*(-k1*i1_old);

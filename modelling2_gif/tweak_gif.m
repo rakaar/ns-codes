@@ -30,14 +30,15 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-% iext(1000:1010) = -20; % -10 is so low for the current params
-iext(500:600) = 10;
+iext(1000:1010) = -5; % -10 is so low for the current params
+% iext(500:600) = 100;
 
 
 % params for phasic burst and rebound burst
 % a = 0.01; A1 = 25; A2 = -0.6; 
 % a = 0.01; A1 = 20; A2 = -0.6; 
- a = 0.01; A1 = 10; A2 = -0.6;
+%  a = 0.01; A1 = 12; A2 = -0.6;
+  a = 0.019; A1 = 5; A2 = -0.6;
 % params fo tonic spike through spike for +ve current
 % a = 0; A1 = 0; A2 = 0; 
 
