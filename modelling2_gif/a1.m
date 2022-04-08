@@ -68,7 +68,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 300; lamda_i = 0;
+lamda_s = 250; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -396,7 +396,7 @@ figure
 grid
 
 % for a random neuron
-random_neuron = 10;
+random_neuron = 23;
 col = 1;
 figure
     hold on
