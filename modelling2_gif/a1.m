@@ -226,7 +226,14 @@ for iter=1:n_iters
           end
 
           total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
-        
+            % clip test - to see whether the later spike(s) is due to
+            % params or really disihibition
+            % uncomment and see if spikes comes or not
+   
+    %             if total_epsc < 0
+    %                 total_epsc = 0;
+    %             end
+           
 			
                 % I_background = rand * (1);
                 % to see only effect of thalamic in feedforward
