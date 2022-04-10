@@ -17,8 +17,8 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
 %     a = 0.01; A1 = 25; A2 = -0.6; % with the above params, we get only in the beginning spike
 %      a = 0.01; A1 = 12; A2 = -0.6;
 % a = 0.01; A1 = 25; A2 = -0.6;
-  a = 0.005; A1 = 10; A2 = -0.6;
-  
+%   a = 0.005; A1 = 10; A2 = -0.6;
+  a = 0.005; A1 = 15; A2 = -0.6;
 iext = total_epsc + I_background;
 
      i1 = i1_old + dt*(-k1*i1_old);
