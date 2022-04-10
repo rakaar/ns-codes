@@ -13,7 +13,7 @@ figure(random_neuron)
         end
         
 
-        plot(mean_spike_rate_of_random_neuron);
+        plot(mean_spike_rate_of_random_neuron*100);
 
         % adjusting from length(tspan)-1 to length(tspan)
         epsc_all_iters_for_random_neuron = squeeze(total_input_epsc(:, col, random_neuron, :));
