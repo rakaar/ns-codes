@@ -224,7 +224,10 @@ for iter=1:n_iters
             recurrence_inh_self_column_epsc_tensor(iter,c,n,i-1) = epsc_inh_own_column * J_ii;
             recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = 0;
           end
-
+          % remove reccurence when no stimulus
+          if i < 500 && i > 600
+            total_epsc = 0;
+          end
           total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
             % clip test - to see whether the later spike(s) is due to
             % params or really disihibition
