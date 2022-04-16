@@ -119,6 +119,29 @@ for iter=1:n_iters
 
     % simulation
     for i=2:length(tspan)
+
+        % remove recurrence in non stimulus
+        if i >= 500 && i <= 600
+                J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
+                J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
+                J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
+                J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
+                J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
+                J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
+                J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
+                J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
+
+        else
+                J_ee_0 = 0; 
+                J_ie_0 = 0;
+                J_ei = 0; 
+                J_ii = 0;
+                J_ee_1 = 0; 
+                J_ie_1 = 0; 
+                J_ee_2 = 0; 
+                J_ie_2 = 0;
+        end
+
 	fprintf("i = %d\n", i);
 	for c=1:n_columns
 	
@@ -224,15 +247,12 @@ for iter=1:n_iters
             recurrence_inh_self_column_epsc_tensor(iter,c,n,i-1) = epsc_inh_own_column * J_ii;
             recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = 0;
           end
-          % remove reccurence when no stimulus
-          if i < 500 && i > 600
-            total_epsc = 0;
-          end
+
           total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
             % clip test - to see whether the later spike(s) is due to
             % params or really disihibition
             % uncomment and see if spikes comes or not
-   
+ 
 %                 if total_epsc < 0
 %                     total_epsc = 0;
 %                 end
