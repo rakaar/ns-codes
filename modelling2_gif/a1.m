@@ -327,6 +327,19 @@ total_input_epsc = thalamic_epsc_tensor ...
                     + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
                     + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
 
+% if clip is on
+% for iter=1:n_iters
+%     for col=1:n_columns
+%         for n=1:n_total_neurons
+%             for t=1:t_simulate
+%                 if total_input_epsc(iter,col,n,t) < 0
+%                     total_input_epsc(iter,col,n,t) = 0;
+%                 end
+%             end
+%         end
+%     end
+% end
+
 [mean_input_epsc_exc_for_iters, mean_input_epsc_exc_for_neurons] = get_mean(total_input_epsc(:,:,1:n_excitatory,:), n_iters, n_excitatory, length(tspan)-1, 1);
 [mean_input_epsc_inh_for_iters, mean_input_epsc_inh_for_neurons] = get_mean(total_input_epsc(:,:,n_excitatory+1:n_total_neurons,:), n_iters, n_inhibitory, length(tspan)-1, 1);
 [mean_input_epsc_all_for_iters, mean_input_epsc_all_for_neurons] = get_mean(total_input_epsc, n_iters, n_total_neurons, length(tspan)-1, 1);
