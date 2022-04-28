@@ -1,8 +1,13 @@
 % for a random neuron
-col = 5;
+col = 4;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 multiply_term = (n_bins*physical_time_in_ms*0.001);
+
+total_input_epsc = thalamic_epsc_tensor ...
+                    + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
+                    + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
+
 for random_neuron=1:n_total_neurons
     clf
 figure(random_neuron)
@@ -16,10 +21,11 @@ figure(random_neuron)
         plot(mean_spike_rate_of_random_neuron*100);
 
         % adjusting from length(tspan)-1 to length(tspan)
-        epsc_all_iters_for_random_neuron = squeeze(total_input_epsc(:, col, random_neuron, :));
+        epsc_all_iters_for_random_neuron = total_input_epsc(:, col, random_neuron, :);
         actual_epsc_input_to_random_neuron_size_adjusted = zeros(n_iters, length(tspan));
+        
         for iter=1:n_iters
-            actual_epsc_input_to_random_neuron_size_adjusted(iter, 2:length(tspan)) = epsc_all_iters_for_random_neuron(iter, :);
+            actual_epsc_input_to_random_neuron_size_adjusted(iter, 2:length(tspan)) = squeeze(epsc_all_iters_for_random_neuron(iter, 1, 1,:));
         end
         
         % taking avg iters

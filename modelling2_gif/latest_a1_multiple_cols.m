@@ -14,7 +14,7 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 1;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 1900; 
+t_simulate = 2900; 
 tspan = 0:dt:t_simulate;
 
 
@@ -74,10 +74,10 @@ thalamic_poisson_spikes_common = zeros(n_iters, n_thalamic, length(tspan));
 %% protochol basic params
 pre_stimulus_time = 500; post_stimulus_time = 400; 
 single_stimulus_duration = 100; gap_duration = 100;
-n_tokens = 5;
+n_tokens = 10;
 lamda_i = 0;
 
-prob = 0.6;
+prob = 0.8;
 
 freq_stim_in_std = 250;
 unfreq_stim_in_std = 1;
@@ -158,7 +158,7 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 1; xe_thalamic = 1;
+weight_thalamic_to_a1 = 40; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
