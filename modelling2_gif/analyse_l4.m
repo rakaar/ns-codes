@@ -98,8 +98,9 @@ figure
       end
 
         plot(spike_rate_per_column_std);
+        plot(lamda_std_protochol./100);
         title('col 2 psth with input')
-        legend('stim','psth')
+        legend('stim','psth','proto')
 grid
 
 % dev
@@ -114,8 +115,9 @@ figure
       end
 
         plot(spike_rate_per_column);
+        plot(lamda_dev_protochol./100);
         title('col 4 psth with input')
-        legend('stim','psth')
+        legend('stim','psth','proto')
 %% end of col 2 and 4 - psth and epsc
 
 %%  raster plot

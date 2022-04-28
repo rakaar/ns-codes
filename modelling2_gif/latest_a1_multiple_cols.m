@@ -143,22 +143,10 @@ epsc_thalamic_common = zeros(n_iters,n_thalamic, length(tspan));
 %% generate inhomo poisson spikes for thalamic neurons
 thalamic_poisson_spikes = zeros(n_iters, n_thalamic, length(tspan));
 lamda = zeros(1, length(tspan));
-% 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
-% WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
-% t_simulate
-lamda_s = 250; lamda_i = 1;
-for i=1:500
-    lamda(1,i) = lamda_i;
-end
-for i=501:600
-    lamda(1,i) = lamda_s+lamda_i;
-end
-for i=601:length(tspan)
-    lamda(1,i) = lamda_i;
-end
+
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 40; xe_thalamic = 1;
+weight_thalamic_to_a1 = 60; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
