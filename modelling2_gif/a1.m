@@ -1,7 +1,6 @@
 clear all;
 close all;
 
-
 n_iters = 5;
 
 % basic variables;

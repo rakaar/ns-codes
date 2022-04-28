@@ -14,8 +14,13 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 % time step
 physical_time_in_ms = 1; %dt time step 
 dt = 1;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
-t_simulate = 2780; 
+t_simulate = 1900; 
 tspan = 0:dt:t_simulate;
+
+
+
+
+
 
 % making bins of 100ms = 20*dt and calculating spike rate
 spike_rate_dt = 1*dt;
@@ -66,16 +71,16 @@ mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 thalamic_poisson_spikes_std = zeros(n_iters, n_thalamic, length(tspan));
 thalamic_poisson_spikes_dev = zeros(n_iters, n_thalamic, length(tspan));
 thalamic_poisson_spikes_common = zeros(n_iters, n_thalamic, length(tspan));
-% protochol basic params
-pre_stimulus_time = 500; post_stimulus_time = 480; 
-single_stimulus_duration = 100; gap_duration = 20;
-n_tokens = 15;
-lamda_i = 4;
+%% protochol basic params
+pre_stimulus_time = 500; post_stimulus_time = 400; 
+single_stimulus_duration = 100; gap_duration = 100;
+n_tokens = 5;
+lamda_i = 0;
 
-prob = 0.9;
+prob = 0.6;
 
-freq_stim_in_std = 200;
-unfreq_stim_in_std = 20;
+freq_stim_in_std = 250;
+unfreq_stim_in_std = 1;
 
 freq_stim_in_dev = unfreq_stim_in_std;
 unfreq_stim_in_dev = freq_stim_in_std;
@@ -127,9 +132,9 @@ lamda_dev_protochol = [lamda_dev_protochol, lamda_i];
 
 % ---- common protochol ---- thalamic poisson input other than std and dev
 lamda_common = lamda_i*ones(1, length(tspan));
+%% end of protochol
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 80; xe_thalamic = 1;
 epsc_thalamic_std = zeros(n_iters,n_thalamic, length(tspan));
 epsc_thalamic_dev = zeros(n_iters,n_thalamic, length(tspan));
 epsc_thalamic_common = zeros(n_iters,n_thalamic, length(tspan));
@@ -153,7 +158,7 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 80; xe_thalamic = 1;
+weight_thalamic_to_a1 = 10; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
