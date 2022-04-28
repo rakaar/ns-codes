@@ -123,9 +123,17 @@ for c=1:n_columns
     spikes1 = spikes(:,c,:,:);
     spikes1 = squeeze(spikes1);
     figure(c*10)
-        raster = reshape(spikes1, n_iters*n_total_neurons, length(tspan));
-        imagesc(raster);
-        title('raster of col', num2str(c));
+        hold on
+            raster = reshape(spikes1, n_iters*n_total_neurons, length(tspan));
+            imagesc(raster);
+            if c==2
+                plot(lamda_std_protochol./10)
+            elseif c==4
+                plot(lamda_dev_protochol./10)
+            end
+            title('raster of col', num2str(c));
+            
+        hold off
     grid
 end
 

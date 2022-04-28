@@ -1,5 +1,5 @@
 % for a random neuron
-col = 4;
+col = 2;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 multiply_term = (n_bins*physical_time_in_ms*0.001);
@@ -7,6 +7,18 @@ multiply_term = (n_bins*physical_time_in_ms*0.001);
 total_input_epsc = thalamic_epsc_tensor ...
                     + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
                     + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
+
+
+% fill the spike rates tensor
+for i=1:n_iters
+    for n=1:n_total_neurons
+        spikes1 = spikes(i, 1, n, :);
+        spikes1_reshaped = reshape(spikes1, 1,length(tspan));
+        spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt);
+        spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length);
+        spike_rates(i,1,n,:) = spikes_rate1; 
+    end
+end
 
 for random_neuron=1:n_total_neurons
     clf
@@ -44,9 +56,15 @@ figure(random_neuron)
         v_binned = spikes_to_spike_rate_neat(v, physical_time_in_ms, dt, spike_rate_dt);
         plot(v_binned);
 
+      if col == 2
+          plot(lamda_std_protochol)
+      elseif col == 4
+          plot(lamda_dev_protochol)
+      end
+
     hold off
         title('random neuron epsc and psth')
-        legend('psth', 'epsc', 'threshold', 'voltage')
+        legend('psth', 'epsc', 'threshold', 'voltage', 'protochol')
 grid
 pause
 clf
