@@ -1,5 +1,5 @@
 % for a random neuron
-col = 1;
+col = 2;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 multiply_term = (n_bins*physical_time_in_ms*0.001);
