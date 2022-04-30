@@ -99,7 +99,7 @@ figure
 
         plot(spike_rate_per_column_std);
         plot(lamda_std_protochol./100);
-        title('col 2 psth with input')
+        title('col 2 psth with input/visualcomfortscalefactor')
         legend('stim','psth','proto')
 grid
 
@@ -129,11 +129,11 @@ for c=1:n_columns
             raster = reshape(spikes1, n_iters*n_total_neurons, length(tspan));
             imagesc(raster);
             if c==2
-                plot(lamda_std_protochol./10)
+                plot(lamda_std_protochol./10, 'g')
             elseif c==4
-                plot(lamda_dev_protochol./10)
+                plot(lamda_dev_protochol./10, 'g')
             end
-            title('raster of col', num2str(c));
+            title('raster of col,', num2str(c));
             
         hold off
     grid

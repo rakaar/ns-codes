@@ -1,24 +1,8 @@
 % for a random neuron
-col = 2;
-iter_to_see=1;
+col = 1;
+iter_to_see=2;
 n_bins = spike_rate_dt/dt;
-
-total_input_epsc = thalamic_epsc_tensor ...
-                    + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
-                    + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
-
-
-% fill the spike rates tensor
-for i=1:n_iters
-    for n=1:n_total_neurons
-        spikes1 = spikes(i, 1, n, :);
-        spikes1_reshaped = reshape(spikes1, 1,length(tspan));
-        spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt);
-        spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length);
-        spike_rates(i,1,n,:) = spikes_rate1; 
-    end
-end
-
+multiply_term = (n_bins*physical_time_in_ms*0.001);
 for random_neuron=1:n_total_neurons
     clf
 figure(random_neuron)
@@ -32,11 +16,10 @@ figure(random_neuron)
         plot(mean_spike_rate_of_random_neuron*100);
 
         % adjusting from length(tspan)-1 to length(tspan)
-        epsc_all_iters_for_random_neuron = total_input_epsc(:, col, random_neuron, :);
+        epsc_all_iters_for_random_neuron = squeeze(total_input_epsc(:, col, random_neuron, :));
         actual_epsc_input_to_random_neuron_size_adjusted = zeros(n_iters, length(tspan));
-        
         for iter=1:n_iters
-            actual_epsc_input_to_random_neuron_size_adjusted(iter, 2:length(tspan)) = squeeze(epsc_all_iters_for_random_neuron(iter, 1, 1,:));
+            actual_epsc_input_to_random_neuron_size_adjusted(iter, 2:length(tspan)) = epsc_all_iters_for_random_neuron(iter, :);
         end
         
         % taking avg iters
@@ -55,15 +38,9 @@ figure(random_neuron)
         v_binned = spikes_to_spike_rate_neat(v, physical_time_in_ms, dt, spike_rate_dt);
         plot(v_binned);
 
-      if col == 2
-          plot(lamda_std_protochol)
-      elseif col == 4
-          plot(lamda_dev_protochol)
-      end
-
     hold off
-        title('random neuron epsc*100 and psth')
-        legend('psth', 'epsc', 'threshold', 'voltage', 'protochol')
+        title('random neuron epsc and psth')
+        legend('psth', 'epsc', 'threshold', 'voltage')
 grid
 pause
 clf

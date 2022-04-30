@@ -310,6 +310,7 @@ end
 
 end
 
+%% -  analysis single column
 % fill the spike rates tensor
 for i=1:n_iters
     for n=1:n_total_neurons
@@ -476,7 +477,7 @@ figure
     imagesc(spike_reshaped);
     title('raster l4')
 grid
-
+%% - end of analysis single colum - 
 % var_tensor, n_iters, n_neurons, time_length,column_index
 return 
 % -------------------------------
