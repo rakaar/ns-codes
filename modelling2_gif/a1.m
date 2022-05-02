@@ -67,7 +67,9 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 250; lamda_i = 0;
+lamda_s = 250; 
+% lamda_i = 0.75;
+lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -120,26 +122,26 @@ for iter=1:n_iters
     for i=2:length(tspan)
 
         % remove recurrence in non stimulus
-        if i >= 500 && i <= 600
-                J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
-                J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
-                J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
-                J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
-                J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
-                J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
-                J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
-                J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
-
-        else
-                J_ee_0 = 0; 
-                J_ie_0 = 0;
-                J_ei = 0; 
-                J_ii = 0;
-                J_ee_1 = 0; 
-                J_ie_1 = 0; 
-                J_ee_2 = 0; 
-                J_ie_2 = 0;
-        end
+%         if i >= 500 && i <= 600
+%                 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
+%                 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
+%                 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
+%                 J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
+%                 J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
+%                 J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
+%                 J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
+%                 J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
+% 
+%         else
+%                 J_ee_0 = 0; 
+%                 J_ie_0 = 0;
+%                 J_ei = 0; 
+%                 J_ii = 0;
+%                 J_ee_1 = 0; 
+%                 J_ie_1 = 0; 
+%                 J_ee_2 = 0; 
+%                 J_ie_2 = 0;
+%         end
 
 	fprintf("i = %d\n", i);
 	for c=1:n_columns
