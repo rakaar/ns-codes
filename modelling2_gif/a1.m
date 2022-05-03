@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 5;
+n_iters = 4;
 
 % basic variables;
 n_columns = 1;
@@ -68,8 +68,8 @@ lamda = zeros(1, length(tspan));
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
 lamda_s = 250; 
-lamda_i = 0.75;
-lamda_i = 0;
+lamda_i = 80;
+% lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -477,8 +477,17 @@ figure
     c = 1;
     spike_reshaped = reshape(spikes(:,c,:,:),  n_iters*n_total_neurons, length(tspan));
     imagesc(spike_reshaped);
-    title('raster l4')
+    title('all iters raster l4')
 grid
+
+figure
+    c = 1;
+    iter=5;
+    spike_reshaped = reshape(spikes(iter,c,:,:),  n_total_neurons, length(tspan));
+    imagesc(spike_reshaped);
+    title('1 iter raster l4')
+grid
+
 %% - end of analysis single colum - 
 % var_tensor, n_iters, n_neurons, time_length,column_index
 return 
