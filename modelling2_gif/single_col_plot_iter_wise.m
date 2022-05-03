@@ -1,12 +1,13 @@
+close all;
 % for a random neuron
 col = 1;
-iter_to_see=5;
+iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 multiply_term = (n_bins*physical_time_in_ms*0.001);
 for random_neuron=1:n_total_neurons
     clf
 figure(random_neuron)
-    hold on
+hold on
         mean_spike_rate_of_random_neuron = zeros(1, spike_rate_length);
         for t=1:spike_rate_length
               mean_spike_rate_of_random_neuron(1,t) = spike_rates(iter_to_see, col, random_neuron,t);

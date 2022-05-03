@@ -23,8 +23,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 30;
-weight_exc_factor = 10;
+increase_inhibitory_factor = 12;
+weight_exc_factor = 2;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
@@ -81,7 +81,7 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 120; xe_thalamic = 1;
+weight_thalamic_to_a1 = 12; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
