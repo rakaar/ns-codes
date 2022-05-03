@@ -24,7 +24,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 % connection strength
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 12;
-weight_exc_factor = 2;
+weight_exc_factor = 3;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
@@ -68,7 +68,7 @@ lamda = zeros(1, length(tspan));
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
 lamda_s = 250; 
-% lamda_i = 0.75;
+lamda_i = 0.75;
 lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
@@ -81,11 +81,11 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 12; xe_thalamic = 1;
+weight_thalamic_to_a1 = 13; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
-tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
+tau_re = 0.5; tau_ir = 2500; tau_ei = 27;
 % izhikevich neuron params
 % for rebound burst and sustained_spike
 neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]); 
