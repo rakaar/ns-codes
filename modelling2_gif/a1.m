@@ -1,10 +1,10 @@
 clear all;
 close all;
 
-n_iters = 4;
+n_iters = 5;
 
 % basic variables;
-n_columns = 1;
+n_columns = 1
 n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
@@ -23,8 +23,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 12;
-weight_exc_factor = 3;
+increase_inhibitory_factor = 30;
+weight_exc_factor = 10;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
@@ -67,9 +67,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 250; 
-lamda_i = 80;
-% lamda_i = 0;
+lamda_s = 250; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -81,11 +79,11 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each thalamic neuron
-weight_thalamic_to_a1 = 13; xe_thalamic = 1;
+weight_thalamic_to_a1 = 120; xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 %% time constant for synaptic resources
-tau_re = 0.5; tau_ir = 2500; tau_ei = 27;
+tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
 % izhikevich neuron params
 % for rebound burst and sustained_spike
 neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]); 
@@ -119,29 +117,9 @@ for iter=1:n_iters
     end
 
     % simulation
-    for i=2:length(tspan)
+    for i=6:length(tspan)
 
-        % remove recurrence in non stimulus
-%         if i >= 500 && i <= 600
-%                 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
-%                 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
-%                 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
-%                 J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
-%                 J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
-%                 J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
-%                 J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
-%                 J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
-% 
-%         else
-%                 J_ee_0 = 0; 
-%                 J_ie_0 = 0;
-%                 J_ei = 0; 
-%                 J_ii = 0;
-%                 J_ee_1 = 0; 
-%                 J_ie_1 = 0; 
-%                 J_ee_2 = 0; 
-%                 J_ie_2 = 0;
-%         end
+       
 
 	fprintf("i = %d\n", i);
 	for c=1:n_columns
@@ -153,8 +131,8 @@ for iter=1:n_iters
 			if c-2 >= 1
 				for j=1:n_excitatory
 					spike_train_exc = spikes(iter,c-2,j,:);
-                    g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
-					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-1); 
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5); 
                  end
 			end
 
@@ -162,8 +140,8 @@ for iter=1:n_iters
 			if c-1 >= 1
 				for j=1:n_excitatory
 					spike_train_exc = spikes(iter,c-1,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
-					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-1); 
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5); 
 				end
 			end
 
@@ -171,8 +149,8 @@ for iter=1:n_iters
 			if c+1 <= n_columns
 				for j=1:n_excitatory
 				    spike_train_exc = spikes(iter,c+1,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
-					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-1);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5);
 				end
 			end	
 
@@ -181,8 +159,8 @@ for iter=1:n_iters
 			if c+2 <= n_columns
 				for j=1:n_excitatory
 					spike_train_exc = spikes(iter,c+2,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
-					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-1);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5);
 				end
 			end	
 
@@ -193,8 +171,8 @@ for iter=1:n_iters
 					continue;
 				end
 				spike_train_exc = spikes(iter,c,j,:);
-				g_t = get_g_t(spike_train_exc, dt, i-1, tspan);
-				epsc_ex_own_column	= epsc_ex_own_column + g_t*xe(iter,c,j,i-1); 
+				g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+				epsc_ex_own_column	= epsc_ex_own_column + g_t*xe(iter,c,j,i-5); 
 			end
 
 			epsc_inh_own_column = 0;
@@ -203,8 +181,8 @@ for iter=1:n_iters
 					continue;
                 end
                 spike_train_inh = spikes(iter,c,j,:);
-				g_t = get_g_t(spike_train_inh, dt, i-1, tspan);
-				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(iter,c,j,i-1);
+				g_t = get_g_t(spike_train_inh, dt, i-5, tspan);
+				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(iter,c,j,i-5);
             end
 		
           % epsc from thalamic neurons
@@ -213,7 +191,7 @@ for iter=1:n_iters
              thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
              epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,thalamic_neuron_num, i-1);
           end
-          thalamic_epsc_tensor(iter,c,n,i-1) = epsc_from_thalamic;
+          thalamic_epsc_tensor(iter,c,n,i-5) = epsc_from_thalamic;
           
 		  if n <= n_excitatory
 			total_epsc = epsc_ex_neuron_back_c2 * J_ee_2 + ...
@@ -487,7 +465,6 @@ figure
     imagesc(spike_reshaped);
     title('1 iter raster l4')
 grid
-
 %% - end of analysis single colum - 
 % var_tensor, n_iters, n_neurons, time_length,column_index
 return 
