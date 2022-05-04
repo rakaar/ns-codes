@@ -23,8 +23,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 6;
-weight_exc_factor = 12;
+increase_inhibitory_factor = 30;
+weight_exc_factor = 10;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
@@ -67,7 +67,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 150; lamda_i = 0;
+lamda_s = 250; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -78,12 +78,12 @@ for i=601:length(tspan)
     lamda(1,i) = lamda_i;
 end
 
-% calculating epsc of each thalamic neuron
+% calculating epsc of each  thalamic neuron
 xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 40;
-weight_thalamic_to_inh_l4 = 100;
+weight_thalamic_to_exc_l4 = 120;
+weight_thalamic_to_inh_l4 = 120;
 
 %% time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
