@@ -1,10 +1,10 @@
 clear all;
 close all;
 
-n_iters = 5;
+n_iters = 2;
 
 % basic variables;
-n_columns = 1
+n_columns = 1;
 n_excitatory = 20; 
 n_inhibitory = 5; 
 n_total_neurons = n_excitatory + n_inhibitory;
@@ -96,7 +96,7 @@ neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
     
 % initialize
 v0 = -70;  
-xr(:, :, :, 1) = 1;
+xr(:, :, :, 1:5) = 1;
 voltages(:, :, :, 1) = v0; % 
 i1_tensor(:, :, :, 1) = 0.01;
 i2_tensor(:, :, :, 1) = 0.001;
@@ -460,7 +460,7 @@ grid
 
 figure
     c = 1;
-    iter=5;
+    iter=1;
     spike_reshaped = reshape(spikes(iter,c,:,:),  n_total_neurons, length(tspan));
     imagesc(spike_reshaped);
     title('1 iter raster l4')
