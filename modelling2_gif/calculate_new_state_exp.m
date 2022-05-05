@@ -10,7 +10,7 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
     k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
     El=-70.0;Vr=-70.0;Thetar=-40.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-a = 0.005; A1 = 12; A2 = -0.6;
+a = 0.009; A1 = 12; A2 = -0.6;
 
 iext = total_epsc + I_background;
 

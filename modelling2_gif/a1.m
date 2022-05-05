@@ -23,7 +23,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 30;
+increase_inhibitory_factor = 3;
 weight_exc_factor = 10;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
@@ -71,10 +71,10 @@ lamda_s = 250; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
-for i=501:600
+for i=200:700
     lamda(1,i) = lamda_s+lamda_i;
 end
-for i=601:length(tspan)
+for i=701:length(tspan)
     lamda(1,i) = lamda_i;
 end
 
@@ -82,7 +82,7 @@ end
 xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 120;
+weight_thalamic_to_exc_l4 = 30;
 weight_thalamic_to_inh_l4 = 120;
 
 %% time constant for synaptic resources

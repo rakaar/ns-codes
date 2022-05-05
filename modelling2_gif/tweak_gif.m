@@ -30,23 +30,18 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-iext(1000:1010) = -50; % -10 is so low for the current params
-% iext(500:600) = 10;
+% iext(1000:1020) = -10; 
+iext(500:600) = 10;
 
 
-% params for phasic burst and rebound burst
-% a = 0.01; A1 = 25; A2 = -0.6; 
-% a = 0.01; A1 = 20; A2 = -0.6; 
-%  a = 0.01; A1 = 12; A2 = -0.6;
-%   a = 0.019; A1 = 5; A2 = -0.6;
-%   a = 0.019; A1 = 5; A2 = -0.6;
-% params fo tonic spike through spike for +ve current
-% a = 0; A1 = 0; A2 = 0; 
 a = 0.005; A1 = 10; A2 = -0.6;
-% testing if these show rebound burst
-%  a = 0.009; A1 = 5; A2 = -0.6;
 
-% IC=(0.01, 0.001, -70.0, -50.0)
+% adjusting params to make voltage realistic
+C = 15;
+b = 0.001;
+a = 0.01;
+
+
 % initial conditions
 i1(1) = 0.01;
 i2(1) = 0.001;
@@ -71,6 +66,7 @@ for t=2:length(tspan)
        x = [x, t];
     end
 end
+
 
 figure
     hold on 
