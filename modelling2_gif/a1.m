@@ -471,7 +471,7 @@ grid
 
 figure
     c = 1;
-    iter=1;
+    iter=2;
     spike_reshaped = reshape(spikes(iter,c,:,:),  n_total_neurons, length(tspan));
     imagesc(spike_reshaped);
     title('1 iter raster l4')
