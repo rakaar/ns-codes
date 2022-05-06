@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 5;
+n_iters = 20;
 
 % basic variables;
 n_columns = 1;
@@ -17,7 +17,7 @@ t_simulate = 1000;
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 1*dt;
+spike_rate_dt = 5*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
@@ -25,7 +25,9 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 150;
 weight_exc_factor = 15;
-J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
+exc_to_exc_factor = 5;
+
+J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
 J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
@@ -82,8 +84,8 @@ end
 xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 300;
-weight_thalamic_to_inh_l4 = 420;
+weight_thalamic_to_exc_l4 = 180;
+weight_thalamic_to_inh_l4 = 320;
 
 %% time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 22;
@@ -462,12 +464,12 @@ figure
 grid
 
 % raster of l4
-figure
-    c = 1;
-    spike_reshaped = reshape(spikes(:,c,:,:),  n_iters*n_total_neurons, length(tspan));
-    imagesc(spike_reshaped);
-    title('all iters raster l4')
-grid
+% figure
+%     c = 1;
+%     spike_reshaped = reshape(spikes(:,c,:,:),  n_iters*n_total_neurons, length(tspan));
+%     imagesc(spike_reshaped);
+%     title('all iters raster l4')
+% grid
 
 for iter=1:n_iters
         figure(iter*100 + 77)
