@@ -1,7 +1,7 @@
 close all;
 % for a random neuron
 col = 1;
-iter_to_see=2;
+iter_to_see=4;
 n_bins = spike_rate_dt/dt;
 multiply_term = (n_bins*physical_time_in_ms*0.001);
 for random_neuron=1:n_total_neurons

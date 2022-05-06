@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 2;
+n_iters = 5;
 
 % basic variables;
 n_columns = 1;
@@ -83,7 +83,7 @@ xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 weight_thalamic_to_exc_l4 = 300;
-weight_thalamic_to_inh_l4 = 450;
+weight_thalamic_to_inh_l4 = 420;
 
 %% time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 22;
@@ -469,13 +469,15 @@ figure
     title('all iters raster l4')
 grid
 
-figure
-    c = 1;
-    iter=2;
-    spike_reshaped = reshape(spikes(iter,c,:,:),  n_total_neurons, length(tspan));
-    imagesc(spike_reshaped);
-    title('1 iter raster l4')
-grid
+for iter=1:n_iters
+        figure(iter*100 + 77)
+            c = 1;
+            spike_reshaped = reshape(spikes(iter,c,:,:),  n_total_neurons, length(tspan));
+            imagesc(spike_reshaped);
+            title('single iter raster l4')
+        grid
+end
+
 %% - end of analysis single colum - 
 % var_tensor, n_iters, n_neurons, time_length,column_index
 return 
