@@ -23,8 +23,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 3;
-weight_exc_factor = 10;
+increase_inhibitory_factor = 120;
+weight_exc_factor = 15;
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
@@ -71,10 +71,10 @@ lamda_s = 250; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
-for i=200:700
+for i=500:600
     lamda(1,i) = lamda_s+lamda_i;
 end
-for i=701:length(tspan)
+for i=601:length(tspan)
     lamda(1,i) = lamda_i;
 end
 
@@ -82,11 +82,11 @@ end
 xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 30;
-weight_thalamic_to_inh_l4 = 120;
+weight_thalamic_to_exc_l4 = 300;
+weight_thalamic_to_inh_l4 = 450;
 
 %% time constant for synaptic resources
-tau_re = 0.9; tau_ir = 5000; tau_ei = 27;
+tau_re = 0.9; tau_ir = 5000; tau_ei = 22;
 % izhikevich neuron params
 % for rebound burst and sustained_spike
 neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]); 
@@ -100,10 +100,10 @@ neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
 % initialize
 v0 = -70;  
 xr(:, :, :, 1:5) = 1;
-voltages(:, :, :, 1) = v0; % 
-i1_tensor(:, :, :, 1) = 0.01;
-i2_tensor(:, :, :, 1) = 0.001;
-theta_tensor(:, :, :, 1) = -50.0;
+voltages(:, :, :, 1:5) = v0; % 
+i1_tensor(:, :, :, 1:5) = 0.01;
+i2_tensor(:, :, :, 1:5) = 0.001;
+theta_tensor(:, :, :, 1:5) = -50.0;
 % inhibitory synapses are non-depressing
 xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
 

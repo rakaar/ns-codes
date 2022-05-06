@@ -30,11 +30,11 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-% iext(1000:1020) = -10; 
-iext(500:600) = 10;
+iext(1000:1020) = -10; 
+% iext(500:600) = 20;
 
 
-a = 0.005; A1 = 10; A2 = -0.6;
+a = 0.005; A1 = 25; A2 = -0.6;
 
 % adjusting params to make voltage realistic
 C = 15;
