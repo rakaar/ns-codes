@@ -59,6 +59,10 @@ xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 xe = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 xi = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 
+xr_thalamic = zeros(n_iters, n_thalamic, length(tspan));
+xe_thalamic = zeros(n_iters, n_thalamic, length(tspan));
+xi_thalamic = zeros(n_iters, n_thalamic, length(tspan));
+
 % mapping from input thalamic neurons to a1 column neurons
 all_combinations = nchoosek(1:n_thalamic, num_of_input_giving_thalamic);
 mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
@@ -81,7 +85,6 @@ for i=601:length(tspan)
 end
 
 % calculating epsc of each  thalamic neuron
-xe_thalamic = 1;
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 weight_thalamic_to_exc_l4 = 180;
@@ -89,6 +92,8 @@ weight_thalamic_to_inh_l4 = 320;
 
 %% time constant for synaptic resources
 tau_re = 0.9; tau_ir = 5000; tau_ei = 22;
+tau_re_thalamic = 2; tau_ir_thalamic = 5000; tau_ei_thalamic = 22;
+
 % izhikevich neuron params
 % for rebound burst and sustained_spike
 neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]); 
@@ -101,11 +106,13 @@ neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
     
 % initialize
 v0 = -70;  
-xr(:, :, :, 1:5) = 1;
+xr(:, :, :, 1:5) = 1; 
+xr_thalamic(:,:,1) = 1;
 voltages(:, :, :, 1:5) = v0; % 
 i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
+
 % inhibitory synapses are non-depressing
 xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
 
@@ -117,14 +124,34 @@ for iter=1:n_iters
     for i=1:n_thalamic
          thalamic_poisson_spikes(iter,i, :) = reshape(poisson_generator(lamda, dt), 1, 1, length(tspan));
     end
+    
+    % depressing synapse thalamus -> l4
+    for n_thal=1:n_thalamic
+        for t=2:length(tspan)
+                current_xr_thalamic = xr_thalamic(iter, n_thal, t-1);
+                current_xe_thalamic = xe_thalamic(iter, n_thal, t-1);
+                current_xi_thalamic = xi_thalamic(iter, n_thal, t-1);
+                
+                M = 0;
+                if thalamic_poisson_spikes(iter,n_thal,t) == 1
+                    M = 1;
+                end
+
+                xr_thalamic(iter,n_thal,t) = update_xr(M, current_xr_thalamic, current_xi_thalamic, tau_re_thalamic, tau_ir_thalamic);
+                xe_thalamic(iter,n_thal,t) = update_xe(M, current_xr_thalamic, current_xe_thalamic, tau_re_thalamic, tau_ei_thalamic);
+                xi_thalamic(iter,n_thal,t) = update_xi(current_xe_thalamic, current_xi_thalamic, tau_ei_thalamic, tau_ir_thalamic);
+            
+        end
+    end
+
+    
+
     for i=1:n_thalamic
-        epsc_thalamic(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes(iter,i,:), length(tspan)) * xe_thalamic,  1,1,length(tspan));
+        epsc_thalamic(iter,i,:) = reshape(get_g_t_vector(thalamic_poisson_spikes(iter,i,:), length(tspan)) .* reshape(xe_thalamic(iter,i,:), 1, length(tspan)),  1,1,length(tspan));
     end
 
     % simulation
     for i=6:length(tspan)
-
-       
 
 	fprintf("i = %d\n", i);
 	for c=1:n_columns
