@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 2;
+n_iters = 10;
 
 % basic variables;
 n_columns = 1;
@@ -73,7 +73,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 250; lamda_i = 0;
+lamda_s = 300; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
@@ -87,12 +87,12 @@ end
 % calculating epsc of each  thalamic neuron
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 180;
-weight_thalamic_to_inh_l4 = 320;
+weight_thalamic_to_exc_l4 = 275;
+weight_thalamic_to_inh_l4 = 500;
 
 %% time constant for synaptic resources
-tau_re = 0.9; tau_ir = 5000; tau_ei = 22;
-tau_re_thalamic = 2; tau_ir_thalamic = 5000; tau_ei_thalamic = 22;
+tau_re = 0.6; tau_ir = 5000; tau_ei = 15;
+tau_re_thalamic = 0.6; tau_ir_thalamic = 2700; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
 % for rebound burst and sustained_spike
