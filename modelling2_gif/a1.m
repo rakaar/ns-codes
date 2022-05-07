@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 20;
+n_iters = 2;
 
 % basic variables;
 n_columns = 1;
@@ -17,7 +17,7 @@ t_simulate = 1000;
 tspan = 0:dt:t_simulate;
 
 % making bins of 100ms = 20*dt and calculating spike rate
-spike_rate_dt = 5*dt;
+spike_rate_dt = 1*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
