@@ -26,10 +26,11 @@ weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 150;
 weight_exc_factor = 15;
 exc_to_exc_factor = 5;
+inh_to_exc_factor = 2;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
-J_ei = -4*weight_reducing_l4*increase_inhibitory_factor; 
+J_ei = -4*weight_reducing_l4*increase_inhibitory_factor*inh_to_exc_factor; 
 J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor;
 J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
 J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
