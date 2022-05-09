@@ -26,7 +26,7 @@ weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 150;
 weight_exc_factor = 15;
 exc_to_exc_factor = 2;
-inh_to_exc_factor = 1.7;
+inh_to_exc_factor = 1.5;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
@@ -74,7 +74,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 400; lamda_i = 0;
+lamda_s = 425; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
