@@ -24,9 +24,13 @@ iext = total_epsc + I_background;
     i2 = i2_old + dt*(-k2*i2_old);
     v = v_old + dt*(1/C)*(iext+ i1_old + i2_old - G*(v_old - El));
     theta = theta_old + dt*( a*(v_old - El) - b*(theta_old - ThetaInf)  );
+     
+    if rand <= 0.001
+        v = theta;
+     end
 
 
-    if v > theta
+    if v >= theta
         i1 = R1*i1 + A1;
         i2 = R2*i2 + A2;
         v = Vr;
