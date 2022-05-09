@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 30;
+n_iters = 20;
 
 % basic variables;
 n_columns = 1;
@@ -74,7 +74,7 @@ lamda = zeros(1, length(tspan));
 % 100ms - 3-4 spikes, 200ms - 18-20 spikes, 300 - rest - 3-4 spikes
 % WARNING: FOR NOW THIS STIMULS IS HARD CODED, need to adjust acc to
 % t_simulate
-lamda_s = 350; lamda_i = 0;
+lamda_s = 375; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
