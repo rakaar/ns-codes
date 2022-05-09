@@ -89,7 +89,7 @@ end
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 weight_thalamic_to_exc_l4 = 275;
-weight_thalamic_to_inh_l4 = 500;
+weight_thalamic_to_inh_l4 = 475;
 
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 5000; tau_ei = 15;
