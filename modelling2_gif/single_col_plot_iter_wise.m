@@ -1,7 +1,7 @@
 close all;
 % for a random neuron
 col = 1;
-iter_to_see=18;
+iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 multiply_term = (n_bins*physical_time_in_ms*0.001);
 for random_neuron=1:n_total_neurons
@@ -71,6 +71,12 @@ hold on
         % all epsc
         all_epsc = rec_epsc + thalamic_curr_to_neuron;
         plot(all_epsc, 'm');
+
+        % background
+        i_back = I_background_tensor(iter_to_see, col, random_neuron, :);
+        i_back = squeeze(i_back);
+        i_back = [0; i_back];
+        plot(i_back, '--p');
 
     hold off
         title('random neuron epsc and psth')
