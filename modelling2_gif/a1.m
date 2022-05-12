@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 2;
+n_iters = 5;
 
 % basic variables;
 n_columns = 1;
@@ -22,11 +22,11 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 0; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 0.5; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 150;
 weight_exc_factor = 15;
-exc_to_exc_factor = 10;
-inh_to_exc_factor = 1.5;
+exc_to_exc_factor = 2;
+inh_to_exc_factor = 2.5;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
