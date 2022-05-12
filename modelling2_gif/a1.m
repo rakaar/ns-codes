@@ -22,7 +22,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 1; % for now all weights reduced by factor of 0.2
+weight_reducing_l4 = 0; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 150;
 weight_exc_factor = 15;
 exc_to_exc_factor = 10;
@@ -46,7 +46,7 @@ spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 
 
-I_background_tensor = zeros(n_iters, length(tspan)-1);
+I_background_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 thalamic_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_exc_self_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_inh_self_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
@@ -88,8 +88,8 @@ end
 % calculating epsc of each  thalamic neuron
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 600;
-weight_thalamic_to_inh_l4 = 700;
+weight_thalamic_to_exc_l4 = 750;
+weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 5000; tau_ei = 15;
@@ -280,8 +280,11 @@ for iter=1:n_iters
 			
                 % I_background = rand * (1);
                 % to see only effect of thalamic in feedforward
-                I_background = 0;
-                I_background_tensor(iter, i) = I_background;
+                
+                
+%                 r = normrnd(5,15);
+                 I_background = 2*normrnd(0,10);
+                 I_background_tensor(iter, c,n,i) = I_background;
             
             % calculate voltage using the function
 % 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
