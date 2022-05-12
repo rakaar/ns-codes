@@ -25,8 +25,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.5; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 150;
 weight_exc_factor = 15;
-exc_to_exc_factor = 2;
-inh_to_exc_factor = 2.5;
+exc_to_exc_factor = 2.5;
+inh_to_exc_factor = 2;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
@@ -314,9 +314,27 @@ for iter=1:n_iters
             % only excitatory synpases are depressing, 
             % inhibitory synapses are non depressing
             if n <= n_excitatory
-                xr(iter,c,n,i) = update_xr(M, current_xr, current_xi, tau_re, tau_ir);
-                xe(iter,c, n, i) = update_xe(M, current_xr, current_xe, tau_re, tau_ei);
-                xi(iter,c, n, i) = update_xi(current_xe, current_xi, tau_ei, tau_ir);
+                new_xr = update_xr(M, current_xr, current_xi, tau_re, tau_ir);
+                new_xe = update_xe(M, current_xr, current_xe, tau_re, tau_ei);
+    
+                % clipping for computational faults
+                if new_xr < 0
+                    new_xr = 0;
+                end
+                if new_xr > 1
+                    new_xr = 1;
+                end
+
+                if new_xe < 0
+                    new_xe = 0;
+                end
+                if new_xe > 1
+                    new_xe = 1;
+                end
+
+                xr(iter,c,n,i) = new_xr;
+                xe(iter,c, n, i) = new_xe;
+                xi(iter,c, n, i) = 1 - (new_xr + new_xe);
             end
 
 
