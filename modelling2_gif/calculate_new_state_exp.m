@@ -35,4 +35,12 @@ iext = total_epsc + I_background;
         theta = max(Thetar, theta);
         is_spike = 1;
     end
+
+    if v < -140
+        v = -140;
+    end
+
+    if theta > 60
+        theta = 60;
+    end
 end
