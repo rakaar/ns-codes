@@ -13,7 +13,7 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
 a = 0.005; A1 = 25; A2 = -0.6;
 
 % adjusting for realistic voltage values
-C = 15;
+C = 3;
 b = 0.001;
 a = 0.01;
 

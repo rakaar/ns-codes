@@ -20,7 +20,7 @@ clear all;
 k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
 El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-t_simulate = 1000;
+t_simulate = 2000;
 dt = 1; % may be 1ms
 tspan = 0:dt:t_simulate;
 
@@ -30,17 +30,17 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-% iext(1000:1020) = -10; 
-for i=1:1000
-    iext(1,i) = 2*normrnd(0,10);
-end
+iext(1000:1020) = -50; 
+% for i=1:1000
+%     iext(1,i) = 2*normrnd(0,10);
+% end
 % iext(1:1000) = rand*15;
 
 
 a = 0.005; A1 = 25; A2 = -0.6;
 
 % adjusting params to make voltage realistic
-C = 15;
+% C = 15;
 b = 0.001;
 a = 0.01;
 
@@ -65,8 +65,12 @@ for t=2:length(tspan)
         v(t) = Vr;
         theta(t) = max(Thetar, theta(t));
 
-        spikes(t) = 1;
+       spikes(t) = 1;
        x = [x, t];
+    end
+
+    if v(t) < -140
+        v(t) = -140;
     end
 end
 
