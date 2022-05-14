@@ -25,7 +25,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.25; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
-exc_to_exc_factor = 1;
+exc_to_exc_factor = 3.5;
 inh_to_exc_factor = 7;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
@@ -88,11 +88,11 @@ end
 % calculating epsc of each  thalamic neuron
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 350;
+weight_thalamic_to_exc_l4 = 400;
 weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
-tau_re = 0.6; tau_ir = 1000; tau_ei = 15;
+tau_re = 0.6; tau_ir = 600; tau_ei = 15;
 tau_re_thalamic = 0.6; tau_ir_thalamic = 2700; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
