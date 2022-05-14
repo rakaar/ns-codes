@@ -32,7 +32,7 @@ iext = total_epsc + I_background;
         i1 = R1*i1 + A1;
         i2 = R2*i2 + A2;
         v = Vr;
-        theta = max(Thetar, theta);
+        theta = max(Thetar, theta)-5;
         is_spike = 1;
     end
 

@@ -92,7 +92,7 @@ weight_thalamic_to_exc_l4 = 850;
 weight_thalamic_to_inh_l4 = 300;
 
 %% time constant for synaptic resources
-tau_re = 0.6; tau_ir = 2000; tau_ei = 15;
+tau_re = 0.6; tau_ir = 1000; tau_ei = 15;
 tau_re_thalamic = 0.6; tau_ir_thalamic = 2700; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
@@ -283,7 +283,12 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 I_background = 2*rand + normrnd(1,5);
+                 if rand < 0.5
+                     I_background = 2*rand + normrnd(1,7);
+                 else
+                     I_background = 1;
+                 end
+
                  I_background_tensor(iter, c,n,i) = I_background;
             
             % calculate voltage using the function
