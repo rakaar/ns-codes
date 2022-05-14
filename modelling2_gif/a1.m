@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 2;
+n_iters = 2 ;
 
 % basic variables;
 n_columns = 1;
@@ -22,11 +22,11 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 
 % connection strength
-weight_reducing_l4 = 0.5; % for now all weights reduced by factor of 0.2
-increase_inhibitory_factor = 100;
+weight_reducing_l4 = 0; % for now all weights reduced by factor of 0.2
+increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
 exc_to_exc_factor = 4;
-inh_to_exc_factor = 5;
+inh_to_exc_factor = 2;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
@@ -89,7 +89,7 @@ end
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 weight_thalamic_to_exc_l4 = 850;
-weight_thalamic_to_inh_l4 = 900;
+weight_thalamic_to_inh_l4 = 300;
 
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 2000; tau_ei = 15;
@@ -283,7 +283,7 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 I_background = 2*normrnd(10,2);
+                 I_background = normrnd(7,0.5);
                  I_background_tensor(iter, c,n,i) = I_background;
             
             % calculate voltage using the function
