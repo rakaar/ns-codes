@@ -88,7 +88,7 @@ end
 % calculating epsc of each  thalamic neuron
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 400;
+weight_thalamic_to_exc_l4 = 500;
 weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
@@ -283,8 +283,8 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 if rand < 0.5
-                     I_background = 2*rand + normrnd(1,7);
+                 if rand < 0.3
+                     I_background = (1*rand + normrnd(1,7))*0.5;
                  else
                      I_background = 1;
                  end
