@@ -283,7 +283,7 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 I_background = normrnd(7,0.5);
+                 I_background = 7;
                  I_background_tensor(iter, c,n,i) = I_background;
             
             % calculate voltage using the function
