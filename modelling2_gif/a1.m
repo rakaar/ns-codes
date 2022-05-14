@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 20;
+n_iters = 2;
 
 % basic variables;
 n_columns = 1;
@@ -92,7 +92,7 @@ weight_thalamic_to_exc_l4 = 850;
 weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
-tau_re = 0.6; tau_ir = 5000; tau_ei = 15;
+tau_re = 0.6; tau_ir = 700; tau_ei = 15;
 tau_re_thalamic = 0.6; tau_ir_thalamic = 2700; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
