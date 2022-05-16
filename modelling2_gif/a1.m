@@ -25,8 +25,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.25; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
-exc_to_exc_factor = 4;
-inh_to_exc_factor = 7;
+exc_to_exc_factor = 5;
+inh_to_exc_factor = 4;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
@@ -294,7 +294,15 @@ for iter=1:n_iters
             % calculate voltage using the function
 % 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
 		   
-            [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_exp(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt);
+            spike_vec = squeeze(spikes(iter,c,n,:));
+            latest_spike_time = -1;
+            for s=i-1:-1:i-5
+                if s >= 1 && spike_vec(s) == 1
+                    latest_spike_time = s;
+                    break;
+                end
+            end
+            [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_dynamic_threshold_rule(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt,i,latest_spike_time);
           
             if spikes(iter,c,n,i-1) == 1
 				spikes(iter,c,n,i) = 0;
@@ -303,7 +311,9 @@ for iter=1:n_iters
 			M = 0;
 			if spikes(iter,c,n,i) == 1
 				M = 1;
-			end
+            end
+
+        
 		
             
             
