@@ -1,5 +1,5 @@
 close all;
-iter_to_see = 1;
+iter_to_see = 5;
 col = 1;
 for n=1:n_total_neurons
     xe_vec = squeeze(xe(iter_to_see,col,n,:));

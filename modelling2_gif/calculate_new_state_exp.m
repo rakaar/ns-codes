@@ -3,7 +3,7 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_exp(v_old, i1_old, i
     
 %      background element causing spike
 % some how adding this background element results prevents disinhibtion
-%      if rand <= 0.001
+%      if rand <= 0.0025
 %         is_spike = 1;
 %      end
 

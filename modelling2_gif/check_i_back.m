@@ -1,13 +1,13 @@
 close all
-iter_to_see = 1;
+iter_to_see = 2;
 col = 1;
-figure
-    hold on
-        for n=1:2
+
+        for n=1:n_excitatory
+            figure
                 x = squeeze(I_background_tensor(iter_to_see,col,n,:));
-                x = x(1:100);
+                x = x(1:500);
                 plot(x)
-            
+
+            grid
         end
-    hold off
-grid
+

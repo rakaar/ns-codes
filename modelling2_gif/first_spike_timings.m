@@ -1,5 +1,5 @@
 close all;
-iter_to_see = 1;
+iter_to_see = 5;
 first_spike_arr = zeros(1,n_total_neurons);
 for n=1:n_total_neurons
     x = spikes(iter_to_see, col, n, :);

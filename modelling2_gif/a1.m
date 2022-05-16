@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 5;
+n_iters = 2;
 
 % basic variables;
 n_columns = 1;
@@ -25,7 +25,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.25; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
-exc_to_exc_factor = 3.5;
+exc_to_exc_factor = 4;
 inh_to_exc_factor = 7;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
@@ -88,11 +88,11 @@ end
 % calculating epsc of each  thalamic neuron
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
-weight_thalamic_to_exc_l4 = 500;
+weight_thalamic_to_exc_l4 = 550;
 weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
-tau_re = 0.6; tau_ir = 600; tau_ei = 15;
+tau_re = 0.6; tau_ir = 700; tau_ei = 15;
 tau_re_thalamic = 0.6; tau_ir_thalamic = 2700; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
@@ -283,10 +283,10 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 if rand < 0.3
-                     I_background = (1*rand + normrnd(1,7))*0.5;
+                 if rand < 0.02
+                     I_background = normrnd(30,2);
                  else
-                     I_background = 1;
+                     I_background = 0;
                  end
 
                  I_background_tensor(iter, c,n,i) = I_background;
@@ -555,7 +555,7 @@ grid
 %     title('all iters raster l4')
 % grid
 
-for iter=1:n_iters
+for iter=1:n_iters 
         figure(iter*100 + 77)
             c = 1;
             spike_reshaped = reshape(spikes(iter,c,:,:),  n_total_neurons, length(tspan));
