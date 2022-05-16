@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 2;
+n_iters = 20;
 
 % basic variables;
 n_columns = 1;
@@ -25,7 +25,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.25; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
-exc_to_exc_factor = 5;
+exc_to_exc_factor = 7;
 inh_to_exc_factor = 4;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
@@ -113,6 +113,21 @@ voltages(:, :, :, 1:5) = v0; %
 i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
+
+% sponataneous current into l4 neurons
+background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
+for iter=1:n_iters
+    for col=1:n_columns
+        for n=1:n_total_neurons
+                background_lamda = 0.5*ones(1, length(tspan));
+                background_spikes = poisson_generator(background_lamda, 1);
+                background_epsc1 = 500*get_g_t_vector_background(background_spikes, length(tspan));
+                background_epsc_reshaped = reshape(background_epsc1, 1,1,1,length(tspan));
+                background_epsc(iter,col,n,:) = background_epsc_reshaped;
+        end
+    end
+end
+
 
 % inhibitory synapses are non-depressing
 xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
@@ -283,12 +298,8 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 if rand < 0.005
-                     I_background = normrnd(50,5);
-                 else
-                     I_background = 0;
-                 end
-%                  I_background = normrnd(3,2);
+
+                 I_background = background_epsc(iter,col,n,i);   
                  I_background_tensor(iter, c,n,i) = I_background;
             
             % calculate voltage using the function
@@ -488,8 +499,8 @@ figure
         mean_input_epsc_extended = zeros(1, length(tspan));
         mean_input_epsc_extended(1, 2:length(tspan)) = mean_input_epsc_all_for_neurons;
         mean_input_epsc_binned = spikes_to_spike_rate_neat(mean_input_epsc_extended, 1, dt, spike_rate_dt);
-        plot(mean_input_epsc_binned*(n_bins*physical_time_in_ms*0.001))
-        plot(mean_spike_rate_for_neurons)
+        plot(mean_input_epsc_binned/(n_bins*0.001))
+        plot(mean_spike_rate_for_neurons/(n_bins*0.001))
     hold off
     title('total input and psth')
     legend('total input epsc', 'psth l4')
@@ -518,8 +529,8 @@ figure
         mean_input_epsc_extended = zeros(1, length(tspan));
         mean_input_epsc_extended(1, 2:length(tspan)) = mean_input_epsc_all_for_neurons;
         mean_input_epsc_binned = spikes_to_spike_rate_neat(mean_input_epsc_extended, 1, dt, spike_rate_dt_5);
-        plot(mean_input_epsc_binned*(n_bins*physical_time_in_ms*0.001))
-        plot(mean_spike_rate_for_neurons)
+        plot(mean_input_epsc_binned)
+        plot(mean_spike_rate_for_neurons/(n_bins*0.001))
     hold off
     title('5 bins total input and psth')
     legend('total input epsc', 'psth l4')
