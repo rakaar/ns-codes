@@ -32,7 +32,7 @@ iext = total_epsc + I_background;
      
 
 
-    time_constant = 7.5;
+    time_constant = 5;
     if t - t_spike <= 5 && t_spike ~= -1
         theta = theta_old + (Thetar-theta_old)*exp(-(t+1-t_spike)/time_constant);
     end

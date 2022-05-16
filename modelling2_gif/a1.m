@@ -283,12 +283,12 @@ for iter=1:n_iters
                 
                 
 %                 r = normrnd(5,15);
-                 if rand < 0.02
-                     I_background = normrnd(30,2);
+                 if rand < 0.005
+                     I_background = normrnd(50,5);
                  else
                      I_background = 0;
                  end
-
+%                  I_background = normrnd(3,2);
                  I_background_tensor(iter, c,n,i) = I_background;
             
             % calculate voltage using the function
