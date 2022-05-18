@@ -11,9 +11,13 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
+n_tokens = 10;
+pre_stimulus_time = 100; post_stimulus_time = 100; 
+single_stimulus_duration = 100; gap_duration = 200;
+
 physical_time_in_ms = 1; %dt time step 
 dt = 1;  % 1 dt = 1 ms 
-t_simulate = 4000; 
+t_simulate = pre_stimulus_time + post_stimulus_time + n_tokens*(single_stimulus_duration + gap_duration); 
 tspan = 0:dt:t_simulate;
 
 % making bins
@@ -84,16 +88,13 @@ thalamic_poisson_spikes_std = zeros(n_iters, n_thalamic, length(tspan));
 thalamic_poisson_spikes_dev = zeros(n_iters, n_thalamic, length(tspan));
 thalamic_poisson_spikes_common = zeros(n_iters, n_thalamic, length(tspan));
 
-pre_stimulus_time = 500; post_stimulus_time = 500; 
-single_stimulus_duration = 100; gap_duration = 200;
 
-n_tokens = 10;
 lamda_i = 0;
 
-prob = 0.8;
+prob = 0.7;
 
 freq_stim_in_std = 300;
-unfreq_stim_in_std = 1;
+unfreq_stim_in_std = 20;
 
 freq_stim_in_dev = unfreq_stim_in_std;
 unfreq_stim_in_dev = freq_stim_in_std;
@@ -144,7 +145,8 @@ lamda_dev_protochol = [lamda_dev_protochol, lamda_post_stimulus];
 lamda_dev_protochol = [lamda_dev_protochol, lamda_i]; % to make it n000 to n001
 
 % ---- common protochol ---- thalamic poisson input other than std and dev
-lamda_common_protochol = lamda_i*ones(1, length(tspan));
+lamda_common = 5;
+lamda_common_protochol = lamda_common*ones(1, length(tspan));
 
 
 % calculating epsc of each thalamic neuron
@@ -181,7 +183,7 @@ weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
-tau_re_thalamic = 0.6; tau_ir_thalamic = 2700; tau_ei_thalamic = 35;
+tau_re_thalamic = 0.6; tau_ir_thalamic = 500; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
 % for rebound burst and sustained_spike
