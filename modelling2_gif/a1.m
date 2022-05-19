@@ -79,10 +79,10 @@ lamda_s = 300; lamda_i = 0;
 for i=1:500
     lamda(1,i) = lamda_i;
 end
-for i=500:600
+for i=500:530
     lamda(1,i) = lamda_s+lamda_i;
 end
-for i=601:length(tspan)
+for i=531:length(tspan)
     lamda(1,i) = lamda_i;
 end
 

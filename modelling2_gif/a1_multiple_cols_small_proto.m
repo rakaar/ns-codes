@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-n_iters = 1;
+n_iters = 10;
 
 % basic variables;
 n_columns = 5;
@@ -11,9 +11,9 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
-n_tokens = 5;
+n_tokens = 10;
 pre_stimulus_time = 100; post_stimulus_time = 100; 
-single_stimulus_duration = 100; gap_duration = 200;
+single_stimulus_duration = 30; gap_duration = 200;
 
 physical_time_in_ms = 1; %dt time step 
 dt = 1;  % 1 dt = 1 ms 
@@ -117,7 +117,7 @@ for tok=1:n_tokens
 %         stim_d = unfreq_stim_in_dev;
 %     end
 
-    if tok == 4
+    if tok == 8
         stim_s = unfreq_stim_in_std;
         stim_d = unfreq_stim_in_dev;
     else
