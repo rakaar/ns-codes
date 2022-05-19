@@ -108,14 +108,7 @@ lamda_std = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
 lamda_dev = zeros(1, n_tokens*(single_stimulus_duration + gap_duration));
 
 for tok=1:n_tokens
-   
-%     if randi([1,100]) <= prob*100
-%         stim_s = freq_stim_in_std;
-%         stim_d = freq_stim_in_dev;
-%     else
-%         stim_s = unfreq_stim_in_std;
-%         stim_d = unfreq_stim_in_dev;
-%     end
+  
 
     if tok == 8
         stim_s = unfreq_stim_in_std;
