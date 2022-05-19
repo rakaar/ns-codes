@@ -249,9 +249,34 @@ for iter=1:n_iters
                     M = 1;
                 end
 
-                xr_thalamic_std(iter,n_thal,t) = update_xr(M, current_xr_thalamic_std, current_xi_thalamic_std, tau_re_thalamic, tau_ir_thalamic);
-                xe_thalamic_std(iter,n_thal,t) = update_xe(M, current_xr_thalamic_std, current_xe_thalamic_std, tau_re_thalamic, tau_ei_thalamic);
-                xi_thalamic_std(iter,n_thal,t) = update_xi(current_xe_thalamic_std, current_xi_thalamic_std, tau_ei_thalamic, tau_ir_thalamic);
+                new_xr_thalamic_std = update_xr(M, current_xr_thalamic_std, current_xi_thalamic_std, tau_re_thalamic, tau_ir_thalamic);
+                new_xe_thalamic_std = update_xe(M, current_xr_thalamic_std, current_xe_thalamic_std, tau_re_thalamic, tau_ei_thalamic);
+                new_xi_thalamic_std = update_xi(current_xe_thalamic_std, current_xi_thalamic_std, tau_ei_thalamic, tau_ir_thalamic);
+
+                if new_xr_thalamic_std > 1
+                    new_xr_thalamic_std = 1;
+                end
+                if new_xr_thalamic_std < 0
+                    new_xr_thalamic_std = 0;
+                end
+
+                if new_xe_thalamic_std > 1
+                    new_xe_thalamic_std = 1;
+                end
+                if new_xe_thalamic_std < 0
+                    new_xe_thalamic_std = 0;
+                end
+
+                if new_xi_thalamic_std > 1
+                    new_xi_thalamic_std = 1;
+                end
+                if new_xi_thalamic_std < 0 
+                    new_xi_thalamic_std = 0;
+                end
+
+                xr_thalamic_std(iter,n_thal,t) = new_xr_thalamic_std;
+                xe_thalamic_std(iter,n_thal,t) = new_xe_thalamic_std;
+                xi_thalamic_std(iter,n_thal,t) = new_xi_thalamic_std;
             
         end
     end
@@ -280,9 +305,34 @@ for iter=1:n_iters
                     M = 1;
                 end
 
-                xr_thalamic_dev(iter,n_thal,t) = update_xr(M, current_xr_thalamic_dev, current_xi_thalamic_dev, tau_re_thalamic, tau_ir_thalamic);
-                xe_thalamic_dev(iter,n_thal,t) = update_xe(M, current_xr_thalamic_dev, current_xe_thalamic_dev, tau_re_thalamic, tau_ei_thalamic);
-                xi_thalamic_dev(iter,n_thal,t) = update_xi(current_xe_thalamic_dev, current_xi_thalamic_dev, tau_ei_thalamic, tau_ir_thalamic);
+                new_xr_thalamic_dev = update_xr(M, current_xr_thalamic_dev, current_xi_thalamic_dev, tau_re_thalamic, tau_ir_thalamic);
+                new_xe_thalamic_dev = update_xe(M, current_xr_thalamic_dev, current_xe_thalamic_dev, tau_re_thalamic, tau_ei_thalamic);
+                new_xi_thalamic_dev = update_xi(current_xe_thalamic_dev, current_xi_thalamic_dev, tau_ei_thalamic, tau_ir_thalamic);
+
+                if new_xr_thalamic_dev > 1
+                    new_xr_thalamic_dev = 1;
+                end
+                if new_xr_thalamic_dev < 0
+                    new_xr_thalamic_dev = 0;
+                end
+
+                if new_xe_thalamic_dev > 1
+                    new_xe_thalamic_dev = 1;
+                end
+                if new_xe_thalamic_dev < 0
+                    new_xe_thalamic_dev = 0;
+                end
+
+                if new_xi_thalamic_dev > 1
+                    new_xi_thalamic_dev = 1;
+                end
+                if new_xi_thalamic_dev < 0 
+                    new_xi_thalamic_dev = 0;
+                end
+                
+                xr_thalamic_dev(iter,n_thal,t) = new_xr_thalamic_dev;
+                xe_thalamic_dev(iter,n_thal,t) = new_xe_thalamic_dev;
+                xi_thalamic_dev(iter,n_thal,t) = new_xi_thalamic_dev;
             
         end
     end
@@ -311,9 +361,35 @@ for iter=1:n_iters
                     M = 1;
                 end
 
-                xr_thalamic_common(iter,n_thal,t) = update_xr(M, current_xr_thalamic_common, current_xi_thalamic_common, tau_re_thalamic, tau_ir_thalamic);
-                xe_thalamic_common(iter,n_thal,t) = update_xe(M, current_xr_thalamic_common, current_xe_thalamic_common, tau_re_thalamic, tau_ei_thalamic);
-                xi_thalamic_common(iter,n_thal,t) = update_xi(current_xe_thalamic_common, current_xi_thalamic_common, tau_ei_thalamic, tau_ir_thalamic);
+                new_xr_thalamic_common = update_xr(M, current_xr_thalamic_common, current_xi_thalamic_common, tau_re_thalamic, tau_ir_thalamic);
+                new_xe_thalamic_common = update_xe(M, current_xr_thalamic_common, current_xe_thalamic_common, tau_re_thalamic, tau_ei_thalamic);
+                new_xi_thalamic_common = update_xi(current_xe_thalamic_common, current_xi_thalamic_common, tau_ei_thalamic, tau_ir_thalamic);
+
+                if new_xr_thalamic_common > 1
+                    new_xr_thalamic_common = 1;
+                end
+                if new_xr_thalamic_common < 0
+                    new_xr_thalamic_common = 0;
+                end
+
+                if new_xe_thalamic_common > 1
+                    new_xe_thalamic_common = 1;
+                end
+                if new_xe_thalamic_common < 0
+                    new_xe_thalamic_common = 0;
+                end
+
+                if new_xi_thalamic_common > 1
+                    new_xi_thalamic_common = 1;
+                end
+                if new_xi_thalamic_common < 0 
+                    new_xi_thalamic_common = 0;
+                end
+                
+                xr_thalamic_common(iter,n_thal,t) = new_xr_thalamic_common;
+                xe_thalamic_common(iter,n_thal,t) = new_xe_thalamic_common;
+                xi_thalamic_common(iter,n_thal,t) = new_xi_thalamic_common;
+
             
         end
     end

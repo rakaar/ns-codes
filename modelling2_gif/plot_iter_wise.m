@@ -1,6 +1,6 @@
 % for a random neuron
 close all;
-col = 2;
+col = 4;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 
@@ -24,11 +24,8 @@ for random_neuron=1:n_total_neurons
     clf
 figure(random_neuron)
     hold on
-        mean_spike_rate_of_random_neuron = zeros(1, spike_rate_length);
-        for t=1:spike_rate_length
-              mean_spike_rate_of_random_neuron(1,t) = spike_rates(iter_to_see, col, random_neuron,t);
-        end
-        plot(mean_spike_rate_of_random_neuron*100,'LineStyle','--');
+        spikes_neuron = squeeze(spikes(iter_to_see, col, random_neuron, :));
+        plot(spikes_neuron*100,'LineStyle','--', 'LineWidth',1);
 
         % threshold
         threshold = squeeze(theta_tensor(iter_to_see, col, random_neuron, :));

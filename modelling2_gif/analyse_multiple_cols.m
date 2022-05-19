@@ -153,7 +153,7 @@ for c=1:n_columns
             if c == 2
                 plot(lamda_std_protochol/6)
             elseif c == 4
-                plot(lamda_dev_protochol*20)
+                plot(lamda_dev_protochol/6)
             else
                 plot(lamda_common_protochol)
             end
