@@ -32,15 +32,16 @@ weight_exc_factor = 15;
 exc_to_exc_factor = 6;
 inh_to_exc_factor = 1;
 inh_to_inh_factor = 1;
+neigh_factor = 3;
 
 J_ee_0 = 6*weight_reducing_l4*weight_exc_factor*exc_to_exc_factor; 
 J_ie_0 = 0.5*weight_reducing_l4*weight_exc_factor;
 J_ei = -4*weight_reducing_l4*increase_inhibitory_factor*inh_to_exc_factor; 
 J_ii = -0.5*weight_reducing_l4*increase_inhibitory_factor*inh_to_inh_factor;
-J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor; 
-J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor; 
-J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
-J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
+J_ee_1 = 0.045*weight_reducing_l4*weight_exc_factor*neigh_factor; 
+J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor*neigh_factor; 
+J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor*neigh_factor; 
+J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor*neigh_factor;
 
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -183,7 +184,7 @@ weight_thalamic_to_inh_l4 = 900;
 
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
-tau_re_thalamic = 0.6; tau_ir_thalamic = 500; tau_ei_thalamic = 35;
+tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 35;
 
 % izhikevich neuron params
 % for rebound burst and sustained_spike
