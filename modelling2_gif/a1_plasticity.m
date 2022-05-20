@@ -11,12 +11,12 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
-n_tokens = 2;
+n_tokens = 10;
 pre_stimulus_time = 100; post_stimulus_time = 100; 
 single_stimulus_duration = 50; gap_duration = 200;
 
 physical_time_in_ms = 1; %dt time step 
-dt = 1;  % 0.2 dt = 20 ms, so 0.01 = 1 ms 
+dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms 
 t_simulate = pre_stimulus_time + post_stimulus_time + n_tokens*(single_stimulus_duration + gap_duration); 
 tspan = 0:dt:t_simulate;
 
@@ -43,9 +43,13 @@ J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor;
 J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
-J_ee_0_initial = 100;
-exc_to_exc_weight_matrix = J_ee_0*ones(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
+exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
+minimum_weight_exc_to_exc = 100;
+maximum_weight_exc_to_exc = 150;
 
+% plasticity parameters
+Amp_strength = 0.015; Amp_weak = 0.021;
+tau_strength = 13; tau_weak = 20;
 
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -132,6 +136,8 @@ i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
+J_ee_0_initial = 100;
+exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
 for iter=1:n_iters
@@ -355,15 +361,85 @@ for iter=1:n_iters
 				M = 1;
             end
 
-        
+
+            % ------updating weights using STDP
+            if n <= n_excitatory % STDP only for excitatory neurons
+                        if  M == 1 
+                                % LTP - checking if there is a spike in pre-syn neuron
+                                for pre_syn=1:n_excitatory
+                                    if pre_syn == n
+                                        continue;
+                                    end
+                
+                                    for impact_time=i:-1:i-19
+                                        if impact_time >= 1 && spikes(iter,c,n,impact_time) == 1 
+                                            exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = exc_to_exc_weight_matrix(iter,c,i-1,pre_syn,n)*(1 + Amp_strength*exp(-(abs(i-impact_time))/tau_strength));    
+                                            % limits on weight
+                                            if exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) < minimum_weight_exc_to_exc
+                                                exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = minimum_weight_exc_to_exc;
+                                            end
+                
+                                            if exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) > maximum_weight_exc_to_exc
+                                                exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = maximum_weight_exc_to_exc;
+                                            end
+                
+                                            break;
+                                        end
+                                    end
+                                end
+
+
+                             % LTD - checking if there is a spike in post-syn neuron
+                                for post_syn=1:n_excitatory
+                                    if post_syn == n
+                                        continue
+                                    end
+                
+                                    for impact_time=i:-1:i-19
+                                        if impact_time >= 1 && spikes(iter,c,n,impact_time) == 1 
+                                            exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = exc_to_exc_weight_matrix(iter,c,i-1,n,post_syn)*(1 - Amp_weak*exp(-(abs(i-impact_time))/tau_weak));    
+                                            % limits on weight
+                                            if exc_to_exc_weight_matrix(iter,c,i,n,post_syn) < minimum_weight_exc_to_exc
+                                                exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = minimum_weight_exc_to_exc;
+                                            end
+                
+                                            if exc_to_exc_weight_matrix(iter,c,i,n,post_syn) > maximum_weight_exc_to_exc
+                                                exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = maximum_weight_exc_to_exc;
+                                            end
+                                            break;
+                                        end
+                                    end
+                                 end
+                
+                        else   % if no spike
+                            for pre_syn=1:n_excitatory
+                                if n == pre_syn
+                                    continue;
+                                end
+
+                                exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = exc_to_exc_weight_matrix(iter,c,i-1,pre_syn,n); 
+                            end
+
+                            for post_syn=1:n_excitatory
+                                if n == post_syn
+                                    continue;
+                                end
+
+                                exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = exc_to_exc_weight_matrix(iter,c,i-1,n,post_syn);
+                            end
+                        end % end of if there is a spike
+            
+            end % end of if n is excitatory neuron
+
+            
+           
+               
 		
             
             
             %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
     
             % update synaptic resources
-            
-            
             current_xr = xr(iter,c, n, i-1);
             current_xe = xe(iter,c, n, i-1);
             current_xi = xi(iter,c, n, i-1);
@@ -531,7 +607,7 @@ figure
         mean_input_epsc_extended(1, 2:length(tspan)) = mean_input_epsc_all_for_neurons;
         mean_input_epsc_binned = spikes_to_spike_rate_neat(mean_input_epsc_extended, 1, dt, spike_rate_dt);
         plot(mean_input_epsc_binned)
-        plot(mean_spike_rate_for_neurons)
+        plot(mean_spike_rate_for_neurons/0.001)
 
         plot(protochol);
     hold off
