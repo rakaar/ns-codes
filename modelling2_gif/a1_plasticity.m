@@ -11,7 +11,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
-n_tokens = 3;
+n_tokens = 2;
 pre_stimulus_time = 100; post_stimulus_time = 100; 
 single_stimulus_duration = 50; gap_duration = 200;
 
@@ -42,6 +42,9 @@ J_ie_1 = 0.0035*weight_reducing_l4*weight_exc_factor;
 J_ee_2 = 0.015*weight_reducing_l4*weight_exc_factor; 
 J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
 
+% synaptic weight matrix - exc to exc - row: presyn, col: postsyn
+J_ee_0_initial = 100;
+exc_to_exc_weight_matrix = J_ee_0*ones(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
 
 
 % voltages and terms from it are 3d tensors
@@ -229,14 +232,27 @@ for iter=1:n_iters
 
 
 			epsc_ex_own_column = 0;
-			for j=1:n_excitatory
-				if j == n
-					continue;
-				end
-				spike_train_exc = spikes(iter,c,j,:);
-				g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-				epsc_ex_own_column	= epsc_ex_own_column + g_t*xe(iter,c,j,i-5); 
-			end
+			if n > n_excitatory % if n is inhibitory neuron
+                    for j=1:n_excitatory
+                        if j == n
+	                        continue;
+                        end
+                        spike_train_exc = spikes(iter,c,j,:);
+                        g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                        x_e_presyn_neuron = xe(iter,c,j,i-5);
+                        epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron;
+                    end
+            else
+                    for j=1:n_excitatory
+                        if j == n
+	                        continue;
+                        end
+                        spike_train_exc = spikes(iter,c,j,:);
+                        g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                        x_e_presyn_neuron = xe(iter,c,j,i-5);
+                        epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*exc_to_exc_weight_matrix(iter,c,i-5,j,n);
+                    end
+            end
 
 			epsc_inh_own_column = 0;
 			for j=n_excitatory+1:n_total_neurons
@@ -269,9 +285,9 @@ for iter=1:n_iters
 						epsc_ex_neuron_back_c1 * J_ee_1 + ...
 						epsc_ex_neuron_front_c1 * J_ee_1 + ...
 						epsc_ex_neuron_front_c2 * J_ee_2 + ...
-						epsc_ex_own_column * J_ee_0 + ...
+						epsc_ex_own_column  + ... 
 						epsc_inh_own_column * J_ei;
-            recurrence_exc_self_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_own_column * J_ee_0;
+            recurrence_exc_self_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_own_column;
             recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 * J_ee_2 + ...
 						                                                     epsc_ex_neuron_back_c1 * J_ee_1 + ...
 						                                                    epsc_ex_neuron_front_c1 * J_ee_1 + ...
