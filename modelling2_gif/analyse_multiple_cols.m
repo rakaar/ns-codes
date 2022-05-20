@@ -211,3 +211,10 @@ grid
 
 
 end
+
+iter=1;
+col = 1;
+figure
+      x = reshape(exc_to_exc_weight_matrix(iter,col,:,:,:),  length(tspan), n_excitatory*n_excitatory);
+      imagesc(x)
+grid
