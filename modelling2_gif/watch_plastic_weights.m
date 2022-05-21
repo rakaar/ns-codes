@@ -1,5 +1,5 @@
 close all;
-pre_syn = 13;
+pre_syn = 5;
 iter = 1;
 col = 1;
 for post_syn=1:n_excitatory
