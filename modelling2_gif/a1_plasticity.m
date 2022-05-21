@@ -11,7 +11,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
-n_tokens = 10;
+n_tokens = 5;
 pre_stimulus_time = 100; post_stimulus_time = 100; 
 single_stimulus_duration = 50; gap_duration = 200;
 
@@ -44,7 +44,7 @@ J_ie_2 = 0.0015*weight_reducing_l4*weight_exc_factor;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
 exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
-minimum_weight_exc_to_exc = 100;
+minimum_weight_exc_to_exc = 90;
 maximum_weight_exc_to_exc = 150;
 
 % plasticity parameters
@@ -136,8 +136,9 @@ i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
-J_ee_0_initial = 100;
-exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
+J_ee_0_initial = 105;
+exc_to_exc_weight_matrix(:, :, :, :,:) = J_ee_0_initial;
+
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
 for iter=1:n_iters
@@ -363,6 +364,8 @@ for iter=1:n_iters
 
 
             % ------updating weights using STDP
+            found_spike_n_is_postsyn = 0;
+            found_spike_n_is_presyn = 0;
             if n <= n_excitatory % STDP only for excitatory neurons
                         if  M == 1 
                                 % LTP - checking if there is a spike in pre-syn neuron
@@ -372,7 +375,7 @@ for iter=1:n_iters
                                     end
                 
                                     for impact_time=i:-1:i-19
-                                        if impact_time >= 1 && spikes(iter,c,n,impact_time) == 1 
+                                        if impact_time >= 1 && spikes(iter,c,pre_syn,impact_time) == 1 && impact_time ~= i
                                             exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = exc_to_exc_weight_matrix(iter,c,i-1,pre_syn,n)*(1 + Amp_strength*exp(-(abs(i-impact_time))/tau_strength));    
                                             % limits on weight
                                             if exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) < minimum_weight_exc_to_exc
@@ -382,7 +385,8 @@ for iter=1:n_iters
                                             if exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) > maximum_weight_exc_to_exc
                                                 exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = maximum_weight_exc_to_exc;
                                             end
-                
+
+                                            found_spike_n_is_postsyn = 1;
                                             break;
                                         end
                                     end
@@ -396,7 +400,7 @@ for iter=1:n_iters
                                     end
                 
                                     for impact_time=i:-1:i-19
-                                        if impact_time >= 1 && spikes(iter,c,n,impact_time) == 1 
+                                        if impact_time >= 1 && spikes(iter,c,post_syn,impact_time) == 1 
                                             exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = exc_to_exc_weight_matrix(iter,c,i-1,n,post_syn)*(1 - Amp_weak*exp(-(abs(i-impact_time))/tau_weak));    
                                             % limits on weight
                                             if exc_to_exc_weight_matrix(iter,c,i,n,post_syn) < minimum_weight_exc_to_exc
@@ -406,11 +410,21 @@ for iter=1:n_iters
                                             if exc_to_exc_weight_matrix(iter,c,i,n,post_syn) > maximum_weight_exc_to_exc
                                                 exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = maximum_weight_exc_to_exc;
                                             end
+
+                                            found_spike_n_is_presyn = 1;
                                             break;
                                         end
                                     end
                                  end
                 
+                              if found_spike_n_is_postsyn == 0
+                                    exc_to_exc_weight_matrix(iter,c,i,pre_syn,n) = exc_to_exc_weight_matrix(iter,c,i-1,pre_syn,n);
+                              end
+
+                              if found_spike_n_is_presyn == 0
+                                    exc_to_exc_weight_matrix(iter,c,i,n,post_syn) = exc_to_exc_weight_matrix(iter,c,i-1,n,post_syn);
+                              end
+
                         else   % if no spike
                             for pre_syn=1:n_excitatory
                                 if n == pre_syn
