@@ -364,43 +364,37 @@ for iter=1:n_iters
 
 
             % ------updating weights using STDP
-            if n <= n_excitatory % if n is excitatory neuron
-                if M == 1 % if there is a spike at current time
-                    
-                    % ---- LTP -- spike in presyn has caused spike in n 
-                    for presyn_neuron=1:n_excitatory % presyn -> n
-                        if presyn_neuron == n
-                            continue
-                        end
-                        
+            if n <= n_excitatory
+                % presyn -> n : LTP
+                for presyn_neuron=1:n_excitatory
+                    if M == 1 % if there is a spike
                         found_spike_in_window_LTP = 0;
 
                         for presyn_spike_time=i-1:-1:i-19
                             if presyn_spike_time >= 1 && spikes(iter,c,presyn_neuron,presyn_spike_time) == 1
-                                exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,n) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,n)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength)) ;
+                                exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,n) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,n)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
                                 found_spike_in_window_LTP = 1;
-                                break;
+                                break
                             end
                         end
-
+                        
                         if found_spike_in_window_LTP == 0
                             exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,n) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,n);
                         end
+                    else % if there is no spike
+                           exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,n) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,n);
+                    end
+                end
 
-                    end % end of presyn -> n
-
-                    % ---- LTD spike in post syn has caused spike in n
-                    for postsyn_neuron=1:n_excitatory
-                        if postsyn_neuron == n
-                            continue
-                        end
-
+                % n -> postyn : LTD
+                for postsyn_neuron=1:n_excitatory
+                    if M == 1 % if there is a spike
                         found_spike_in_window_LTD = 0;
 
                         for postsyn_spike_time=i:-1:i-19
                             if postsyn_spike_time >= 1 && spikes(iter,c,postsyn_neuron,postsyn_spike_time) == 1
                                 exc_to_exc_weight_matrix(iter,c,i,n,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,n,postsyn_neuron)*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
-                                found_spike_in_window_LTD  = 1;
+                                found_spike_in_window_LTD = 1;
                                 break;
                             end
                         end
@@ -408,29 +402,12 @@ for iter=1:n_iters
                         if found_spike_in_window_LTD == 0
                             exc_to_exc_weight_matrix(iter,c,i,n,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,n,postsyn_neuron);
                         end
-                    end
-
-                else % if there is no spike at current time
-                    
-                    % presyn -> n
-                    for presyn_neuron=1:n_excitatory
-                        if presyn_neuron == n
-                            continue
-                        end
-
-                        exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,n) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,n);
-                    end
-                    
-                    for postsyn_neuron=1:n_excitatory
-                        if postsyn_neuron == n
-                            continue
-                        end
-
+                    else % if there is no spike
                         exc_to_exc_weight_matrix(iter,c,i,n,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,n,postsyn_neuron);
                     end
-
-                end % if there is a spike at current time
-            end % end of if n is excitatory neuron
+                end
+                
+            end
             
             
             %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));

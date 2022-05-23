@@ -14,7 +14,7 @@ for post_syn=1:n_excitatory
 end
 
 close all;
-post_syn = 5;
+post_syn = 13;
 iter = 1;
 col = 1;
 for pre_syn=1:n_excitatory
