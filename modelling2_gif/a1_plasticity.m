@@ -11,7 +11,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
     
 % time step
-n_tokens = 5;
+n_tokens = 2;
 pre_stimulus_time = 100; post_stimulus_time = 100; 
 single_stimulus_duration = 50; gap_duration = 200;
 
@@ -368,14 +368,14 @@ for iter=1:n_iters
                     if M == 1 % if there is a spike
                         % LTP - if pre-syn has spike before
                         for presyn=1:n_excitatory % for all presyn neurons
+                            
                             found_spike_in_LTP = 0;
-
                             if presyn == n
                                 continue;
                             end
-
-                            for presyn_spike_time=i:-1:i-19
-                                if presyn_spike_time >= 1 && presyn_spike_time ~= i && spikes(iter,c,presyn,presyn_spike_time) == 1
+        
+                            for presyn_spike_time=i-1:-1:i-19
+                                if presyn_spike_time >= 1 && spikes(iter,c,presyn,presyn_spike_time) == 1
                                        exc_to_exc_weight_matrix(iter,c,i,presyn,n) = exc_to_exc_weight_matrix(iter,c,i-1,presyn,n)* (1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
                                        found_spike_in_LTP = 1;
                                        break;
@@ -390,6 +390,7 @@ for iter=1:n_iters
                         % LTD - if postsyn has a spike before or at that
                         % time
                         for postsyn=1:n_excitatory % for all postsyn neurons
+                                
                                 found_spike_in_LTD = 0;
                                 if postsyn == n
                                     continue;

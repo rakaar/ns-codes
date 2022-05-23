@@ -1,5 +1,5 @@
 close all;
-pre_syn = 5;
+pre_syn = 7;
 iter = 1;
 col = 1;
 for post_syn=1:n_excitatory
@@ -14,7 +14,7 @@ for post_syn=1:n_excitatory
 end
 
 close all;
-post_syn = 15;
+post_syn = 5;
 iter = 1;
 col = 1;
 for pre_syn=1:n_excitatory
@@ -27,3 +27,4 @@ for pre_syn=1:n_excitatory
         hold off
     grid
 end
+
