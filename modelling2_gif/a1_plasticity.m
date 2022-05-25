@@ -1,6 +1,6 @@
 clear all;
 close all;
-
+tic ;
 n_iters = 1;
 
 % basic variables;
@@ -11,7 +11,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
 
 % time step
-n_tokens = 10;
+n_tokens = 20;
 pre_stimulus_time = 100; post_stimulus_time = 100;
 single_stimulus_duration = 50; gap_duration = 200;
 
@@ -430,9 +430,9 @@ for iter=1:n_iters
 %                                     end
 
                                     num_of_LTPs(iter,c,i) = num_of_LTPs(iter,c,i) + 1; 
-                                    if presyn_neuron == 5 && N == 7
-                                        fprintf("\n LTP - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
-                                    end
+%                                     if presyn_neuron == 5 && N == 7
+%                                         fprintf("\n LTP - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
+%                                     end
                                 end
                                     
                                 
@@ -444,16 +444,16 @@ for iter=1:n_iters
 
                         if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,N) == 0
                             exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N);
-                            if presyn_neuron == 5 && N == 7
-                                    fprintf("\n LTP - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
-                            end
+%                             if presyn_neuron == 5 && N == 7
+%                                     fprintf("\n LTP - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
+%                             end
                         end
                     else % if there is no spike
                         if either_LTP_or_LTD_occured(presyn_neuron,N) == 0
                             exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N);
-                            if presyn_neuron == 5 && N == 7
-                                    fprintf("\n LTP - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
-                            end
+%                             if presyn_neuron == 5 && N == 7
+%                                     fprintf("\n LTP - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
+%                             end
                         end
                      end
                 end
@@ -475,10 +475,10 @@ for iter=1:n_iters
 %                                 end
                                 num_of_LTDs(iter,c,i) = num_of_LTDs(iter,c,i) + 1;
                                 has_LTD_occurred(N, postsyn_neuron) = 1;
-                                if N == 5 && postsyn_neuron == 7
-                                    fprintf("\n LTD - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
-                                    fprintf("\n due to same time ??? %d %d \n", spikes(iter,c,N,i), spikes(iter,c,postsyn_neuron,i))
-                                end
+%                                 if N == 5 && postsyn_neuron == 7
+%                                     fprintf("\n LTD - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
+%                                     fprintf("\n due to same time ??? %d %d \n", spikes(iter,c,N,i), spikes(iter,c,postsyn_neuron,i))
+%                                 end
                                 either_LTP_or_LTD_occured(N,postsyn_neuron) = 1;
                                 found_spike_in_window_LTD = 1;
                                 break;
@@ -487,17 +487,17 @@ for iter=1:n_iters
 
                         if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(N,postsyn_neuron) == 0
                             exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron);
-                            if N == 5 && postsyn_neuron == 7
-                                    fprintf("\n LTD - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
-                            end
+%                             if N == 5 && postsyn_neuron == 7
+%                                     fprintf("\n LTD - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
+%                             end
                         end
                     else % if there is no spike
 
                         if either_LTP_or_LTD_occured(N,postsyn_neuron) == 0
                                exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron);
-                                if N == 5 && postsyn_neuron == 7
-                                    fprintf("\n LTD - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
-                                end
+%                                 if N == 5 && postsyn_neuron == 7
+%                                     fprintf("\n LTD - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
+%                                 end
                         end
                         
                     end
@@ -517,7 +517,8 @@ for iter=1:n_iters
     end
 
 end
-
+toc;
+return
 %% -  analysis single column
 % fill the spike rates tensor
 for i=1:n_iters
