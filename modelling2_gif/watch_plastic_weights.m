@@ -1,5 +1,6 @@
 close all;
 %% presyn fix
+close all;
 pre_syn = 5;
 iter = 1;
 col = 1;
