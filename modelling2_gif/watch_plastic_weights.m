@@ -50,3 +50,22 @@ figure
     legend('protochol', 'ltds')
     hold off
 grid
+
+%% watch synapse and spikes
+presyn = 5;
+postsyn = 15;
+iter=1;c=1;
+figure
+    hold on
+        plot(squeeze(spikes(iter,c,presyn,:))*100, '--p')
+        plot(squeeze(spikes(iter,c,postsyn,:))*100)
+        plot(squeeze(exc_to_exc_weight_matrix(iter,c,:,presyn,postsyn)));
+        plot(squeeze(exc_to_exc_weight_matrix(iter,c,:,postsyn,presyn)));
+        l1 = num2str(presyn) + ' ' + 'spikes';
+        l2 = num2str(postsyn) + ' ' + 'spikes';
+        l3 = num2str(presyn) + '->' + num2str(postsyn);
+        l4 = num2str(postsyn) + '->' + num2str(presyn);
+        legend(l1,  l2, l3, l4)
+    hold off
+    
+grid
