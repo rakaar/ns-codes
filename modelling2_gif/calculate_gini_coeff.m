@@ -20,8 +20,9 @@ function gini_coeff = calculate_gini_coeff(matrix, row_wise_or_column_wise)
     
     % normalise the sum vector
     sum_vector_normalised = zeros(1, length(sum_vector));
+    sum_all_elements = sum(sum_vector(:));
     for s=1:length(sum_vector)
-        sum_vector_normalised(1,s) = sum_vector(1,s)/sum(sum_vector(:));
+        sum_vector_normalised(1,s) = sum_vector(1,s)/sum_all_elements;
     end
 
     sorted_sum_vector_normalised = sort(sum_vector_normalised);
