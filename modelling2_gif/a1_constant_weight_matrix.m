@@ -200,7 +200,7 @@ for iter=1:n_iters
     end
 
     % simulation
-    for i=6:length(tspan)
+    for i=1:length(tspan)
 
     	fprintf("i = %d\n", i);
     	for c=1:n_columns
