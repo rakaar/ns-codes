@@ -17,7 +17,7 @@ hold on
 
         plot(mean_spike_rate_of_random_neuron*100,'LineStyle','--');
 
-%         % adjusting from length(tspan)-1 to length(tspan)
+%         % adjusting from length(tspan)-1 to le    ngth(tspan)
 %         epsc_all_iters_for_random_neuron = squeeze(total_input_epsc(:, col, random_neuron, :));
 %         actual_epsc_input_to_random_neuron_size_adjusted = zeros(n_iters, length(tspan));
 %         for iter=1:n_iters

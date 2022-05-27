@@ -11,7 +11,7 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
 
 % time step
-n_tokens = 2;
+n_tokens = 10;
 pre_stimulus_time = 100; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 200;
 
@@ -58,7 +58,6 @@ i2_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 theta_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spikes = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
-g_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 
 I_background_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 thalamic_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
@@ -209,8 +208,7 @@ for iter=1:n_iters
     				for j=1:n_excitatory
     					spike_train_exc = spikes(iter,c-2,j,:);
                         g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        g_tensor(iter,c-2,j,i) = g_t;
-    					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5);
+                        epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5);
                     end
     			end
 
@@ -219,8 +217,7 @@ for iter=1:n_iters
     				for j=1:n_excitatory
     					spike_train_exc = spikes(iter,c-1,j,:);
     					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        g_tensor(iter,c-1,j,i) = g_t;
-    					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5);
+                        epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5);
     				end
     			end
 
@@ -229,8 +226,7 @@ for iter=1:n_iters
     				for j=1:n_excitatory
     				    spike_train_exc = spikes(iter,c+1,j,:);
     					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        g_tensor(iter,c+1,j,i) = g_t;
-    					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5);
+                        epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5);
     				end
     			end
 
@@ -240,8 +236,7 @@ for iter=1:n_iters
     				for j=1:n_excitatory
     					spike_train_exc = spikes(iter,c+2,j,:);
     					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        g_tensor(iter,c+2,j,i) = g_t;
-    					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5);
+                        epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5);
     				end
     			end
 
@@ -254,7 +249,6 @@ for iter=1:n_iters
                         end
                         spike_train_exc = spikes(iter,c,j,:);
                         g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        g_tensor(iter,c,j,i) = g_t;
                         x_e_presyn_neuron = xe(iter,c,j,i-5);
                         epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron;
                     end
@@ -265,7 +259,6 @@ for iter=1:n_iters
                         end
                         spike_train_exc = spikes(iter,c,j,:);
                         g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        g_tensor(iter,c,j,i) = g_t;
                         x_e_presyn_neuron = xe(iter,c,j,i-5);
                         epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*exc_to_exc_weight_matrix(iter,c,i-5,j,n);
                     end
@@ -278,8 +271,7 @@ for iter=1:n_iters
                     end
                     spike_train_inh = spikes(iter,c,j,:);
     				g_t = get_g_t(spike_train_inh, dt, i-5, tspan);
-                    g_tensor(iter,c,j,i) = g_t;
-    				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(iter,c,j,i-5);
+                    epsc_inh_own_column = epsc_inh_own_column + g_t*xe(iter,c,j,i-5);
                 end
 
                 % epsc from thalamic neurons
@@ -525,6 +517,7 @@ for iter=1:n_iters
 
 end
 toc;
+save('batch_1.mat');
 return
 %% -  analysis single column
 % fill the spike rates tensor

@@ -1,4 +1,8 @@
-for batch=2:200 % for batch
+
+for batch=2:3 % for batch
+fprintf("\n batch_number is %d \n", batch)
+pause(0.25);
+
 n_iters = 1;
 
 % previous batch variables
@@ -15,8 +19,8 @@ previous_batch_xr = previous_batch_xr_struct.xr;
 previous_batch_xi_struct = load(previous_batch_file, 'xi');
 previous_batch_xi = previous_batch_xi_struct.xi;
 
-previous_batch_voltage_struct = load(previous_batch_file, 'voltage');
-previous_batch_voltage = previous_batch_voltage_struct.voltage;
+previous_batch_voltage_struct = load(previous_batch_file, 'voltages');
+previous_batch_voltage = previous_batch_voltage_struct.voltages;
 
 previous_batch_theta_struct = load(previous_batch_file, 'theta_tensor');
 previous_batch_theta = previous_batch_theta_struct.theta_tensor;
@@ -26,6 +30,7 @@ previous_batch_i1 = previous_batch_i1_struct.i1_tensor;
 
 previous_batch_i2_struct = load(previous_batch_file, 'i2_tensor');
 previous_batch_i2 = previous_batch_i2_struct.i2_tensor;
+
 
 previous_batch_exc_to_exc_weight_matrix_struct = load(previous_batch_file,'exc_to_exc_weight_matrix');
 previous_batch_exc_to_exc_weight_matrix = previous_batch_exc_to_exc_weight_matrix_struct.exc_to_exc_weight_matrix;
@@ -39,7 +44,14 @@ n_thalamic = 9; num_of_input_giving_thalamic = 4;
 
 % time step
 n_tokens = 10;
-pre_stimulus_time = 0; post_stimulus_time = 0;
+pre_stimulus_time = 0; 
+post_stimulus_time = 0;
+% if batch == batches(end)
+%     post_stimulus_time = 100;
+% else 
+%     post_stimulus_time = 0;
+% end
+
 single_stimulus_duration = 50; gap_duration = 200;
 
 physical_time_in_ms = 1; %dt time step
@@ -116,9 +128,8 @@ mapping_matrix_thalamic_to_a1 = all_combinations(1:n_total_neurons,:);
 %% generate inhomo poisson spikes for thalamic neurons
 thalamic_poisson_spikes = zeros(n_iters, n_thalamic, length(tspan));
 
-silence_period_pre_and_post = 100;
-pre_protochol_silence = zeros(1,silence_period_pre_and_post);
-post_protochol_silence = zeros(1, silence_period_pre_and_post);
+pre_protochol_silence = zeros(1,pre_stimulus_time);
+post_protochol_silence = zeros(1, post_stimulus_time);
 
 lamda_s = 300;
 lamda_i = 0;
@@ -159,6 +170,7 @@ neuron_params_rb_ss = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -70 0]);
 neuron_params_rb_ps = containers.Map({'a', 'b', 'c', 'd'}, [0.02 0.25 -58 0.5]);
 
 % initialize
+xr_thalamic(:,:,1) = 1;
 
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
@@ -223,18 +235,21 @@ for iter=1:n_iters
     			epsc_ex_neuron_back_c2 = 0;
     			if c-2 >= 1
     				for j=1:n_excitatory
-                        if i <= 5   
-                            len_prev_batch_spikes = length(prev_batch_spikes);
-                            spikes_from_prev_batch = previous_batch_spikes(iter,c-2,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                        if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c-2,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
                             if i > 1
                                 spikes_from_current_batch = spikes(iter,c-2,j,1:i-1);
                                 spike_train_exc = [squeeze(spikes_from_prev_batch) squeeze(spikes_from_current_batch)];
                             else % i=1 case
                                 spike_train_exc = squeeze(spikes_from_prev_batch);
                             end
+
+                        else
+                            spike_train_exc = squeeze(spikes(iter,c-2,j,i-10:i-1));
                         end
                             
-                        g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                        g_t = get_g_t(spike_train_exc, dt, 11, tspan);
                         xe_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c-2,j,:)), ...
                                                squeeze(xe(iter,c-2,j,:)), ...
                                                 i-5);
@@ -245,19 +260,22 @@ for iter=1:n_iters
     			epsc_ex_neuron_back_c1 = 0;
     			if c-1 >= 1
     				for j=1:n_excitatory
-                        if i <= 5   
-                            len_prev_batch_spikes = length(prev_batch_spikes);
-                            spikes_from_prev_batch = previous_batch_spikes(iter,c-1,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                        if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c-1,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
                             if i > 1
                                 spikes_from_current_batch = spikes(iter,c-1,j,1:i-1);
                                 spike_train_exc = [squeeze(spikes_from_prev_batch) squeeze(spikes_from_current_batch)];
                             else % i=1 case
                                 spike_train_exc = squeeze(spikes_from_prev_batch);
                             end
+
+                         else
+                            spike_train_exc = squeeze(spikes(iter,c-1,j,i-10:i-1));
                         end
 
     					
-    					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+    					g_t = get_g_t(spike_train_exc, dt, 11, tspan);
                         xe_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c-1,j,:)), ...
                                                squeeze(xe(iter,c-1,j,:)), ...
                                                 i-5);
@@ -268,18 +286,21 @@ for iter=1:n_iters
     			epsc_ex_neuron_front_c1 = 0;
     			if c+1 <= n_columns
     				for j=1:n_excitatory
-                        if i <= 5   
-                            len_prev_batch_spikes = length(prev_batch_spikes);
-                            spikes_from_prev_batch = previous_batch_spikes(iter,c+1,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                        if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c+1,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
                             if i > 1
                                 spikes_from_current_batch = spikes(iter,c+1,j,1:i-1);
                                 spike_train_exc = [squeeze(spikes_from_prev_batch) squeeze(spikes_from_current_batch)];
                             else % i=1 case
                                 spike_train_exc = squeeze(spikes_from_prev_batch);
                             end
+
+                         else
+                            spike_train_exc = squeeze(spikes(iter,c+1,j,i-10:i-1));
                         end
     				    
-    					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+    					g_t = get_g_t(spike_train_exc, dt, 11, tspan);
                         xe_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c+1,j,:)), ...
                                                squeeze(xe(iter,c+1,j,:)), ...
                                                 i-5);
@@ -291,18 +312,21 @@ for iter=1:n_iters
     			epsc_ex_neuron_front_c2 = 0;
     			if c+2 <= n_columns
     				for j=1:n_excitatory
-                        if i <= 5   
-                            len_prev_batch_spikes = length(prev_batch_spikes);
-                            spikes_from_prev_batch = previous_batch_spikes(iter,c+2,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                        if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c+2,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
                             if i > 1
                                 spikes_from_current_batch = spikes(iter,c+2,j,1:i-1);
                                 spike_train_exc = [squeeze(spikes_from_prev_batch) squeeze(spikes_from_current_batch)];
                             else % i=1 case
                                 spike_train_exc = squeeze(spikes_from_prev_batch);
                             end
+
+                         else
+                            spike_train_exc = squeeze(spikes(iter,c+2,j,i-10:i-1));
                         end
     					
-    					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+    					g_t = get_g_t(spike_train_exc, dt, 11, tspan);
                         xe_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c+2,j,:)), ...
                                                squeeze(xe(iter,c+2,j,:)), ...
                                                 i-5);
@@ -318,18 +342,20 @@ for iter=1:n_iters
                             continue;
                         end
 
-                        if i <= 5   
-                            len_prev_batch_spikes = length(prev_batch_spikes);
-                            spikes_from_prev_batch = previous_batch_spikes(iter,c,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                        if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
                             if i > 1
                                 spikes_from_current_batch = spikes(iter,c,j,1:i-1);
-                                spike_train_exc = [squeeze(spikes_from_prev_batch) squeeze(spikes_from_current_batch)];
+                                spike_train_exc = [transpose(squeeze(spikes_from_prev_batch)) transpose(squeeze(spikes_from_current_batch))];
                             else % i=1 case
                                 spike_train_exc = squeeze(spikes_from_prev_batch);
                             end
+                         else
+                            spike_train_exc = squeeze(spikes(iter,c,j,i-10:i-1));
                         end
 
-                        g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                        g_t = get_g_t(spike_train_exc, dt, 11, tspan);
                         x_e_presyn_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c,j,:)), ...
                                                squeeze(xe(iter,c,j,:)), ...
                                                 i-5);
@@ -341,20 +367,28 @@ for iter=1:n_iters
                             continue;
                         end
 
-                        if i <= 5   
-                            len_prev_batch_spikes = length(prev_batch_spikes);
-                            spikes_from_prev_batch = previous_batch_spikes(iter,c,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                        if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
                             if i > 1
                                 spikes_from_current_batch = spikes(iter,c,j,1:i-1);
-                                spike_train_exc = [squeeze(spikes_from_prev_batch) squeeze(spikes_from_current_batch)];
+                                spike_train_exc = [transpose(squeeze(spikes_from_prev_batch)) transpose(squeeze(spikes_from_current_batch))];
                             else % i=1 case
                                 spike_train_exc = squeeze(spikes_from_prev_batch);
                             end
+                        else
+                            spike_train_exc = squeeze(spikes(iter,c,j,i-10:i-1));
                         end
 
-                        g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
-                        x_e_presyn_neuron = xe(iter,c,j,i-5);
-                        epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*exc_to_exc_weight_matrix(iter,c,i-5,j,n);
+                        g_t = get_g_t(spike_train_exc, dt, 11, tspan);
+                        x_e_presyn_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c,j,:)), ...
+                                               squeeze(xe(iter,c,j,:)), ...
+                                                i-5);
+
+                        epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*...
+                                                        return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,j,n)),...
+                                                                              squeeze(exc_to_exc_weight_matrix(iter,c,:,j,n)), ...
+                                                                              i-5);
                     end
                 end
 
@@ -363,16 +397,33 @@ for iter=1:n_iters
     				if j == n
     					continue;
                     end
-                    spike_train_inh = spikes(iter,c,j,:);
-    				g_t = get_g_t(spike_train_inh, dt, i-5, tspan);
-    				epsc_inh_own_column = epsc_inh_own_column + g_t*xe(iter,c,j,i-5);
+                    
+                    if i <= 10   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c,j,len_prev_batch_spikes-(10-i):len_prev_batch_spikes);
+                            if i > 1
+                                spikes_from_current_batch = spikes(iter,c,j,1:i-1);
+                                spike_train_inh = [transpose(squeeze(spikes_from_prev_batch)) transpose(squeeze(spikes_from_current_batch))];
+                            else % i=1 case
+                                spike_train_inh = squeeze(spikes_from_prev_batch);
+                            end
+                    else
+                            spike_train_inh = squeeze(spikes(iter,c,j,i-10:i-1));
+                    end
+
+                    g_t = get_g_t(spike_train_inh, dt, 11, tspan);
+                    xe_neuron = return_from_old_or_new(squeeze(previous_batch_xe(iter,c,j,:)), ...
+                                               squeeze(xe(iter,c,j,:)), ...
+                                                i-5);
+
+    				epsc_inh_own_column = epsc_inh_own_column + g_t*xe_neuron;
                 end
 
                 % epsc from thalamic neurons
                 epsc_from_thalamic = 0;
                 for ttt=1:num_of_input_giving_thalamic
                     thalamic_neuron_num = mapping_matrix_thalamic_to_a1(n, ttt);
-                    epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,thalamic_neuron_num, i-1);
+                    epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,thalamic_neuron_num, i);
                 end
                 % seperate weights thalamic to exc and inh
                 if n <= n_excitatory
@@ -381,7 +432,7 @@ for iter=1:n_iters
                     epsc_from_thalamic = epsc_from_thalamic*weight_thalamic_to_inh_l4;
                 end
 
-                thalamic_epsc_tensor(iter,c,n,i-5) = epsc_from_thalamic;
+                thalamic_epsc_tensor(iter,c,n,i) = epsc_from_thalamic;
 
 
       		  if n <= n_excitatory
@@ -391,14 +442,14 @@ for iter=1:n_iters
                     epsc_ex_neuron_front_c2 * J_ee_2 + ...
                     epsc_ex_own_column  + ...
                     epsc_inh_own_column * J_ei;
-                recurrence_exc_self_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_own_column;
-                recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 * J_ee_2 + ...
+                recurrence_exc_self_column_epsc_tensor(iter,c,n,i) = epsc_ex_own_column;
+                recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i) = epsc_ex_neuron_back_c2 * J_ee_2 + ...
                     epsc_ex_neuron_back_c1 * J_ee_1 + ...
                     epsc_ex_neuron_front_c1 * J_ee_1 + ...
                     epsc_ex_neuron_front_c2 * J_ee_2 ;
 
-                recurrence_inh_self_column_epsc_tensor(iter,c,n,i-1) = epsc_inh_own_column * J_ei;
-                recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = 0;
+                recurrence_inh_self_column_epsc_tensor(iter,c,n,i) = epsc_inh_own_column * J_ei;
+                recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i) = 0;
 
     		  else
 
@@ -409,13 +460,13 @@ for iter=1:n_iters
                     epsc_ex_own_column * J_ie_0 + ...
                     epsc_inh_own_column * J_ii;
 
-                recurrence_exc_self_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_own_column * J_ie_0;
-                recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 * J_ie_2 + ...
+                recurrence_exc_self_column_epsc_tensor(iter,c,n,i) = epsc_ex_own_column * J_ie_0;
+                recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i) = epsc_ex_neuron_back_c2 * J_ie_2 + ...
                     epsc_ex_neuron_back_c1 * J_ie_1 + ...
                     epsc_ex_neuron_front_c1 * J_ie_1 + ...
                     epsc_ex_neuron_front_c2 * J_ie_2;
-                recurrence_inh_self_column_epsc_tensor(iter,c,n,i-1) = epsc_inh_own_column * J_ii;
-                recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = 0;
+                recurrence_inh_self_column_epsc_tensor(iter,c,n,i) = epsc_inh_own_column * J_ii;
+                recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i) = 0;
               end
 
               total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
@@ -440,18 +491,37 @@ for iter=1:n_iters
               % calculate voltage using the function
               % 			[voltages(iter,c, n, i), u_values(iter,c, n, i)] = calculate_v_u(v_current, u_current, dt, neuron_params_rb_ss, total_epsc, I_background );
 
-              spike_vec = squeeze(spikes(iter,c,n,:));
+              if i <= 5   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c,j,len_prev_batch_spikes-(5-i):len_prev_batch_spikes);
+                            if i > 1
+                                spikes_from_current_batch = spikes(iter,c,j,1:i-1);
+                                spike_vec = [transpose(squeeze(spikes_from_prev_batch)) transpose(squeeze(spikes_from_current_batch))];
+                            else % i=1 case
+                                spike_vec = squeeze(spikes_from_prev_batch);
+                            end
+                    else
+                            spike_vec = squeeze(spikes(iter,c,j,i-5:i-1));
+              end
+
               latest_spike_time = -1;
-              for s=i-1:-1:i-5
+              for s=1:5
                   if s >= 1 && spike_vec(s) == 1
                       latest_spike_time = s;
                       break;
                   end
               end
-              [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_dynamic_threshold_rule(voltages(iter,c, n, i-1), i1_tensor(iter,c, n, i-1), i2_tensor(iter,c, n, i-1), theta_tensor(iter,c, n, i-1), total_epsc, I_background,dt,i,latest_spike_time);
+              previous_voltage = return_from_old_or_new(squeeze(previous_batch_voltage(iter,c, n, :)),  squeeze(voltages(iter,c,n,:)),  i-1);
+              previous_i1 = return_from_old_or_new(squeeze(previous_batch_i1(iter,c, n, :)),  squeeze(i1_tensor(iter,c,n,:)),  i-1);
+              previous_i2 = return_from_old_or_new(squeeze(previous_batch_i2(iter,c, n, :)),  squeeze(i2_tensor(iter,c,n,:)),  i-1);
+              previous_theta = return_from_old_or_new(squeeze(previous_batch_theta(iter,c, n, :)),  squeeze(theta_tensor(iter,c,n,:)),  i-1);
 
-              if spikes(iter,c,n,i-1) == 1
-  				spikes(iter,c,n,i) = 0;
+              [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_dynamic_threshold_rule(previous_voltage, previous_i1, previous_i2, previous_theta, total_epsc, I_background,dt,i,latest_spike_time);
+            
+            previous_time_spike_or_not = return_from_old_or_new(squeeze(previous_batch_spikes(iter,c,n,:)),  squeeze(spikes(iter,c,n,:)), i-1);
+          
+            if previous_time_spike_or_not == 1 
+                spikes(iter,c,n,i) = 0;
    			end
 
             M = 0;
@@ -463,9 +533,9 @@ for iter=1:n_iters
             %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
 
             % update synaptic resources
-            current_xr = xr(iter,c, n, i-1);
-            current_xe = xe(iter,c, n, i-1);
-            current_xi = xi(iter,c, n, i-1);
+            current_xr = return_from_old_or_new(squeeze(previous_batch_xr(iter,c,n,:)),  squeeze(xr(iter,c,n,:)), i-1);
+            current_xe = return_from_old_or_new(squeeze(previous_batch_xe(iter,c,n,:)),  squeeze(xe(iter,c,n,:)), i-1);
+            current_xi = return_from_old_or_new(squeeze(previous_batch_xi(iter,c,n,:)),  squeeze(xi(iter,c,n,:)), i-1);
 
             % only excitatory synpases are depressing,
             % inhibitory synapses are non depressing
@@ -508,12 +578,27 @@ for iter=1:n_iters
                 for presyn_neuron=1:n_excitatory
                     if spikes(iter,c,N,i) == 1 % if there is a spike
                         found_spike_in_window_LTP = 0;
+                        
+                        if i <= 20   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c,presyn_neuron,len_prev_batch_spikes-(20-i):len_prev_batch_spikes);
+                            if i > 1
+                                spikes_from_current_batch = spikes(iter,c,presyn_neuron,1:i-1);
+                                past_spike_train = [transpose(squeeze(spikes_from_prev_batch)) transpose(squeeze(spikes_from_current_batch))];
+                            else % i=1 case
+                                past_spike_train = squeeze(spikes_from_prev_batch);
+                            end
+                        else
+                                past_spike_train = squeeze(spikes(iter,c,presyn_neuron,i-20:i-1));
+                        end
 
-                        for presyn_spike_time=i-1:-1:i-19
-                            if presyn_spike_time >= 1 && spikes(iter,c,presyn_neuron,presyn_spike_time) == 1
+                        
+                        for presyn_spike_time=1:20
+                            if presyn_spike_time >= 1 && past_spike_train(presyn_spike_time) == 1
                                 
                                 if has_LTD_occurred(presyn_neuron,N) == 0
-                                    exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
+                                    previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)), i-1);
+                                    exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = previous_weight*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
                                     % clipping weights 
 %                                     if exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) < minimum_weight_exc_to_exc
 %                                         exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = minimum_weight_exc_to_exc;
@@ -536,14 +621,16 @@ for iter=1:n_iters
                         end
 
                         if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,N) == 0
-                            exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N);
+                            previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)), i-1);
+                            exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = previous_weight;
 %                             if presyn_neuron == 5 && N == 7
 %                                     fprintf("\n LTP - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
 %                             end
                         end
                     else % if there is no spike
                         if either_LTP_or_LTD_occured(presyn_neuron,N) == 0
-                            exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N);
+                            previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)), i-1);
+                            exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = previous_weight;
 %                             if presyn_neuron == 5 && N == 7
 %                                     fprintf("\n LTP - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
 %                             end
@@ -556,9 +643,25 @@ for iter=1:n_iters
                     if spikes(iter,c,N,i) == 1 % if there is a spike
                         found_spike_in_window_LTD = 0;
 
-                        for postsyn_spike_time=i:-1:i-19
-                            if postsyn_spike_time >= 1 && spikes(iter,c,postsyn_neuron,postsyn_spike_time) == 1
-                                exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron)*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
+
+                        if i <= 20   
+                            len_prev_batch_spikes = length(previous_batch_spikes);
+                            spikes_from_prev_batch = previous_batch_spikes(iter,c,postsyn_neuron,len_prev_batch_spikes-(20-i):len_prev_batch_spikes);
+                            if i > 1
+                                spikes_from_current_batch = spikes(iter,c,postsyn_neuron,1:i-1);
+                                past_spike_train = [transpose(squeeze(spikes_from_prev_batch)) transpose(squeeze(spikes_from_current_batch))];
+                            else % i=1 case 
+                                past_spike_train = squeeze(spikes_from_prev_batch);
+                            end
+                        else
+                                past_spike_train = squeeze(spikes(iter,c,postsyn_neuron,i-20:i-1));
+                        end
+
+
+                        for postsyn_spike_time=1:20
+                            if postsyn_spike_time >= 1 && past_spike_train(postsyn_spike_time) == 1
+                                previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)), i-1);
+                                exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = previous_weight*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
                                 % clipping weights
 %                                 if exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) < minimum_weight_exc_to_exc
 %                                     exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = minimum_weight_exc_to_exc;
@@ -579,7 +682,8 @@ for iter=1:n_iters
                         end
 
                         if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(N,postsyn_neuron) == 0
-                            exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron);
+                            previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)), i-1);
+                            exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = previous_weight;
 %                             if N == 5 && postsyn_neuron == 7
 %                                     fprintf("\n LTD - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
 %                             end
@@ -587,7 +691,8 @@ for iter=1:n_iters
                     else % if there is no spike
 
                         if either_LTP_or_LTD_occured(N,postsyn_neuron) == 0
-                               exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron);
+                                previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)), i-1);
+                               exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = previous_weight;
 %                                 if N == 5 && postsyn_neuron == 7
 %                                     fprintf("\n LTD - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
 %                                 end
@@ -607,7 +712,7 @@ for iter=1:n_iters
 
 
         %	break % for testing only one iteration
-    end
+    end 
 
 end
 

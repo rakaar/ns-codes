@@ -5,7 +5,7 @@ function g_t = get_g_t(spike_train, dt, t, tspan)
 	kernel_kt = [0 exp(-[0:length(spike_train)-1])./tau_syn];
 
     if t >=  11
-        x = conv(spike_train(t-10:t),kernel_kt);
+        x = conv(spike_train(t-10:t-1),kernel_kt);
         g_t = x(11);
     else
          x = conv(spike_train(1:t),kernel_kt);
