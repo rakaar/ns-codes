@@ -1,9 +1,9 @@
 
-for batch=2:2 % for batch
+for batch=2:50 % for batch
 fprintf("\n batch_number is %d \n", batch)
 pause(0.25);
 
-n_iters = 1;
+n_iters = 1;        
 
 % previous batch variables
 previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
@@ -52,7 +52,7 @@ post_stimulus_time = 0;
 %     post_stimulus_time = 0;
 % end
 
-single_stimulus_duration = 50; gap_duration = 200;
+single_stimulus_duration = 50; gap_duration = 300;
 
 physical_time_in_ms = 1; %dt time step
 dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
@@ -68,7 +68,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.25; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
-exc_to_exc_factor = 6;
+exc_to_exc_factor = 35;
 inh_to_exc_factor = 1;
 inh_to_inh_factor = 1;
 
@@ -153,7 +153,7 @@ protochol = [pre_protochol_silence, lamda, post_protochol_silence, 0]; % 0 is to
 epsc_thalamic = zeros(n_iters,n_thalamic, length(tspan));
 
 weight_thalamic_to_exc_l4 = 550;
-weight_thalamic_to_inh_l4 = 900;
+weight_thalamic_to_inh_l4 = 750;
 
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;

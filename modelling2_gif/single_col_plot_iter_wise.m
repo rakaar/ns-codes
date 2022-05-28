@@ -78,9 +78,12 @@ hold on
         i_back = [0; i_back];
         plot(i_back, '--p');
 
+        % protochol
+        plot(protochol)
+
     hold off
         title('random neuron epsc and psth')
-        legend('spike rate','threshold','voltage','thalamic epsc','exc epsc','inh epsc','rec epsc','all epsc')
+        legend('spike rate','threshold','voltage','thalamic epsc','exc epsc','inh epsc','rec epsc','all epsc', 'protochol')
 grid
 pause
 clf
