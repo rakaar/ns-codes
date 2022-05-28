@@ -518,7 +518,7 @@ for iter=1:n_iters
 end
 toc;
 save('batch_1.mat');
-
+return
 %% -  analysis single column
 % fill the spike rates tensor
 for i=1:n_iters
