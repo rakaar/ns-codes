@@ -1,5 +1,5 @@
 
-for batch=2:3 % for batch
+for batch=2:2 % for batch
 fprintf("\n batch_number is %d \n", batch)
 pause(0.25);
 
@@ -504,19 +504,23 @@ for iter=1:n_iters
                             spike_vec = squeeze(spikes(iter,c,j,i-5:i-1));
               end
 
-              latest_spike_time = -1;
+              gap = -1;
               for s=1:5
                   if s >= 1 && spike_vec(s) == 1
-                      latest_spike_time = s;
+                      gap = 6-s;
                       break;
                   end
               end
               previous_voltage = return_from_old_or_new(squeeze(previous_batch_voltage(iter,c, n, :)),  squeeze(voltages(iter,c,n,:)),  i-1);
               previous_i1 = return_from_old_or_new(squeeze(previous_batch_i1(iter,c, n, :)),  squeeze(i1_tensor(iter,c,n,:)),  i-1);
               previous_i2 = return_from_old_or_new(squeeze(previous_batch_i2(iter,c, n, :)),  squeeze(i2_tensor(iter,c,n,:)),  i-1);
-              previous_theta = return_from_old_or_new(squeeze(previous_batch_theta(iter,c, n, :)),  squeeze(theta_tensor(iter,c,n,:)),  i-1);
+              if i  == 1
+                   previous_theta = return_from_old_or_new(squeeze(previous_batch_theta(iter,c, n, :)),  squeeze(theta_tensor(iter,c,n,:)),  i-1);
+              else
+                    previous_theta = theta_tensor(iter,c,n,i-1);
+              end
 
-              [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_dynamic_threshold_rule(previous_voltage, previous_i1, previous_i2, previous_theta, total_epsc, I_background,dt,i,latest_spike_time);
+              [voltages(iter,c, n, i), i1_tensor(iter,c, n, i), i2_tensor(iter,c, n, i), theta_tensor(iter,c, n, i), spikes(iter,c,n,i)] = calculate_new_state_dynamic_threshold_rule_long(previous_voltage, previous_i1, previous_i2, previous_theta, total_epsc, I_background,dt,i,gap);
             
             previous_time_spike_or_not = return_from_old_or_new(squeeze(previous_batch_spikes(iter,c,n,:)),  squeeze(spikes(iter,c,n,:)), i-1);
           
