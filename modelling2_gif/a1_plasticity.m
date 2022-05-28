@@ -29,7 +29,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 weight_reducing_l4 = 0.25; % for now all weights reduced by factor of 0.2
 increase_inhibitory_factor = 75;
 weight_exc_factor = 15;
-exc_to_exc_factor = 35;
+exc_to_exc_factor = 6;
 inh_to_exc_factor = 1;
 inh_to_inh_factor = 1;
 
