@@ -1,7 +1,6 @@
 
-for batch=2:50 % for batch
+for batch=2:200 % for batch
 fprintf("\n batch_number is %d \n", batch)
-pause(0.25);
 
 n_iters = 1;        
 
@@ -575,8 +574,7 @@ for iter=1:n_iters
                 % if change has occured in LTP or LTD for a synapse, 
                 % Don't undo it in the next iteration
                 either_LTP_or_LTD_occured = zeros(n_excitatory, n_excitatory);
-                has_LTD_occurred = zeros(n_excitatory, n_excitatory);
-
+                
             for N=1:n_excitatory
                 % presyn -> N : LTP
                 for presyn_neuron=1:n_excitatory
@@ -598,9 +596,9 @@ for iter=1:n_iters
 
                         
                         for presyn_spike_time=1:20
-                            if presyn_spike_time >= 1 && past_spike_train(presyn_spike_time) == 1
+                            if presyn_spike_time >= 1 && past_spike_train(presyn_spike_time) == 1 && spikes(iter,c,presyn_neuron,i) == 0
                                 
-                                if has_LTD_occurred(presyn_neuron,N) == 0
+                                
                                     previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,presyn_neuron,N)), i-1);
                                     exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = previous_weight*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
                                     % clipping weights 
@@ -615,7 +613,7 @@ for iter=1:n_iters
 %                                     if presyn_neuron == 5 && N == 7
 %                                         fprintf("\n LTP - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N))
 %                                     end
-                                end
+                                
                                     
                                 
                                 either_LTP_or_LTD_occured(presyn_neuron,N) = 1;
@@ -663,7 +661,7 @@ for iter=1:n_iters
 
 
                         for postsyn_spike_time=1:20
-                            if postsyn_spike_time >= 1 && past_spike_train(postsyn_spike_time) == 1
+                            if postsyn_spike_time >= 1 && past_spike_train(postsyn_spike_time) == 1 && spikes(iter,c,postsyn_neuron,i) == 0
                                 previous_weight = return_from_old_or_new(squeeze(previous_batch_exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)),  squeeze(exc_to_exc_weight_matrix(iter,c,:,N,postsyn_neuron)), i-1);
                                 exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = previous_weight*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
                                 % clipping weights
@@ -674,7 +672,7 @@ for iter=1:n_iters
 %                                     exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = maximum_weight_exc_to_exc;
 %                                 end
                                 num_of_LTDs(iter,c,i) = num_of_LTDs(iter,c,i) + 1;
-                                has_LTD_occurred(N, postsyn_neuron) = 1;
+                                
 %                                 if N == 5 && postsyn_neuron == 7
 %                                     fprintf("\n LTD - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,c,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron))
 %                                     fprintf("\n due to same time ??? %d %d \n", spikes(iter,c,N,i), spikes(iter,c,postsyn_neuron,i))
