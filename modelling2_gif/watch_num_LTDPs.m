@@ -3,11 +3,18 @@ iter = 1;
 col = 1;
 batches = 200;
 n_excitatory = 20;
+% batch_data_path = "D:\batches_data";
 batch_data_path = "D:\batches_data";
 
-num_of_LTPs = 0;
-num_of_LTDs_same_time_spike = 0;
-num_of_LTDs_non_same_time_spike = 0;
+num_LTP_same_time_spike = 0;
+num_LTP_diff_time_spike = 0;
+
+num_LTD_same_time_spike = 0;
+num_LTD_diff_time_spike = 0;
+
+same_time_spike_LTP = 0; 
+same_time_spike_LTD = 0;
+
 
 for b=1:batches
         fprintf("\n batch is %d \n", b);
@@ -25,19 +32,43 @@ for b=1:batches
         for t=1:time_period-1
             for presyn=1:n_excitatory
                 for postsyn=1:n_excitatory
+                    % same time spike check
+                    if (batch_spikes(presyn,t) == 1) && (batch_spikes(postsyn,t) == 1)
+                        if batch_weight_matrix(t,presyn,postsyn) < batch_weight_matrix(t+1,presyn,postsyn)
+                            same_time_spike_LTP = same_time_spike_LTP + 1;
+                        elseif batch_weight_matrix(t,presyn,postsyn) > batch_weight_matrix(t+1,presyn,postsyn)
+                            same_time_spike_LTD = same_time_spike_LTD + 1;
+                        end
+                    end
+
+
                     % LTP or LTD
                     if batch_weight_matrix(t,presyn,postsyn) < batch_weight_matrix(t+1,presyn,postsyn)
-                        num_of_LTPs = num_of_LTPs + 1;
+                        % LTP
+                        % same time spike or not
+                        if (batch_spikes(presyn,t) == 1) && (batch_spikes(postsyn,t) == 1)
+                            num_LTP_same_time_spike = num_LTP_same_time_spike + 1;
+                        else
+                            num_LTP_diff_time_spike = num_LTP_diff_time_spike + 1;
+                        end
+
                     elseif batch_weight_matrix(t,presyn,postsyn) > batch_weight_matrix(t+1,presyn,postsyn)
-                             % is it due to same time spike
-                            if batch_spikes(presyn,t) == batch_spikes(postsyn,t)
-                                num_of_LTDs_same_time_spike = num_of_LTDs_same_time_spike + 1;
-                            else
-                                num_of_LTDs_non_same_time_spike = num_of_LTDs_non_same_time_spike + 1 ;
-                            end
+                         if (batch_spikes(presyn,t) == 1) && (batch_spikes(postsyn,t) == 1)
+                            num_LTD_same_time_spike = num_LTD_same_time_spike + 1;
+                        else
+                            num_LTD_diff_time_spike = num_LTD_diff_time_spike + 1;
+                        end
                     end
                 end
             end
         end
         
 end
+
+fprintf("\n num_LTP_same_time_spike %d \n",num_LTP_same_time_spike)
+fprintf("\n num_LTP_diff_time_spike %d \n",num_LTP_diff_time_spike)
+fprintf("\n num_LTD_same_time_spike %d \n",num_LTD_same_time_spike)
+fprintf("\n num_LTD_diff_time_spike %d \n", num_LTD_diff_time_spike)
+
+fprintf("\n same_time_spike_LTP %d \n", same_time_spike_LTP)
+fprintf("\n same_time_spike_LTD %d \n", same_time_spike_LTD)

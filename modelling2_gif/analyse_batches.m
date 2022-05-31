@@ -7,12 +7,14 @@ for b=1:length(batches)
     fprintf("\n batch num %d \n",batch_num);
     
 col = 1;
-batch_data_path = "D:\batches_data";
+% batch_data_path = "D:\batches_data";
+batch_data_path = "D:\2_batches_data";
+batches_images_path = "D:\2_batches_images\";
 batch_file_name = batch_data_path + "\batch_" + num2str(batch_num) + ".mat";
 folder_name = "batch_" + num2str(batch_num);
-mkdir("D:\batches_images\",folder_name)
+mkdir(batches_images_path,folder_name)
 
-images_path = "D:\batches_images\" + "batch_" + num2str(batch_num) + "\";
+images_path = batches_images_path + "batch_" + num2str(batch_num) + "\";
 
 spikes = load(batch_file_name,"spikes").spikes;
 n_iters = load(batch_file_name,"n_iters").n_iters;
