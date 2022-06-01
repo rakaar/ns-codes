@@ -7,7 +7,7 @@ col = 1;
 weight_over_time = [];
 batches = 200;
 % batch_data_path = "D:\batches_data";
-batch_data_path = "D:\2_batches_data";
+batch_data_path = "D:\3_batches_data";
 
 for b=1:batches
         fprintf("\n batch is %d \n", b);
@@ -31,7 +31,7 @@ col = 1;
 weights_over_time = [];
 batches = 200;
 % batch_data_path = "D:\batches_data";
-batch_data_path = "D:\2_batches_data";
+batch_data_path = "D:\3_batches_data";
 
 for b=1:batches
         fprintf("\n batch is %d \n", b);
@@ -56,7 +56,7 @@ col = 1;
 batches = 200;
 n_excitatory = 20;
 % batch_data_path = "D:\batches_data";
-batch_data_path = "D:\2_batches_data";
+batch_data_path = "D:\3_batches_data";
 weights_stacked_side_by_side = zeros(n_excitatory*n_excitatory, batches);
 for b=1:batches
         fprintf("\n batch is %d \n", b);
