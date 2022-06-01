@@ -70,3 +70,17 @@ figure
     hold off
     
 grid
+
+%% imagesc of stacked side by side
+close all;
+weights_stacked_side_by_side = zeros(n_excitatory*n_excitatory,length(tspan));
+for t=1:length(tspan)
+    weight_at_t = exc_to_exc_weight_matrix(1,1,t,:,:);
+    weight_at_t_reshaped = reshape(weight_at_t, n_excitatory*n_excitatory,1);
+    weights_stacked_side_by_side(:,t) = weight_at_t_reshaped;
+end
+
+figure
+    imagesc(weights_stacked_side_by_side);
+    title('weights stacked side by side')
+grid
