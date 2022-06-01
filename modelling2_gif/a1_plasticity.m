@@ -48,8 +48,8 @@ minimum_weight_exc_to_exc = 85;
 maximum_weight_exc_to_exc = 150;
 
 % plasticity parameters
-Amp_strength = 0.015; Amp_weak = 0.021;
-tau_strength = 13; tau_weak = 20;
+Amp_strength = 0.015; Amp_weak = 0.015;
+tau_strength = 15; tau_weak = 15;
 
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
