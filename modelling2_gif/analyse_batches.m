@@ -8,8 +8,8 @@ for b=1:length(batches)
     
 col = 1;
 % batch_data_path = "D:\batches_data";
-batch_data_path = "D:\4_batches_data";
-batches_images_path = "D:\4_batches_images\";
+batch_data_path = "D:\1_pv_som_data";
+batches_images_path = "D:\1_pv_som_images\";
 batch_file_name = batch_data_path + "\batch_" + num2str(batch_num) + ".mat";
 folder_name = "batch_" + num2str(batch_num);
 mkdir(batches_images_path,folder_name)

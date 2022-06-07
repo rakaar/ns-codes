@@ -4,7 +4,7 @@ overlap_size = 5;
 n_batches = 200;
 n_excitatory = 20;
 % batch_data_path = "D:\batches_data";
-batch_data_path = "D:\4_batches_data";
+batch_data_path = "D:\1_pv_som_data";
 
 gini_coeff_row_over_time = zeros(1,n_batches);
 gini_coeff_col_over_time = zeros(1,n_batches);
