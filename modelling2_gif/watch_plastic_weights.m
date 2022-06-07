@@ -1,9 +1,9 @@
 close all;
 %% presyn fix
 close all;
-pre_syn = 5;
+pre_syn = 8;
 iter = 1;
-col = 1;
+col = 2;
 for post_syn=1:n_excitatory
     figure(post_syn)
     hold on

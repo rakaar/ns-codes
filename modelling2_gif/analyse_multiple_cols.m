@@ -150,13 +150,7 @@ for c=1:n_columns
     figure(c*100 + 77)
         hold on
             imagesc(squeeze(spikes(iter_to_see,c,:,:)));
-            if c == 2
-                plot(lamda_std_protochol/6)
-            elseif c == 4
-                plot(lamda_dev_protochol/6)
-            else
-                plot(lamda_common_protochol)
-            end
+            
         hold off
         
         title('raster of l4')
@@ -171,40 +165,33 @@ spike_rate_length_5 = (length(tspan)-1)/(spike_rate_dt_5/dt);
 spike_rates_5 = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length_5);
 
 for c=1:n_columns
-for i=1:n_iters
-    for n=21:25
-        spikes1 = spikes(i, c, n, :);
-        spikes1_reshaped = reshape(spikes1, 1,length(tspan));
-        spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt_5);
-        spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length_5);
-        spike_rates_5(i,1,n,:) = spikes_rate1; 
-    end
+    for i=1:n_iters
+        for n=21:25
+            spikes1 = spikes(i, c, n, :);
+            spikes1_reshaped = reshape(spikes1, 1,length(tspan));
+            spike_rate1 = spikes_to_spike_rate_neat(spikes1_reshaped, physical_time_in_ms, dt, spike_rate_dt_5);
+            spikes_rate1 = reshape(spike_rate1, 1,1,1,spike_rate_length_5);
+            spike_rates_5(i,1,n,:) = spikes_rate1; 
+        end
 end
+
+total_input_epsc = thalamic_epsc_tensor ...
+                    + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
+                    + recurrence_exc_neighbour_column_epsc_tensor + recurrence_inh_neighbour_column_epsc_tensor ;
 
 figure(c*100 + 69)
      [mean_spike_rate_for_iters, mean_spike_rate_for_neurons] = get_mean(spike_rates_5, n_iters, n_total_neurons, spike_rate_length_5,1);
-        n_bins = spike_rate_dt_5/dt;
+     [mean_input_epsc_all_for_iters, mean_input_epsc_all_for_neurons] = get_mean(total_input_epsc(iter_to_see,c,:,:), n_iters, n_total_neurons, length(tspan)-1, 1);  
+     n_bins = spike_rate_dt_5/dt;
     hold on
         mean_input_epsc_extended = zeros(1, length(tspan));
         mean_input_epsc_extended(1, 2:length(tspan)) = mean_input_epsc_all_for_neurons;
         mean_input_epsc_binned = spikes_to_spike_rate_neat(mean_input_epsc_extended, 1, dt, spike_rate_dt_5);
         plot(mean_input_epsc_binned)
         plot(mean_spike_rate_for_neurons/(n_bins*0.001))
-
-        if c == 2
-                lamda_std_protochol_binned = spikes_to_spike_rate_neat(lamda_std_protochol, 1, dt, spike_rate_dt_5);
-                plot(lamda_std_protochol_binned/6)
-            elseif c == 4
-                lamda_dev_protochol_binned = spikes_to_spike_rate_neat(lamda_dev_protochol, 1, dt, spike_rate_dt_5);
-                plot(lamda_dev_protochol_binned/6)
-            else
-                lamda_common_protochol_binned = spikes_to_spike_rate_neat(lamda_common_protochol, 1, dt, spike_rate_dt_5);
-                plot(lamda_common_protochol_binned/6)
-            end
-
     hold off
     title('5 bins total input and psth')
-    legend('total input epsc', 'psth l4','protochol')
+    legend('total input epsc', 'psth l4')
 grid
 
 
@@ -212,9 +199,3 @@ grid
 
 end
 
-iter=1;
-col = 1;
-figure
-      x = reshape(exc_to_exc_weight_matrix(iter,col,:,:,:),  length(tspan), n_excitatory*n_excitatory);
-      imagesc(x)
-grid
