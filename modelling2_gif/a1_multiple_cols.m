@@ -16,11 +16,11 @@ n_thalamic_cols = 9;
 % time step
 n_tokens = 10;
 pre_stimulus_time = 100; post_stimulus_time = 0;
-single_stimulus_duration = 50; gap_duration = 300;
+single_stimulus_duration = 50; gap_duration = 100;
 
 physical_time_in_ms = 1; %dt time step
 dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
-t_simulate = pre_stimulus_time + post_stimulus_time + 2*n_tokens*(single_stimulus_duration + gap_duration);
+t_simulate = pre_stimulus_time + post_stimulus_time + n_tokens*(2*single_stimulus_duration + gap_duration);
 tspan = 0:dt:t_simulate;
 
 % making bins
@@ -111,7 +111,7 @@ lamda(:,:,:,1:pre_stimulus_time) = lamda_s;
 
 for iter=1:n_iters
     for tok=1:n_tokens
-        ind = pre_stimulus_time + (tok-1)*(2*single_stimulus_duration + 2*gap_duration) + 1;
+        ind = pre_stimulus_time + (tok-1)*(2*single_stimulus_duration + 1*gap_duration) + 1;
         % ---- first half of token
         % stimulus
         lamda(iter,1,:,ind:ind+49) = lamda_i;
@@ -122,21 +122,21 @@ for iter=1:n_iters
         lamda(iter,6,:,ind:ind+49) = lamda_b;
         lamda(iter,7:9,:,ind:ind+49) = lamda_i;
         % silence
-        lamda(iter,:,:,ind+50:ind+349) = lamda_s;
+        lamda(iter,:,:,ind+50:ind+149) = lamda_s;
 
         % ---- second half of token
         % stimulus
-        lamda(iter,1,:,ind+350:ind+399) = lamda_i;
-        lamda(iter,2,:,ind+350:ind+399) = lamda_i;
-        lamda(iter,3,:,ind+350:ind+399) = lamda_i;
-        lamda(iter,4,:,ind+350:ind+399) = lamda_b;
-        lamda(iter,5,:,ind+350:ind+399) = lamda_m;
-        lamda(iter,6,:,ind+350:ind+399) = lamda_a;
-        lamda(iter,7,:,ind+350:ind+399) = lamda_m;
-        lamda(iter,8,:,ind+350:ind+399) = lamda_b;
-        lamda(iter,9,:,ind+350:ind+399) = lamda_i;
-        % silence
-        lamda(iter,:,:,ind+400:ind+699) = lamda_s;
+        lamda(iter,1,:,ind+150:ind+199) = lamda_i;
+        lamda(iter,2,:,ind+150:ind+199) = lamda_i;
+        lamda(iter,3,:,ind+150:ind+199) = lamda_i;
+        lamda(iter,4,:,ind+150:ind+199) = lamda_b;
+        lamda(iter,5,:,ind+150:ind+199) = lamda_m;
+        lamda(iter,6,:,ind+150:ind+199) = lamda_a;
+        lamda(iter,7,:,ind+150:ind+199) = lamda_m;
+        lamda(iter,8,:,ind+150:ind+199) = lamda_b;
+        lamda(iter,9,:,ind+150:ind+199) = lamda_i;
+        % silence - saving time computationally
+        % lamda(iter,:,:,ind+400:ind+699) = lamda_s;
     end
 
 end
