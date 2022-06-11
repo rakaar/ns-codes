@@ -1,6 +1,7 @@
 clear all;
 close all;
 
+tic
 n_iters = 1;
 
 % basic variables;
@@ -13,7 +14,7 @@ n_thalamic_neurons = 2;
 n_thalamic_cols = 9;
     
 % time step
-n_tokens = 1;
+n_tokens = 25;
 pre_stimulus_time = 100; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 300;
 
@@ -685,3 +686,4 @@ end
 end
 
 save('multiple_cols_pv_som.mat')
+toc
