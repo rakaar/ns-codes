@@ -1,9 +1,8 @@
-close all;
 %% presyn fix
 close all;
-pre_syn = 8;
+pre_syn = 14;
 iter = 1;
-col = 2;
+col = 4;
 for post_syn=1:n_excitatory
     figure(post_syn)
     hold on
@@ -73,14 +72,16 @@ grid
 
 %% imagesc of stacked side by side
 close all;
-weights_stacked_side_by_side = zeros(n_excitatory*n_excitatory,length(tspan));
-for t=1:length(tspan)
-    weight_at_t = exc_to_exc_weight_matrix(1,1,t,:,:);
-    weight_at_t_reshaped = reshape(weight_at_t, n_excitatory*n_excitatory,1);
-    weights_stacked_side_by_side(:,t) = weight_at_t_reshaped;
+    for col_to_see=1:n_columns
+        weights_stacked_side_by_side = zeros(n_excitatory*n_excitatory,length(tspan));
+    for t=1:length(tspan)
+        weight_at_t = exc_to_exc_weight_matrix(1,col_to_see,t,:,:);
+        weight_at_t_reshaped = reshape(weight_at_t, n_excitatory*n_excitatory,1);
+        weights_stacked_side_by_side(:,t) = weight_at_t_reshaped;
+    end
+    
+    figure
+        imagesc(weights_stacked_side_by_side);
+        title(['weights stacked side by side col ', num2str(col_to_see)])
+    grid
 end
-
-figure
-    imagesc(weights_stacked_side_by_side);
-    title('weights stacked side by side')
-grid

@@ -13,7 +13,7 @@ n_thalamic_neurons = 2;
 n_thalamic_cols = 9;
     
 % time step
-n_tokens = 20;
+n_tokens = 1;
 pre_stimulus_time = 100; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 300;
 
@@ -29,17 +29,19 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
+inc_inh_to_exc_factor = 2.5;
+
 J_ee_0 = 135;
 J_pv_e_0 = 1.8750;
 J_som_e_0 = 1.8750*3;
 
-J_e_pv = -100;
-J_pv_pv = -9.3750;
+J_e_pv = -100*inc_inh_to_exc_factor;
+J_pv_pv = -9.3750*inc_inh_to_exc_factor;
 J_som_pv = 0;
 
-J_e_som = -50;
+J_e_som = -50*inc_inh_to_exc_factor;
 J_som_som = 0;
-J_pv_som = -9.3750;
+J_pv_som = -9.3750*inc_inh_to_exc_factor;
 
 % other column
 J_ee_1 = 0.1687;
@@ -98,15 +100,17 @@ xe_thalamic = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan))
 xi_thalamic = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
 
 % mapping from input thalamic neurons to a1 column neurons
-lamda_i = 0.75;
+lamda_i = 5;
 lamda_a = 300;
 lamda_b = 50;
 lamda_m = 100;
 lamda_s = 0;
 
+lamda(:,:,:,1:pre_stimulus_time) = lamda_s;
+
 for iter=1:n_iters
     for tok=1:n_tokens
-        ind = (tok-1)*(2*single_stimulus_duration + 2*gap_duration) + 1;
+        ind = pre_stimulus_time + (tok-1)*(2*single_stimulus_duration + 2*gap_duration) + 1;
         % ---- first half of token
         % stimulus
         lamda(iter,1,:,ind:ind+49) = lamda_i;
@@ -123,12 +127,13 @@ for iter=1:n_iters
         % stimulus
         lamda(iter,1,:,ind+350:ind+399) = lamda_i;
         lamda(iter,2,:,ind+350:ind+399) = lamda_i;
-        lamda(iter,3,:,ind+350:ind+399) = lamda_b;
-        lamda(iter,4,:,ind+350:ind+399) = lamda_m;
-        lamda(iter,5,:,ind+350:ind+399) = lamda_a;
-        lamda(iter,6,:,ind+350:ind+399) = lamda_m;
-        lamda(iter,7,:,ind+350:ind+399) = lamda_b;
-        lamda(iter,8:9,:,ind+350:ind+399) = lamda_i;
+        lamda(iter,3,:,ind+350:ind+399) = lamda_i;
+        lamda(iter,4,:,ind+350:ind+399) = lamda_b;
+        lamda(iter,5,:,ind+350:ind+399) = lamda_m;
+        lamda(iter,6,:,ind+350:ind+399) = lamda_a;
+        lamda(iter,7,:,ind+350:ind+399) = lamda_m;
+        lamda(iter,8,:,ind+350:ind+399) = lamda_b;
+        lamda(iter,9,:,ind+350:ind+399) = lamda_i;
         % silence
         lamda(iter,:,:,ind+400:ind+699) = lamda_s;
     end
@@ -265,7 +270,7 @@ for iter=1:n_iters
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
-            epsc_thalamic(iter,thal_col,thal_n,:) = reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
+            epsc_thalamic(iter,thal_col,thal_n,:) = 50*reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
         end
     end
 

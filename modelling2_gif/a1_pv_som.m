@@ -6,7 +6,7 @@ n_iters = 1;
 % basic variables;
 n_columns = 1;
 n_excitatory = 20;
-n_pv = 3; n_som = 2;
+n_pv = 3; n_som = 2;    
 n_inhibitory = n_pv + n_som;
 n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
@@ -666,7 +666,7 @@ title('l4 total input epsc')
 grid
 
 % -- plot psth of l4 exc, inh, all
-figure
+figurea1
 subplot(1,2,1)
 hold on
 [mean_spike_rate_exc_for_iters, mean_spike_rate_exc_for_neurons] = get_mean(spike_rates(:,:,1:n_excitatory,:), n_iters, n_excitatory, spike_rate_length,1);

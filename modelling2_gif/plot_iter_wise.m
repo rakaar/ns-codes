@@ -1,6 +1,6 @@
 % for a random neuron
 close all;
-col = 2;
+col = 1;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 
@@ -75,16 +75,10 @@ figure(random_neuron)
         all_epsc = rec_epsc_own_col + epsc_neigh + thalamic_curr_to_neuron;
         plot(all_epsc, 'm');
 
-         % protochol
-         if col == 2
-              plot(lamda_std_protochol)
-          elseif col == 4
-              plot(lamda_dev_protochol)
-          end
-
+      
     hold off
         title('random neuron epsc*100 and psth')
-        legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc','protochol')
+        legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc')
 grid
 pause
 clf
