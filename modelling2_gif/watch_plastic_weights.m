@@ -1,6 +1,6 @@
 %% presyn fix
 close all;
-pre_syn = 10;
+pre_syn = 18;
 iter = 1;
 col = 2;
 for post_syn=1:n_excitatory
