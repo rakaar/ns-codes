@@ -12,9 +12,9 @@ n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic = 9; num_of_input_giving_thalamic = 4;
 
 % time step
-n_tokens = 10;
+n_tokens = 5;
 pre_stimulus_time = 100; post_stimulus_time = 0;
-single_stimulus_duration = 50; gap_duration = 300;
+single_stimulus_duration = 50; gap_duration = 100;
 
 physical_time_in_ms = 1; %dt time step
 dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
