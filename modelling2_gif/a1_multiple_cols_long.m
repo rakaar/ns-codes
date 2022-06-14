@@ -1,5 +1,5 @@
 
-for batch=2:2 % for batch
+for batch=2:200 % for batch
 fprintf("\n batch_number is %d \n", batch)
 
 n_iters = 1;        
@@ -948,7 +948,7 @@ for iter=1:n_iters
         %	break % for testing only one iteration
     end 
 
-end
+end 
 
     filename = "batch_" + num2str(batch) + ".mat";
     save(filename);
