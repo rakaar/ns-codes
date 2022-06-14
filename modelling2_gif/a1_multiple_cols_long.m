@@ -5,7 +5,7 @@ fprintf("\n batch_number is %d \n", batch)
 n_iters = 1;        
 
 % previous batch variables
-previous_batch_file = "batch_" + num2str(batch-1) + ".mat   ";
+previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
 previous_batch_spikes_struct = load(previous_batch_file, 'spikes');
 previous_batch_spikes = previous_batch_spikes_struct.spikes;
 
