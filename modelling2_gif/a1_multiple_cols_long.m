@@ -40,13 +40,13 @@ n_excitatory = 20;
 n_pv = 3; n_som = 2;
 n_inhibitory = n_pv + n_som;
 n_total_neurons = n_excitatory + n_inhibitory;
-n_thalamic_neurons = 2;
+n_thalamic_neurons = 25;
 n_thalamic_cols = 9;
 
 % time step
-n_tokens = 1;
+n_tokens = 10;
 pre_stimulus_time = 0; post_stimulus_time = 0;
-single_stimulus_duration = 50; gap_duration = 100;
+single_stimulus_duration = 50; gap_duration = 50;
 
 physical_time_in_ms = 1; %dt time step
 dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
@@ -153,19 +153,19 @@ for iter=1:n_iters
         lamda(iter,6,:,ind:ind+49) = lamda_b;
         lamda(iter,7:9,:,ind:ind+49) = lamda_i;
         % silence
-        lamda(iter,:,:,ind+50:ind+149) = lamda_s;
+        lamda(iter,:,:,ind+50:ind+99) = lamda_s;
 
         % ---- second half of token
         % stimulus
-        lamda(iter,1,:,ind+150:ind+199) = lamda_i;
-        lamda(iter,2,:,ind+150:ind+199) = lamda_i;
-        lamda(iter,3,:,ind+150:ind+199) = lamda_i;
-        lamda(iter,4,:,ind+150:ind+199) = lamda_b;
-        lamda(iter,5,:,ind+150:ind+199) = lamda_m;
-        lamda(iter,6,:,ind+150:ind+199) = lamda_a;
-        lamda(iter,7,:,ind+150:ind+199) = lamda_m;
-        lamda(iter,8,:,ind+150:ind+199) = lamda_b;
-        lamda(iter,9,:,ind+150:ind+199) = lamda_i;
+        lamda(iter,1,:,ind+100:ind+149) = lamda_i;
+        lamda(iter,2,:,ind+100:ind+149) = lamda_i;
+        lamda(iter,3,:,ind+100:ind+149) = lamda_i;
+        lamda(iter,4,:,ind+100:ind+149) = lamda_b;
+        lamda(iter,5,:,ind+100:ind+149) = lamda_m;
+        lamda(iter,6,:,ind+100:ind+149) = lamda_a;
+        lamda(iter,7,:,ind+100:ind+149) = lamda_m;
+        lamda(iter,8,:,ind+100:ind+149) = lamda_b;
+        lamda(iter,9,:,ind+100:ind+149) = lamda_i;
         % silence - saving time computationally
         % lamda(iter,:,:,ind+400:ind+699) = lamda_s;
     end
@@ -176,17 +176,8 @@ end
 n_input_thalamic = 5;
 thalamic_connections = zeros(n_total_neurons,n_input_thalamic);
 % since there are 2 neurons in each thalamic column
-% using coin flip outcomes/binary representation to create combinations
-coin_flip_outcomes = dec2bin(1:n_total_neurons);
 for n=1:n_total_neurons
-    outcome_str = coin_flip_outcomes(n,:);
-    outcome_split = split(outcome_str,'');
-    for z=2:6
-        str_connection_num = outcome_split{z};
-        connection_num = str2num(str_connection_num);
-        thalamic_connections(n,z-1) = connection_num + 1;
-    end
-
+    thalamic_connections(n,:) = randperm(n_thalamic_neurons,n_input_thalamic);
 end
 
 % weight_thalamic_to_exc_l4 = 550;
@@ -213,7 +204,7 @@ tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 35;
 
 
 % initialize
-xr_thalamic(:,:,1) = 1;
+xr_thalamic(:,:,:,1) = 1;
 
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));

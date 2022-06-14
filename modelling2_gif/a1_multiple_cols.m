@@ -14,7 +14,7 @@ n_thalamic_neurons = 25;
 n_thalamic_cols = 9;
     
 % time step
-n_tokens = 20;
+n_tokens = 10;
 pre_stimulus_time = 100; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 50;
 

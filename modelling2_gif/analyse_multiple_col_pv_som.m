@@ -96,3 +96,17 @@ for thal_col=1:n_thalamic_cols
         hold off
     grid
 end
+
+%% lamda
+close all;
+iter_to_see = 1;
+for thal_col=1:n_thalamic_cols
+    figure
+        hold on
+%           plot(squeeze(epsc_thalamic(iter_to_see, thal_col, 1,:)))
+%             plot(squeeze(epsc_thalamic(iter_to_see, thal_col, 2,:)))
+            plot(squeeze(epsc_thalamic(iter_to_see,thal_col,7,:)))
+            title(['thal col ', num2str(thal_col)])
+        hold off
+    grid
+end
