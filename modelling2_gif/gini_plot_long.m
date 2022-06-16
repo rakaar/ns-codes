@@ -4,25 +4,25 @@ overlap_size = 5;
 n_batches = 200;
 n_excitatory = 20;
 % batch_data_path = "D:\batches_data";
-batch_data_path = "D:\1_pv_som_data";
+batch_data_path = "D:\1_mult_col_pvsom";
 
 gini_coeff_row_over_time = zeros(1,n_batches);
 gini_coeff_col_over_time = zeros(1,n_batches);
 gini_coeff_of_transpose_and_sum_row_over_time = zeros(1,n_batches);
 gini_coeff_of_transpose_and_sum_col_over_time = zeros(1,n_batches);
 
-iter=1;col=1;
+iter=1;col=5;
 for t=1:n_batches
     fprintf("\n for batch %d \n",t);
     weights_avg_matrix = zeros(n_excitatory, n_excitatory);
     batch_file_name = batch_data_path + "\batch_" + num2str(t) + ".mat";
     batch_weight_matrix_struct = load(batch_file_name, "exc_to_exc_weight_matrix");
     batch_weight_matrix = batch_weight_matrix_struct.exc_to_exc_weight_matrix;
-    batch_weight_matrix = squeeze(batch_weight_matrix);
-    batch_tspan = size(batch_weight_matrix, 1);
+    batch_weight_matrix1 = squeeze(batch_weight_matrix(iter,col,:,:,:));
+    batch_tspan = size(batch_weight_matrix1, 1);
     for presyn=1:n_excitatory
         for postsyn=1:n_excitatory
-            weights_avg_matrix(presyn, postsyn) = sum(batch_weight_matrix(:,presyn,postsyn))/batch_tspan;
+            weights_avg_matrix(presyn, postsyn) = sum(batch_weight_matrix1(:,presyn,postsyn))/batch_tspan;
         end
     end
     
