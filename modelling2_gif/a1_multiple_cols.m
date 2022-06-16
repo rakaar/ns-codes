@@ -15,12 +15,16 @@ n_thalamic_cols = 9;
     
 % time step
 n_tokens = 10;
-pre_stimulus_time = 100; post_stimulus_time = 0;
+pre_stimulus_time = 0; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 50;
+pre_token_silence = 100;
+post_token_silence = 100;
+
+token_start_times = zeros(n_tokens,1);
 
 physical_time_in_ms = 1; %dt time step
 dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
-t_simulate = pre_stimulus_time + post_stimulus_time + n_tokens*(2*single_stimulus_duration + gap_duration);
+t_simulate = n_tokens*(2*single_stimulus_duration + gap_duration + pre_token_silence + post_token_silence);
 tspan = 0:dt:t_simulate;
 
 % making bins
@@ -111,34 +115,51 @@ lamda(:,:,:,1:pre_stimulus_time) = lamda_s;
 
 for iter=1:n_iters
     for tok=1:n_tokens
-        ind = pre_stimulus_time + (tok-1)*(2*single_stimulus_duration + 1*gap_duration) + 1;
+        ind =  (tok-1)*(2*single_stimulus_duration + 1*gap_duration + pre_token_silence + post_token_silence) + 1;
+        
+
         % ---- first half of token
+        
+        % pretoken silence
+        lamda(iter,:,:,ind:ind+pre_token_silence-1) = lamda_s;
+
         % stimulus
-        lamda(iter,1,:,ind:ind+49) = lamda_i;
-        lamda(iter,2,:,ind:ind+49) = lamda_b;
-        lamda(iter,3,:,ind:ind+49) = lamda_m;
-        lamda(iter,4,:,ind:ind+49) = lamda_a;
-        lamda(iter,5,:,ind:ind+49) = lamda_m;
-        lamda(iter,6,:,ind:ind+49) = lamda_b;
-        lamda(iter,7:9,:,ind:ind+49) = lamda_i;
-        % silence
-        lamda(iter,:,:,ind+50:ind+99) = lamda_s;
+        token_first_half_start_time = ind+pre_token_silence;
+        token_first_half_end_time = token_first_half_start_time+single_stimulus_duration-1;
+
+        lamda(iter,1,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,2,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,3,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        lamda(iter,4,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
+        lamda(iter,5,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        lamda(iter,6,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,7:9,:,token_first_half_start_time:ind+pre_token_silence+single_stimulus_duration-1) = lamda_i;
+
+        % posttoken silence
+        token_gap_duration_start = ind+pre_token_silence+single_stimulus_duration;
+        token_gap_duration_end = token_gap_duration_start+gap_duration-1;
+        lamda(iter,:,:,token_gap_duration_start:token_gap_duration_end) = 0;
 
         % ---- second half of token
         % stimulus
-        lamda(iter,1,:,ind+100:ind+149) = lamda_i;
-        lamda(iter,2,:,ind+100:ind+149) = lamda_i;
-        lamda(iter,3,:,ind+100:ind+149) = lamda_i;
-        lamda(iter,4,:,ind+100:ind+149) = lamda_b;
-        lamda(iter,5,:,ind+100:ind+149) = lamda_m;
-        lamda(iter,6,:,ind+100:ind+149) = lamda_a;
-        lamda(iter,7,:,ind+100:ind+149) = lamda_m;
-        lamda(iter,8,:,ind+100:ind+149) = lamda_b;
-        lamda(iter,9,:,ind+100:ind+149) = lamda_i;
+        token_second_half_start_time = token_gap_duration_end;
+        token_second_half_end_time = token_second_half_start_time + single_stimulus_duration - 1;
+        lamda(iter,1,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,2,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,3,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,4,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,5,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,6,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        lamda(iter,7,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,8,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,9,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
         % silence - saving time computationally
-        % lamda(iter,:,:,ind+400:ind+699) = lamda_s;
+        
+        
+        lamda(iter,:,:,token_second_half_end_time:token_second_half_end_time+post_token_silence-1) = 0;
+        
+        token_start_times(tok,1) = token_second_half_end_time+post_token_silence;
     end
-
 end
 
 % thalamic connections based on neuron number
