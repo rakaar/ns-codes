@@ -1,8 +1,10 @@
-clear all;
-close all;
-
-tic
+for batch=2:200 % for batch
 n_iters = 1;
+
+% previous batch variables
+previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
+previous_batch_exc_to_exc_weight_matrix_struct = load(previous_batch_file,'exc_to_exc_weight_matrix');
+previous_batch_exc_to_exc_weight_matrix = previous_batch_exc_to_exc_weight_matrix_struct.exc_to_exc_weight_matrix;
 
 % basic variables;
 n_columns = 5;
@@ -214,8 +216,11 @@ i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
-J_ee_0_initial = 100;
-exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
+for inital_times=1:5
+    exc_to_exc_weight_matrix(:, :, inital_times, :,:) = previous_batch_exc_to_exc_weight_matrix(:,:,end,:,:);
+
+end
+
 
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
@@ -746,5 +751,14 @@ end
 
 end
 
-save('batch_1.mat')
-toc
+    filename = "batch_" + num2str(batch) + ".mat";
+    save(filename);
+
+    clear all;
+
+end % end of for batch
+
+    
+
+
+

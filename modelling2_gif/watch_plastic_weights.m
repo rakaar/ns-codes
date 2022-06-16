@@ -2,7 +2,7 @@
 close all;
 pre_syn = 7;
 iter = 1;
-col = 4;
+col = 2;
 for post_syn=1:n_excitatory
     figure(post_syn)
     hold on
