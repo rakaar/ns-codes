@@ -312,7 +312,7 @@ for iter=1:n_iters
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
-            epsc_thalamic(iter,thal_col,thal_n,:) = 50*reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
+            epsc_thalamic(iter,thal_col,thal_n,:) = reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
         end
     end
 
@@ -453,17 +453,17 @@ for iter=1:n_iters
           if n <= n_excitatory
                for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
-                    epsc_from_thalamic = epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_exc_l4_arr(col_index);
+                    epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_exc_l4_arr(col_index);
                end
           elseif n > n_excitatory && n <= n_excitatory + n_pv
              for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
-                    epsc_from_thalamic = epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_pv_l4_arr(col_index);
+                    epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_pv_l4_arr(col_index);
              end
           else
               for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
-                    epsc_from_thalamic = epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
+                    epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
              end
           end
 

@@ -41,7 +41,7 @@ figure(random_neuron)
         thalamic_curr_to_neuron = thalamic_epsc_tensor(iter_to_see, col, random_neuron, :);
         thalamic_curr_to_neuron = squeeze(thalamic_curr_to_neuron);
         thalamic_curr_to_neuron = [0; thalamic_curr_to_neuron];
-        plot(thalamic_curr_to_neuron,'g');
+        plot(thalamic_curr_to_neuron,'g','LineWidth',5);
     
         % exc epsc own col
         exc_epsc = recurrence_exc_self_column_epsc_tensor(iter_to_see, col, random_neuron, :) + recurrence_exc_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);

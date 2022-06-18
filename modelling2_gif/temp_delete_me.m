@@ -95,3 +95,29 @@ figure
         plot(squeeze(epsc_thalamic(1,c,2,:)))
    end
 grid
+
+
+
+%% epsc
+for n=1:25
+    figure
+    hold on 
+        plot(squeeze(lamda(1,3,n,:)));
+
+        plot(squeeze(epsc_thalamic(1,3,n,:)));
+
+        plot(squeeze(100*xe_thalamic(1,3,n,:)));
+
+    hold off
+grid
+
+end
+%% epsc input thalamic
+for n=1:25
+    figure
+        hold on
+            plot(squeeze(thalamic_epsc_tensor(1,3,n,:)))
+            plot(squeeze(lamda(1,3,n,:)));
+        hold off
+    grid
+end
