@@ -74,6 +74,11 @@ num_of_LTDs = zeros(n_iters, n_columns, length(tspan));
 Amp_strength = 0.015; Amp_weak = 0.021;
 tau_strength = 13; tau_weak = 20;
 
+% kernel for g(t)
+tau_syn = 10;
+kernel_kt = [0 exp(-[0:t_simulate])./tau_syn];
+    
+
 % voltages and terms from it are 3d tensors
 voltages = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
 i1_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -328,7 +333,7 @@ for iter=1:n_iters
 			if c-2 >= 1
 				for j=1:n_excitatory
 					spike_train_exc = spikes(iter,c-2,j,:);
-                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
 					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5); 
                  end
 			end
@@ -337,7 +342,7 @@ for iter=1:n_iters
 			if c-1 >= 1
 				for j=1:n_excitatory
 					spike_train_exc = spikes(iter,c-1,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
 					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5); 
 				end
 			end
@@ -346,7 +351,7 @@ for iter=1:n_iters
 			if c+1 <= n_columns
 				for j=1:n_excitatory
 				    spike_train_exc = spikes(iter,c+1,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
 					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5);
 				end
 			end	
@@ -356,7 +361,7 @@ for iter=1:n_iters
 			if c+2 <= n_columns
 				for j=1:n_excitatory
 					spike_train_exc = spikes(iter,c+2,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
 					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5);
 				end
 			end	
@@ -369,7 +374,7 @@ for iter=1:n_iters
                         continue;
                     end
                     spike_train_exc = spikes(iter,c,j,:);
-                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     x_e_presyn_neuron = xe(iter,c,j,i-5);
                     epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron;
                 end
@@ -379,7 +384,7 @@ for iter=1:n_iters
                         continue;
                     end
                     spike_train_exc = spikes(iter,c,j,:);
-                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     x_e_presyn_neuron = xe(iter,c,j,i-5);
                     epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*exc_to_exc_weight_matrix(iter,c,i-5,j,n);
                 end
@@ -392,7 +397,7 @@ for iter=1:n_iters
 					continue;
                 end
                 spike_train_inh = spikes(iter,c,j,:);
-				g_t = get_g_t(spike_train_inh, dt, i-5, tspan);
+				g_t = get_g_t(spike_train_inh, dt, i-5, tspan,kernel_kt);
                 epsc_pv_own_column = epsc_pv_own_column + g_t*xe(iter,c,j,i-5);
             end
 
@@ -402,7 +407,7 @@ for iter=1:n_iters
 					continue;
                 end
                 spike_train_inh = spikes(iter,c,j,:);
-				g_t = get_g_t(spike_train_inh, dt, i-5, tspan);
+				g_t = get_g_t(spike_train_inh, dt, i-5, tspan,kernel_kt);
                 epsc_som_own_column = epsc_som_own_column + g_t*xe(iter,c,j,i-5);
             end
 
@@ -410,7 +415,7 @@ for iter=1:n_iters
             if c-2 >= 1
 				for j=n_excitatory+n_pv+1:n_total_neurons
 					spike_train_exc = spikes(iter,c-2,j,:);
-                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     epsc_som_back_c2 = epsc_som_back_c2 + g_t*xe(iter, c-2,j,i-5);
                 end
             end
@@ -419,7 +424,7 @@ for iter=1:n_iters
             if c-1 >= 1
 				for j=n_excitatory+n_pv+1:n_total_neurons
 					spike_train_exc = spikes(iter,c-1,j,:);
-                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     epsc_som_back_c1 = epsc_som_back_c1 + g_t*xe(iter, c-1,j,i-5);
                 end
             end
@@ -428,7 +433,7 @@ for iter=1:n_iters
             if c+1 <= n_columns
 				for j=n_excitatory+n_pv+1:n_total_neurons
 				    spike_train_exc = spikes(iter,c+1,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     epsc_som_front_c1 = epsc_som_front_c1 + g_t*xe(iter,c+1,j,i-5);
 				end
             end
@@ -437,7 +442,7 @@ for iter=1:n_iters
             if c+2 <= n_columns
 				for j=n_excitatory+n_pv+1:n_total_neurons
 					spike_train_exc = spikes(iter,c+2,j,:);
-					g_t = get_g_t(spike_train_exc, dt, i-5, tspan);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     epsc_som_front_c2 = epsc_som_front_c2 + g_t*xe(iter,c+2,j,i-5);
 				end
 			end
