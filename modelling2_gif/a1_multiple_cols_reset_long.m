@@ -65,7 +65,7 @@ J_e_som_2 = -2;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
 exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
-minimum_weight_exc_to_exc = 85;
+minimum_weight_exc_to_exc = 50;
 maximum_weight_exc_to_exc = 150;
 
 % analysis of weights
@@ -634,12 +634,12 @@ for iter=1:n_iters
                             if postsyn_spike_time >= 1 && spikes(iter,col_stdp,postsyn_neuron,postsyn_spike_time) == 1 && spikes(iter,col_stdp,postsyn_neuron,i) == 0 
                                 exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron)*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
                                 % clipping weights
-%                                 if exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) < minimum_weight_exc_to_exc
-%                                     exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = minimum_weight_exc_to_exc;
-%                                 end
-%                                 if exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) > maximum_weight_exc_to_exc
-%                                     exc_to_exc_weight_matrix(iter,c,i,N,postsyn_neuron) = maximum_weight_exc_to_exc;
-%                                 end
+                                if exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) < minimum_weight_exc_to_exc
+                                    exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = minimum_weight_exc_to_exc;
+                                end
+                                if exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) > maximum_weight_exc_to_exc
+                                    exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = maximum_weight_exc_to_exc;
+                                end
                                 num_of_LTDs(iter,col_stdp,i) = num_of_LTDs(iter,col_stdp,i) + 1;
                                 
 %                                 if N == 5 && (postsyn_neuron == 13 || postsyn_neuron == 12) && col_stdp == 2
@@ -686,12 +686,12 @@ for iter=1:n_iters
                             if presyn_spike_time >= 1 && spikes(iter,col_stdp,presyn_neuron,presyn_spike_time) == 1 && spikes(iter,col_stdp,presyn_neuron,i) == 0
                                     exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
                                     % clipping weights 
-%                                     if exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) < minimum_weight_exc_to_exc
-%                                         exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = minimum_weight_exc_to_exc;
-%                                     end
-%                                     if exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) > maximum_weight_exc_to_exc
-%                                         exc_to_exc_weight_matrix(iter,c,i,presyn_neuron,N) = maximum_weight_exc_to_exc;
-%                                     end
+                                    if exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) < minimum_weight_exc_to_exc
+                                        exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = minimum_weight_exc_to_exc;
+                                    end
+                                    if exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) > maximum_weight_exc_to_exc
+                                        exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = maximum_weight_exc_to_exc;
+                                    end
 
                                     num_of_LTPs(iter,col_stdp,i) = num_of_LTPs(iter,col_stdp,i) + 1; 
 %                                     if presyn_neuron == 5 && (N == 13 || N == 12) && col_stdp == 2
