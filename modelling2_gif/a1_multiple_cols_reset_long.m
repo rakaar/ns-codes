@@ -242,7 +242,7 @@ xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
 
 for iter=1:n_iters
     
-    fprintf("------iter numm %d -----", iter);
+%     fprintf("------iter numm %d -----", iter);
 
     % thalamic
     for thal_col=1:n_thalamic_cols
@@ -321,10 +321,10 @@ for iter=1:n_iters
     % simulation
     for i=6:length(tspan)
 
-	fprintf("i = %d\n", i);
+% 	fprintf("i = %d\n", i);
 	for c=1:n_columns
 	            
-        fprintf("\n +++++iter numm %d, column %d +++++++\n", iter, c);
+%         fprintf("\n +++++iter numm %d, column %d +++++++\n", iter, c);
             
 		for n=1:n_total_neurons
 					
@@ -737,7 +737,7 @@ for iter=1:n_iters
         
         % re-initialize at the end of token
         if ismember(i,token_start_times)
-            disp("*******************token resest***************************")
+%             disp("*******************token resest***************************")
             voltages(:,:,:,i) = v0;  
             xr(:, :, :, i) = 1;
             xe(:, :, :, i) = 0;
