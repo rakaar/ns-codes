@@ -1,12 +1,12 @@
 %% 1 ms bins
 clear all;close all;
-pre_syn = 10;
-post_syn = 15;
+pre_syn = 15;
+post_syn = 2;
 iter = 1;
 col = 3;
 weight_over_time = [];
 batches = 200;
-batch_data_path = "D:\1_mult_col_pvsom";
+batch_data_path = "D:\4_multi_col_reset";
 
 for b=1:batches
         fprintf("\n batch is %d \n", b);
@@ -24,13 +24,13 @@ grid
 
 %% 200 ms bins
 clear all;close all;
-pre_syn = 10;
-post_syn = 15;
+pre_syn = 19;
+post_syn = 20;
 iter = 1;
-col = 4;
+col = 2;
 weights_over_time = [];
 batches = 200;
-batch_data_path = "D:\1_mult_col_pvsom";
+batch_data_path = "D:\4_multi_col_reset";
 
 for b=1:batches
         fprintf("\n batch is %d \n", b);
@@ -89,10 +89,10 @@ end
 %% imagesc
 close all;clear all;
 iter = 1;
-batches = 100;
+batches = 200;
 n_excitatory = 20;
 n_cols = 5;
-batch_data_path = "D:\2_mult_col_reset";
+batch_data_path ="D:\4_multi_col_reset";
 weights_stacked_side_by_side = zeros(n_cols, n_excitatory*n_excitatory, batches);
 for b=1:batches
         fprintf("\n batch is %d \n", b);
