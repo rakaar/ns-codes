@@ -89,7 +89,7 @@ end
 %% imagesc
 close all;clear all;
 iter = 1;
-batches = 200;
+batches = 19;
 n_excitatory = 20;
 n_cols = 5;
 batch_data_path ="D:\4_multi_col_reset";

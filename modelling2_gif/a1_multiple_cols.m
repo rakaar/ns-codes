@@ -63,8 +63,8 @@ J_e_som_2 = -2;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
 exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
-minimum_weight_exc_to_exc = 50;
-maximum_weight_exc_to_exc = 150;
+minimum_weight_exc_to_exc = 5;
+maximum_weight_exc_to_exc = 500;
 
 % analysis of weights
 num_of_LTPs = zeros(n_iters, n_columns, length(tspan));
