@@ -74,7 +74,7 @@ num_of_LTDs = zeros(n_iters, n_columns, length(tspan));
 
 % plasticity parameters
 Amp_strength = 0.015; Amp_weak = 0.021;
-tau_strength = 13; tau_weak = 20;
+tau_strength = 30; tau_weak = 50;
 
 % kernel for g(t)
 tau_syn = 10;
