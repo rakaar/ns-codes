@@ -6,8 +6,8 @@ n_excitatory=20; n_pv = 3; n_som  = 2;
 batches = 200;
 iter=1;
 
-batch_data_path = "D:\4_multi_col_reset";
-images_path = "D:\4_multi_col_reset_images\";
+batch_data_path = "D:\7_multi_col_big_clip_range";
+images_path = "D:\7_multi_col_big_clip_images\";
 
 
 
@@ -39,18 +39,21 @@ end
 for c=1:n_columns
     figure
         imagesc(squeeze(psth_avg_exc(c,:,:)));
+        title(['col ',num2str(c)])
         image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
         saveas(gcf, image_name);
     grid
 
     figure
         imagesc(squeeze(psth_avg_pv(c,:,:)));
+        title(['col ',num2str(c)])
         image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
         saveas(gcf, image_name);
     grid
 
     figure
         imagesc(squeeze(psth_avg_som(c,:,:)));
+        title(['col ',num2str(c)])
         image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
         saveas(gcf, image_name);
     grid

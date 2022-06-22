@@ -1,12 +1,12 @@
 %% 1 ms bins
 clear all;close all;
-pre_syn = 15;
-post_syn = 2;
+pre_syn = 7;
+post_syn = 18;
 iter = 1;
 col = 3;
 weight_over_time = [];
 batches = 200;
-batch_data_path = "D:\4_multi_col_reset";
+batch_data_path = "D:\7_multi_col_big_clip_range";
 
 for b=1:batches
         fprintf("\n batch is %d \n", b);
@@ -19,7 +19,7 @@ end
 
 figure
     plot(weight_over_time)
-    title("presyn is "+ pre_syn + "," + "postsyn is " + post_syn)
+    title("presyn is "+ pre_syn + "," + "postsyn is " + post_syn + " col " + col)
 grid
 
 %% 200 ms bins
@@ -89,10 +89,10 @@ end
 %% imagesc
 close all;clear all;
 iter = 1;
-batches = 19;
+batches = 200;
 n_excitatory = 20;
 n_cols = 5;
-batch_data_path ="D:\4_multi_col_reset";
+batch_data_path ="D:\7_multi_col_big_clip_range";
 weights_stacked_side_by_side = zeros(n_cols, n_excitatory*n_excitatory, batches);
 for b=1:batches
         fprintf("\n batch is %d \n", b);

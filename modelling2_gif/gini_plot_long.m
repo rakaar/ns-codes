@@ -3,15 +3,16 @@ bin_size = 10;
 overlap_size = 5;
 n_batches = 200;
 n_excitatory = 20;
-% batch_data_path = "D:\batches_data";
-batch_data_path = "D:\4_multi_col_reset";
+batch_data_path = "D:\7_multi_col_big_clip_range";
 
 gini_coeff_row_over_time = zeros(1,n_batches);
 gini_coeff_col_over_time = zeros(1,n_batches);
 gini_coeff_of_transpose_and_sum_row_over_time = zeros(1,n_batches);
 gini_coeff_of_transpose_and_sum_col_over_time = zeros(1,n_batches);
 
-iter=1;col=5;
+iter=1;
+for col=1:5
+
 for t=1:n_batches
     fprintf("\n for batch %d \n",t);
     weights_avg_matrix = zeros(n_excitatory, n_excitatory);
@@ -51,8 +52,11 @@ figure
         plot(gini_coeff_of_transpose_and_sum_row_over_time);
 %         plot(gini_coeff_of_transpose_and_sum_col_over_time, '--.');
     hold off
-    title('gini coeffs')
+    title(['gini coeffs', num2str(col)])
 %     legend('row', 'col', 'a + transpose(a) row','a + transpose(a) col')
         legend('row', 'col', 'a + transpose(a) row')
     
 grid
+
+end
+
