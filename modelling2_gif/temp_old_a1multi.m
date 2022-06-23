@@ -65,8 +65,6 @@ J_e_som_2 = -2;
 exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
 minimum_weight_exc_to_exc = 5;
 maximum_weight_exc_to_exc = 500;
-across_columns_exc_to_exc_weight_matrix = zeros(n_iters, n_columns, n_columns, length(tspan), n_excitatory, n_excitatory);
-
 
 % analysis of weights
 num_of_LTPs = zeros(n_iters, n_columns, length(tspan));
@@ -223,17 +221,6 @@ theta_tensor(:, :, :, 1:5) = -50.0;
 
 J_ee_0_initial = 100;
 exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
-connected_columns_arr = [ [1,2];[1 3];[2 3];[2 4];[3 4];[3 5];[4 5]; [2 1];[3 1];[3 2];[4 2];[4 3];[5 3];[5 4] ];
-num_connected_pairs = size(connected_columns_arr,1);
-for cc=1:num_connected_pairs
-    c1 = connected_columns_arr(cc,1);
-    c2 = connected_columns_arr(cc,2);
-    if  abs(c2 - c1) == 1
-        across_columns_exc_to_exc_weight_matrix(:,c1,c2,:,:,:) = J_ee_1;
-    elseif abs(c2 - c1) == 2
-        across_columns_exc_to_exc_weight_matrix(:,c1,c2,:,:,:) = J_ee_2;
-    end
-end
 
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
@@ -342,77 +329,41 @@ for iter=1:n_iters
 		for n=1:n_total_neurons
 					
 			% voltage sum from excitatory neighbouring columns, will be useful for inhib and exc neurons
-			% TODO - change column input neurons, if n is exc and if n is pv, som
-            epsc_ex_neuron_back_c2 = 0;
-            
+			epsc_ex_neuron_back_c2 = 0;
 			if c-2 >= 1
-                 if n <= n_excitatory
-                    for j=1:n_excitatory
-					    spike_train_exc = spikes(iter,c-2,j,:);
-                        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					    epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5)*across_columns_exc_to_exc_weight_matrix(iter,c-2,c,i,j,n); 
-                    end
-                 else % for inhibitory neurons
-                        for j=1:n_excitatory
-					        spike_train_exc = spikes(iter,c-2,j,:);
-                            g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					        epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5); 
-                        end
+				for j=1:n_excitatory
+					spike_train_exc = spikes(iter,c-2,j,:);
+                    g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
+					epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5); 
                  end
 			end
 
 			epsc_ex_neuron_back_c1 = 0;
 			if c-1 >= 1
-                if n <= n_excitatory
-                        for j=1:n_excitatory
-					        spike_train_exc = spikes(iter,c-1,j,:);
-					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					        epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5)*across_columns_exc_to_exc_weight_matrix(iter,c-1,c,i,j,n); 
-	                    end
-                else
-                        for j=1:n_excitatory
-					            spike_train_exc = spikes(iter,c-1,j,:);
-					            g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					            epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5); 
-			            end
-                
-                end
-				
+				for j=1:n_excitatory
+					spike_train_exc = spikes(iter,c-1,j,:);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
+					epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5); 
+				end
 			end
 
 			epsc_ex_neuron_front_c1 = 0;
 			if c+1 <= n_columns
-                if n <= n_excitatory
-                        for j=1:n_excitatory
-				            spike_train_exc = spikes(iter,c+1,j,:);
-					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					        epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5)*across_columns_exc_to_exc_weight_matrix(iter,c+1,c,i,j,n);
-	                    end
-                else
-                        for j=1:n_excitatory
-				            spike_train_exc = spikes(iter,c+1,j,:);
-					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					        epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5);
-				        end
-                end
+				for j=1:n_excitatory
+				    spike_train_exc = spikes(iter,c+1,j,:);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
+					epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5);
+				end
 			end	
 
 
 			epsc_ex_neuron_front_c2 = 0;
 			if c+2 <= n_columns
-                if n <= n_excitatory
-                        for j=1:n_excitatory
-					        spike_train_exc = spikes(iter,c+2,j,:);
-					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					        epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5)*across_columns_exc_to_exc_weight_matrix(iter,c+2,c,i,j,n);
-	                    end
-                else
-                        for j=1:n_excitatory
-					        spike_train_exc = spikes(iter,c+2,j,:);
-					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
-					        epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5);
-				        end
-                end
+				for j=1:n_excitatory
+					spike_train_exc = spikes(iter,c+2,j,:);
+					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
+					epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5);
+				end
 			end	
 
 
@@ -520,10 +471,10 @@ for iter=1:n_iters
           
                     
 		  if n <= n_excitatory % excitatory neuron
-      			total_epsc = epsc_ex_neuron_back_c2 + ...
-                    epsc_ex_neuron_back_c1 + ...
-                    epsc_ex_neuron_front_c1 + ...
-                    epsc_ex_neuron_front_c2 + ...
+      			total_epsc = epsc_ex_neuron_back_c2 * J_ee_2 + ...
+                    epsc_ex_neuron_back_c1 * J_ee_1 + ...
+                    epsc_ex_neuron_front_c1 * J_ee_1 + ...
+                    epsc_ex_neuron_front_c2 * J_ee_2 + ...
                     epsc_ex_own_column  + ... % weight already included in weight matrix
                     epsc_som_back_c2 * J_e_som_2 + ...
                     epsc_som_back_c1 * J_e_som_1 + ...
@@ -532,10 +483,10 @@ for iter=1:n_iters
                     epsc_pv_own_column * J_e_pv + ...
                     epsc_som_own_column * J_e_som;
                 recurrence_exc_self_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_own_column;
-                recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 + ...
-                                                                            epsc_ex_neuron_back_c1 + ...
-                                                                            epsc_ex_neuron_front_c1 + ...
-                                                                            epsc_ex_neuron_front_c2 ;
+                recurrence_exc_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_ex_neuron_back_c2 * J_ee_2 + ...
+                                                                            epsc_ex_neuron_back_c1 * J_ee_1 + ...
+                                                                            epsc_ex_neuron_front_c1 * J_ee_1 + ...
+                                                                            epsc_ex_neuron_front_c2 * J_ee_2 ;
 
                 recurrence_inh_self_column_epsc_tensor(iter,c,n,i-1) = epsc_pv_own_column*J_e_pv + epsc_som_own_column*J_e_som;
                 recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2 * J_e_som_2 + ...

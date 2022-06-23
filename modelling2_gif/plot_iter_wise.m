@@ -59,7 +59,7 @@ figure(random_neuron)
         epsc_neigh = recurrence_exc_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
         epsc_neigh = squeeze(epsc_neigh);
         epsc_neigh = [0; epsc_neigh];
-        plot(epsc_neigh,'--s')
+        plot(epsc_neigh,'--s','LineWidth',2)
 
         % recurrence own column
         rec_epsc_own_col = exc_epsc + inh_epsc;
@@ -73,7 +73,7 @@ figure(random_neuron)
 
         % all epsc
         all_epsc = rec_epsc_own_col + epsc_neigh + thalamic_curr_to_neuron;
-        plot(all_epsc, 'm');
+        plot(all_epsc, 'm','LineWidth',4);
 
         % protochol
         plot(squeeze(lamda(iter_to_see,col+2,1,:)))
