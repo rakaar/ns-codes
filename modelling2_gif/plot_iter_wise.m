@@ -25,7 +25,7 @@ for random_neuron=1:n_total_neurons
 figure(random_neuron)
     hold on
         spikes_neuron = squeeze(spikes(iter_to_see, col, random_neuron, :));
-        plot(spikes_neuron*100,'LineStyle','--', 'LineWidth',1);
+        plot(spikes_neuron*100,'LineStyle','--', 'LineWidth',2);
 
         % threshold
         threshold = squeeze(theta_tensor(iter_to_see, col, random_neuron, :));
@@ -59,7 +59,7 @@ figure(random_neuron)
         epsc_neigh = recurrence_exc_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
         epsc_neigh = squeeze(epsc_neigh);
         epsc_neigh = [0; epsc_neigh];
-        plot(epsc_neigh,'--s','LineWidth',2)
+        plot(epsc_neigh,'--s')
 
         % recurrence own column
         rec_epsc_own_col = exc_epsc + inh_epsc;
@@ -73,7 +73,7 @@ figure(random_neuron)
 
         % all epsc
         all_epsc = rec_epsc_own_col + epsc_neigh + thalamic_curr_to_neuron;
-        plot(all_epsc, 'm','LineWidth',4);
+        plot(all_epsc, 'm','LineWidth',2);
 
         % protochol
         plot(squeeze(lamda(iter_to_see,col+2,1,:)))
