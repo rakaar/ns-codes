@@ -14,7 +14,7 @@ n_thalamic_neurons = 25;
 n_thalamic_cols = 9;
     
 % time step
-n_tokens = 3;
+n_tokens = 5;
 pre_stimulus_time = 0; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 50;
 pre_token_silence = 10;
@@ -223,7 +223,12 @@ theta_tensor(:, :, :, 1:5) = -50.0;
 
 J_ee_0_initial = 100;
 exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
-connected_columns_arr = [ [1,2];[1 3];[2 3];[2 4];[3 4];[3 5];[4 5]; [2 1];[3 1];[3 2];[4 2];[4 3];[5 3];[5 4] ];
+connected_columns_arr = [  [1,2];[1 3];[2 3];[2 4];[3 4];[3 5];[4 5]; [2 1];[3
+    
+
+
+
+1];[3 2];[4 2];[4 3];[5 3];[5 4] ];
 num_connected_pairs = size(connected_columns_arr,1);
 for cc=1:num_connected_pairs
     c1 = connected_columns_arr(cc,1);
@@ -781,7 +786,7 @@ for iter=1:n_iters
 
             end % end of for all excitatory neurons
 
-        end
+        end % end of stdp within column for all columns
 
         
         % re-initialize at the end of token
@@ -796,9 +801,65 @@ for iter=1:n_iters
             theta_tensor(:, :, :,i) = -50.0;
         end
 %	break % for testing only one iteration
-end
+    
+    
+    either_LTP_or_LTD_occured = zeros(n_columns, n_columns, n_excitatory, n_excitatory);% pre, post
+    % plasticity across columns
+    for cc=1:num_connected_pairs
+        c1 = connected_columns_arr(cc,1);
+        c2 = connected_columns_arr(cc,2);
+       
+        for N=1:n_excitatory
+           % N -> postsyn : LTD
+           for postsyn_neuron=1:n_excitatory
+                if spikes(iter,c1,N,i) == 1
+                    found_spike_in_window_LTD = 0;
+                    for postsyn_spike_time=i-1:-1:i-20
+                        if postsyn_spike_time >= 1 && spikes(iter,c2,postsyn_neuron,i) == 0 && spikes(iter,c2,postsyn_neuron,postsyn_spike_time) == 1
+                            across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i,N,postsyn_neuron) = across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i-1,N,postsyn_neuron)*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak)); 
+                            either_LTP_or_LTD_occured(c1,c2,N,postsyn_neuron) = 1;
+                            found_spike_in_window_LTD = 1;
+                        end
+                    end
 
-end
+                    if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(c1,c2,N,postsyn_neuron) == 0
+                        across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i,N,postsyn_neuron) =  across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i-1,N,postsyn_neuron);
+                    end
+                else % if no spike
+                    across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i,N,postsyn_neuron) =  across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i-1,N,postsyn_neuron);
+                end
+           end
+
+            % presyn -> N : LTP
+           for presyn_neuron=1:n_excitatory
+                if spikes(iter,c1,N,i) == 1
+
+                    found_spike_in_window_LTP = 0;
+                    for presyn_spike_time=i-1:-1:i-20
+                        if presyn_spike_time >= 1 && spikes(iter,c2,presyn_neuron,i) == 0 && spikes(iter,c2,presyn_neuron,presyn_spike_time) == 1
+                            across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i,presyn_neuron,N) = across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i-1,presyn_neuron,N)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
+                            found_spike_in_window_LTP = 1;
+                            either_LTP_or_LTD_occured(c2,c1,presyn_neuron,N) = 1;
+                        end
+                    end
+
+                    if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(c2,c1,presyn_neuron,N) == 0
+                        across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i,presyn_neuron,N) = across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i-1,presyn_neuron,N);
+                    end
+                else % if no spike
+                    across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i,presyn_neuron,N) = across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i-1,presyn_neuron,N);
+                end
+           end
+
+          
+            
+        end % end of excitatory neurons in c1
+    end % end of connected pairs
+    
+
+    end % end of a single time step
+
+end % end of an iter
 
 save('batch_1.mat')
 toc

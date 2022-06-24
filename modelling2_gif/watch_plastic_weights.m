@@ -84,4 +84,24 @@ close all;
         imagesc(weights_stacked_side_by_side);
         title(['weights stacked side by side col ', num2str(col_to_see)])
     grid
-end
+    end
+
+ %% across column weights
+ iter = 1;
+ for cc=1:num_connected_pairs
+    c1 = connected_columns_arr(cc,1);
+    c2 = connected_columns_arr(cc,2);
+    
+    weights_stacked_side_by_side = zeros(n_excitatory*n_excitatory,length(tspan));
+
+    for t=2:length(tspan)
+        weight_at_t = across_columns_exc_to_exc_weight_matrix(iter,c1,c2,t,:,:);
+        weight_at_t_reshaped = reshape(weight_at_t, n_excitatory*n_excitatory,1);
+        weights_stacked_side_by_side(:,t) = weight_at_t_reshaped;
+    end
+
+    figure
+        imagesc(weights_stacked_side_by_side)
+        title(['weights side by side-', num2str(c1), '-', num2str(c2)])
+    grid
+ end
