@@ -13,26 +13,38 @@ grid
 n_columns=5;
 
 within_column_weight_matrices = zeros(n_columns, length(tspan),n_excitatory, n_excitatory);
+within_column_weight_matrices_diagonal_removed = zeros(n_columns, length(tspan),n_excitatory, n_excitatory-1);
 
 for c1=1:n_columns
     for c2=1:n_columns
         if c1 == c2
-            figure
+            
                n1 = (c1-1)*25 + 1;
                n2 = n1 + 19;
                within_column_weights_tensor = network_weight_matrix(1,:,n1:n2,n1:n2);
                within_column_weights_tensor_squeezed = squeeze(within_column_weights_tensor);
-               within_column_weight_matrices(c1, :, :, :) = reshape(within_column_weights_tensor_squeezed,  1,length(tspan),n_excitatory,n_excitatory);
+               within_column_weights_tensor_squeezed_dia_removed = remove_diagonal_elements(within_column_weights_tensor_squeezed);
                
+               within_column_weight_matrices(c1, :, :, :) = reshape(within_column_weights_tensor_squeezed,  1,length(tspan),n_excitatory,n_excitatory);
+               within_column_weight_matrices_diagonal_removed(c1,:,:,:) = reshape(within_column_weights_tensor_squeezed_dia_removed,  1,length(tspan),n_excitatory, n_excitatory-1);
+
                 weights_stacked_side_by_side = zeros(n_excitatory*n_excitatory, length(tspan));
+                weights_stacked_side_by_side_diagonal_removed = zeros(n_excitatory*(n_excitatory-1), length(tspan));
                 for t=1:length(tspan)
                     weights_stacked_side_by_side(:,t) = reshape(within_column_weights_tensor_squeezed(t,:,:),  n_excitatory*n_excitatory,1);
+                    weights_stacked_side_by_side_diagonal_removed(:,t) = reshape(within_column_weights_tensor_squeezed_dia_removed(t,:,:), (n_excitatory-1)*n_excitatory,1);
                 end
 
-            grid
+            
+%            figure
+%                 imagesc(weights_stacked_side_by_side);
+%                 title(['col',num2str(c1), ' weight matrix'])
+%             grid
 
-            imagesc(weights_stacked_side_by_side);
-            title(['col',num2str(c1), ' weight matrix'])
+           figure
+                imagesc(weights_stacked_side_by_side_diagonal_removed);
+                title(['col',num2str(c1), ' weight matrix'])
+            grid
         else % c1 not equal to c2
             continue
         end
@@ -43,8 +55,8 @@ end
 close all
 iter = 1;
 pre = 3; 
-col_pre = 4;
-col_post = 5;
+col_pre = 1;
+col_post = 2;
 
 pre_n_index = (col_pre - 1)*25 + pre;
 for post=1:20

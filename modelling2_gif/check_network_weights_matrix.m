@@ -97,9 +97,9 @@ end
 close all
 % 3 -> 5 LTD y no?, 3 spike 5 no spike and 5 past spike
 
-col = 3;
-pre_index_in_col = 3;
-post_index_in_col = 5;
+col = 2;
+pre_index_in_col = 1;
+post_index_in_col = 17;
 
 pre_index_in_network = (col-1)*n_total_neurons + pre_index_in_col;
 post_index_in_network = (col-1)*n_total_neurons + post_index_in_col;
@@ -121,11 +121,13 @@ for t=2:length(tspan)
         end
 
         if post_has_spike_in_past == 1
-            disp(" xxxxxxxxxxxxxxx PROBLEM - LTD has to be there xxxxxxxxxxxxxxx")
-            fprintf("\n past weight %f , now weight %f \n", network_weight_matrix(iter,t-1,pre_index_in_network,post_index_in_network),network_weight_matrix(iter,t,pre_index_in_network,post_index_in_network))
-            return
-        else
-            disp("okkkk")
+            if network_weight_matrix(iter,t-1,pre_index_in_network,post_index_in_network) > network_weight_matrix(iter,t,pre_index_in_network,post_index_in_network)
+                disp("ltd crt")
+            else
+                disp("XXXXXXXX PROBLEM XXXXXXXXXXXXXX")
+                return
+            end
         end
     end   
 end
+disp("-------over----------")

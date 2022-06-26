@@ -321,6 +321,9 @@ for n1=1:num_network_neurons
             weight_value = 0;
         end
     
+%         if n1 == n2
+%             weight_value = 0;
+%         end
        network_weight_matrix(:,:,n1,n2) = weight_value;
     end % end of for n2
 end % end of for n1
@@ -744,7 +747,9 @@ for iter=1:n_iters
                             network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron);
                         end
                     else % if no spike
+                        if either_LTP_or_LTD_occured(neuron_p, postsyn_neuron) == 0
                             network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron);
+                        end
                     end
                 end
 
@@ -792,7 +797,10 @@ for iter=1:n_iters
                             network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
                         end
                     else % if no spike
-                        network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
+                        if either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
+                        end
+                        
                     end
                 end
             end % end of all network neurons
