@@ -54,9 +54,9 @@ end
 %% across column 
 close all
 iter = 1;
-pre = 3; 
-col_pre = 1;
-col_post = 2;
+pre = 15; 
+col_pre = 2;
+col_post = 1;
 
 pre_n_index = (col_pre - 1)*25 + pre;
 for post=1:20
@@ -70,9 +70,9 @@ end
 %% within column individual synapses
 close all
 iter = 1;
-pre = 3; 
+pre = 5; 
 
-col = 3;
+col = 4;
 for post=1:20
     figure
         plot(squeeze(within_column_weight_matrices(col, :,pre,post)))

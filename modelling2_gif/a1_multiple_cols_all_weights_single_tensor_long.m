@@ -1,7 +1,11 @@
-clear all;
-close all;
+for batch=2:50
 
-tic
+% previous batch variables
+previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
+previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
+previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
+  
+
 n_iters = 1;
 
 % basic variables;
@@ -172,19 +176,7 @@ end
 % thalamic connections based on neuron number
 n_input_thalamic = 5;
 thalamic_connections = zeros(n_total_neurons,n_input_thalamic);
-% since there are 2 neurons in each thalamic column
-% using coin flip outcomes/binary representation to create combinations
-% coin_flip_outcomes = dec2bin(1:n_total_neurons);
-% for n=1:n_total_neurons
-%     outcome_str = coin_flip_outcomes(n,:);
-%     outcome_split = split(outcome_str,'');
-%     for z=2:6
-%         str_connection_num = outcome_split{z};
-%         connection_num = str2num(str_connection_num);
-%         thalamic_connections(n,z-1) = connection_num + 1;
-%     end
-% 
-% end
+
 
 for n=1:n_total_neurons
     thalamic_connections(n,:) = randperm(n_thalamic_neurons,n_input_thalamic);
@@ -221,113 +213,15 @@ i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
-J_ee_0_initial = 100;
-exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
 
 % weight matrix of all neurons in all columns
 num_network_neurons = n_columns*n_total_neurons;
 network_weight_matrix = zeros(iter, length(tspan), num_network_neurons, num_network_neurons);
 
-within_column_weights_map = containers.Map;
-within_column_weights_map('exc-to-exc') = J_ee_0;
-within_column_weights_map('exc-to-pv') = J_pv_e_0;
-within_column_weights_map('exc-to-som') = J_som_e_0;
 
-within_column_weights_map('pv-to-exc') = J_e_pv;
-within_column_weights_map('pv-to-pv') = J_pv_pv;
-within_column_weights_map('pv-to-som') = J_som_pv;
-
-within_column_weights_map('som-to-exc') = J_e_som;
-within_column_weights_map('som-to-som') = J_som_som;
-within_column_weights_map('som-to-pv') = J_pv_som;
-
-% neighbouring column
-beside_column_weights_map = containers.Map;
-beside_column_weights_map('exc-to-exc') = J_ee_1;
-beside_column_weights_map('exc-to-pv') = J_pv_e_1;
-beside_column_weights_map('exc-to-som') = J_som_e_1;
-
-beside_column_weights_map('som-to-exc') = J_e_som_1;
-beside_column_weights_map('som-to-pv') = 0;
-beside_column_weights_map('som-to-som') = 0;
-
-beside_column_weights_map('pv-to-exc') = 0;
-beside_column_weights_map('pv-to-pv') = 0;
-beside_column_weights_map('pv-to-som') = 0;
-
-% neighbouring neihbouring column
-beside_beside_column_weights_map = containers.Map;
-beside_beside_column_weights_map('exc-to-exc') = J_ee_2;
-beside_beside_column_weights_map('exc-to-pv') = J_pv_e_2;
-beside_beside_column_weights_map('exc-to-som') = J_som_e_2;
-
-beside_beside_column_weights_map('som-to-exc') = J_e_som_2;
-beside_beside_column_weights_map('som-to-pv') = 0;
-beside_beside_column_weights_map('som-to-som') = 0;
-
-beside_beside_column_weights_map('pv-to-exc') = 0;
-beside_beside_column_weights_map('pv-to-pv') = 0;
-beside_beside_column_weights_map('pv-to-som') = 0;
-
-% initialize weights within column
-for n1=1:num_network_neurons
-    for n2=1:num_network_neurons
-        c1 = floor(n1/n_total_neurons) + 1;
-        c2 = floor(n2/n_total_neurons) + 1;
-        
-        if c1 == 6
-            c1 = 5;
-        end
-        if c2 == 6
-            c2 = 5;
-        end
-
-        n1_index_in_column = mod(n1,n_total_neurons);
-        if n1_index_in_column == 0
-            n1_index_in_column = 25;
-        end
-
-        n2_index_in_column = mod(n2,n_total_neurons);
-        if n2_index_in_column == 0
-            n2_index_in_column = 25;
-        end
-            
-        if n1_index_in_column <= n_excitatory
-            n1_type = 'exc';
-        elseif n1_index_in_column > n_excitatory && n1_index_in_column <= n_excitatory + n_pv
-            n1_type = 'pv';
-        elseif n1_index_in_column > n_excitatory + n_pv
-            n1_type = 'som';
-        end
-
-        if n2_index_in_column <= n_excitatory
-            n2_type = 'exc';
-        elseif n2_index_in_column > n_excitatory && n2_index_in_column <= n_excitatory + n_pv
-            n2_type = 'pv';
-        elseif n2_index_in_column > n_excitatory + n_pv
-            n2_type = 'som';
-        end
-
-        
-        connection_type = strcat(n1_type,'-to-',n2_type);
-        
-        if c1 == c2 % within column weights
-                weight_value = within_column_weights_map(connection_type);
-        elseif abs(c1 - c2) == 1 % beside column weights
-                weight_value = beside_column_weights_map(connection_type);
-        elseif abs(c1 - c2) == 2 % beside beside column weights 
-                weight_value = beside_beside_column_weights_map(connection_type);
-        else % out of reach column 
-            weight_value = 0;
-        end
-    
-%         if n1 == n2
-%             weight_value = 0;
-%         end
-       network_weight_matrix(:,:,n1,n2) = weight_value;
-    end % end of for n2
-end % end of for n1
-
+for inital_times=1:5
+    network_weight_matrix(:,inital_times,:,:) = previous_batch_network_weight_matrix(:,end,:,:);
+end
 
 
 % sponataneous current into l4 neurons
@@ -434,7 +328,7 @@ for iter=1:n_iters
 	            
 %         fprintf("\n +++++iter numm %d, column %d +++++++\n", iter, c);
             
-       
+      
 
 		for n=1:n_total_neurons
 					
@@ -824,5 +718,10 @@ for iter=1:n_iters
 
 end % end of an iter
 
-save('batch_1.mat')
-toc
+
+filename = "batch_" + num2str(batch) + ".mat";
+save(filename);
+
+clear all;
+
+end % end of all batches
