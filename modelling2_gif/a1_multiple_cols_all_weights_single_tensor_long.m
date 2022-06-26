@@ -218,6 +218,106 @@ theta_tensor(:, :, :, 1:5) = -50.0;
 num_network_neurons = n_columns*n_total_neurons;
 network_weight_matrix = zeros(iter, length(tspan), num_network_neurons, num_network_neurons);
 
+within_column_weights_map = containers.Map;
+within_column_weights_map('exc-to-exc') = J_ee_0;
+within_column_weights_map('exc-to-pv') = J_pv_e_0;
+within_column_weights_map('exc-to-som') = J_som_e_0;
+
+within_column_weights_map('pv-to-exc') = J_e_pv;
+within_column_weights_map('pv-to-pv') = J_pv_pv;
+within_column_weights_map('pv-to-som') = J_som_pv;
+
+within_column_weights_map('som-to-exc') = J_e_som;
+within_column_weights_map('som-to-som') = J_som_som;
+within_column_weights_map('som-to-pv') = J_pv_som;
+
+% neighbouring column
+beside_column_weights_map = containers.Map;
+beside_column_weights_map('exc-to-exc') = J_ee_1;
+beside_column_weights_map('exc-to-pv') = J_pv_e_1;
+beside_column_weights_map('exc-to-som') = J_som_e_1;
+
+beside_column_weights_map('som-to-exc') = J_e_som_1;
+beside_column_weights_map('som-to-pv') = 0;
+beside_column_weights_map('som-to-som') = 0;
+
+beside_column_weights_map('pv-to-exc') = 0;
+beside_column_weights_map('pv-to-pv') = 0;
+beside_column_weights_map('pv-to-som') = 0;
+
+% neighbouring neihbouring column
+beside_beside_column_weights_map = containers.Map;
+beside_beside_column_weights_map('exc-to-exc') = J_ee_2;
+beside_beside_column_weights_map('exc-to-pv') = J_pv_e_2;
+beside_beside_column_weights_map('exc-to-som') = J_som_e_2;
+
+beside_beside_column_weights_map('som-to-exc') = J_e_som_2;
+beside_beside_column_weights_map('som-to-pv') = 0;
+beside_beside_column_weights_map('som-to-som') = 0;
+
+beside_beside_column_weights_map('pv-to-exc') = 0;
+beside_beside_column_weights_map('pv-to-pv') = 0;
+beside_beside_column_weights_map('pv-to-som') = 0;
+
+% initialize weights within column
+for n1=1:num_network_neurons
+    for n2=1:num_network_neurons
+        c1 = floor(n1/n_total_neurons) + 1;
+        c2 = floor(n2/n_total_neurons) + 1;
+        
+        if c1 == 6
+            c1 = 5;
+        end
+        if c2 == 6
+            c2 = 5;
+        end
+
+        n1_index_in_column = mod(n1,n_total_neurons);
+        if n1_index_in_column == 0
+            n1_index_in_column = 25;
+        end
+
+        n2_index_in_column = mod(n2,n_total_neurons);
+        if n2_index_in_column == 0
+            n2_index_in_column = 25;
+        end
+            
+        if n1_index_in_column <= n_excitatory
+            n1_type = 'exc';
+        elseif n1_index_in_column > n_excitatory && n1_index_in_column <= n_excitatory + n_pv
+            n1_type = 'pv';
+        elseif n1_index_in_column > n_excitatory + n_pv
+            n1_type = 'som';
+        end
+
+        if n2_index_in_column <= n_excitatory
+            n2_type = 'exc';
+        elseif n2_index_in_column > n_excitatory && n2_index_in_column <= n_excitatory + n_pv
+            n2_type = 'pv';
+        elseif n2_index_in_column > n_excitatory + n_pv
+            n2_type = 'som';
+        end
+
+        
+        connection_type = strcat(n1_type,'-to-',n2_type);
+        
+        if c1 == c2 % within column weights
+                weight_value = within_column_weights_map(connection_type);
+        elseif abs(c1 - c2) == 1 % beside column weights
+                weight_value = beside_column_weights_map(connection_type);
+        elseif abs(c1 - c2) == 2 % beside beside column weights 
+                weight_value = beside_beside_column_weights_map(connection_type);
+        else % out of reach column 
+            weight_value = 0;
+        end
+    
+%         if n1 == n2
+%             weight_value = 0;
+%         end
+       network_weight_matrix(:,:,n1,n2) = weight_value;
+    end % end of for n2
+end % end of for n1
+
 
 for inital_times=1:5
     network_weight_matrix(:,inital_times,:,:) = previous_batch_network_weight_matrix(:,end,:,:);

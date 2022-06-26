@@ -172,19 +172,6 @@ end
 % thalamic connections based on neuron number
 n_input_thalamic = 5;
 thalamic_connections = zeros(n_total_neurons,n_input_thalamic);
-% since there are 2 neurons in each thalamic column
-% using coin flip outcomes/binary representation to create combinations
-% coin_flip_outcomes = dec2bin(1:n_total_neurons);
-% for n=1:n_total_neurons
-%     outcome_str = coin_flip_outcomes(n,:);
-%     outcome_split = split(outcome_str,'');
-%     for z=2:6
-%         str_connection_num = outcome_split{z};
-%         connection_num = str2num(str_connection_num);
-%         thalamic_connections(n,z-1) = connection_num + 1;
-%     end
-% 
-% end
 
 for n=1:n_total_neurons
     thalamic_connections(n,:) = randperm(n_thalamic_neurons,n_input_thalamic);
