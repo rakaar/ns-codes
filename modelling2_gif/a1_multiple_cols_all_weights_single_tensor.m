@@ -73,7 +73,7 @@ num_of_LTPs = zeros(n_iters, n_columns, length(tspan));
 num_of_LTDs = zeros(n_iters, n_columns, length(tspan));
 
 % plasticity parameters
-Amp_strength = 0; Amp_weak = 0;
+Amp_strength = 0.015; Amp_weak = 0.021;
 tau_strength = 30; tau_weak = 50;
 
 % kernel for g(t)
@@ -223,17 +223,6 @@ theta_tensor(:, :, :, 1:5) = -50.0;
 
 J_ee_0_initial = 100;
 exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
-connected_columns_arr = [  [1,2];[1 3];[2 3];[2 4];[3 4];[3 5];[4 5]; [2 1];[3 1];[3 2];[4 2];[4 3];[5 3];[5 4] ];
-num_connected_pairs = size(connected_columns_arr,1);
-for cc=1:num_connected_pairs
-    c1 = connected_columns_arr(cc,1);
-    c2 = connected_columns_arr(cc,2);
-    if  abs(c2 - c1) == 1
-        across_columns_exc_to_exc_weight_matrix(:,c1,c2,:,:,:) = J_ee_1;
-    elseif abs(c2 - c1) == 2
-        across_columns_exc_to_exc_weight_matrix(:,c1,c2,:,:,:) = J_ee_2;
-    end
-end
 
 % weight matrix of all neurons in all columns
 num_network_neurons = n_columns*n_total_neurons;
@@ -285,6 +274,13 @@ for n1=1:num_network_neurons
     for n2=1:num_network_neurons
         c1 = floor(n1/n_total_neurons) + 1;
         c2 = floor(n2/n_total_neurons) + 1;
+        
+        if c1 == 6
+            c1 = 5;
+        end
+        if c2 == 6
+            c2 = 5;
+        end
 
         n1_index_in_column = mod(n1,n_total_neurons);
         if n1_index_in_column == 0
@@ -312,6 +308,7 @@ for n1=1:num_network_neurons
             n2_type = 'som';
         end
 
+        
         connection_type = strcat(n1_type,'-to-',n2_type);
         
         if c1 == c2 % within column weights
@@ -320,6 +317,8 @@ for n1=1:num_network_neurons
                 weight_value = beside_column_weights_map(connection_type);
         elseif abs(c1 - c2) == 2 % beside beside column weights 
                 weight_value = beside_beside_column_weights_map(connection_type);
+        else % out of reach column 
+            weight_value = 0;
         end
     
        network_weight_matrix(:,:,n1,n2) = weight_value;
@@ -447,8 +446,6 @@ for iter=1:n_iters
 					    spike_train_exc = spikes(iter,c-2,j,:);
                         g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                         presyn_neuron_index_in_network = (c-2 - 1)*n_total_neurons + j;
-                        fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                        pause(0)
                         epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network); 
                  end
 			end
@@ -459,8 +456,6 @@ for iter=1:n_iters
 					        spike_train_exc = spikes(iter,c-1,j,:);
 					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                             presyn_neuron_index_in_network = (c-1 - 1)*n_total_neurons + j;
-                            fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                            pause(0)
                             epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network); 
                 end
             end
@@ -471,9 +466,7 @@ for iter=1:n_iters
 				            spike_train_exc = spikes(iter,c+1,j,:);
 					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                             presyn_neuron_index_in_network = (c+1 - 1)*n_total_neurons + j;
-                            fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                             pause(0)
-					        epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                            epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end	
 
@@ -484,9 +477,7 @@ for iter=1:n_iters
 					        spike_train_exc = spikes(iter,c+2,j,:);
 					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                             presyn_neuron_index_in_network = (c+2 - 1)*n_total_neurons + j;
-                            fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                            pause(0)
-					        epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                            epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end	
 
@@ -500,8 +491,6 @@ for iter=1:n_iters
                     g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     x_e_presyn_neuron = xe(iter,c,j,i-5);
                     presyn_neuron_index_in_network = (c - 1)*n_total_neurons + j;
-                    fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                    pause(0)
                     epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
             end
 			
@@ -515,8 +504,6 @@ for iter=1:n_iters
                 spike_train_inh = spikes(iter,c,j,:);
 				g_t = get_g_t(spike_train_inh, dt, i-5, tspan,kernel_kt);
                 presyn_neuron_index_in_network = (c - 1)*n_total_neurons + j;
-                fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                pause(0)
                 epsc_pv_own_column = epsc_pv_own_column + g_t*xe(iter,c,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
             end
 
@@ -528,8 +515,6 @@ for iter=1:n_iters
                 spike_train_inh = spikes(iter,c,j,:);
 				g_t = get_g_t(spike_train_inh, dt, i-5, tspan,kernel_kt);
                 presyn_neuron_index_in_network = (c - 1)*n_total_neurons + j;
-                fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                pause(0)
                 epsc_som_own_column = epsc_som_own_column + g_t*xe(iter,c,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
             end
 
@@ -539,8 +524,6 @@ for iter=1:n_iters
 					spike_train_exc = spikes(iter,c-2,j,:);
                     g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c-2 - 1)*n_total_neurons + j;
-                    fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                    pause(0)
                     epsc_som_back_c2 = epsc_som_back_c2 + g_t*xe(iter, c-2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end
@@ -551,8 +534,6 @@ for iter=1:n_iters
 					spike_train_exc = spikes(iter,c-1,j,:);
                     g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c-1 - 1)*n_total_neurons + j;
-                    fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                    pause(0)
                     epsc_som_back_c1 = epsc_som_back_c1 + g_t*xe(iter, c-1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end
@@ -563,8 +544,6 @@ for iter=1:n_iters
 				    spike_train_exc = spikes(iter,c+1,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c+1 - 1)*n_total_neurons + j;
-                    fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                        pause(0)
                     epsc_som_front_c1 = epsc_som_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
 				end
             end
@@ -575,8 +554,6 @@ for iter=1:n_iters
 					spike_train_exc = spikes(iter,c+2,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c+2 - 1)*n_total_neurons + j;
-                    fprintf("\n weight is %f \n",network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network));
-                        pause(0)
                     epsc_som_front_c2 = epsc_som_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
 				end
 			end
@@ -714,123 +691,113 @@ for iter=1:n_iters
     
     end
 
-	% ------updating weights using STDP
-        
-                % if change has occured in LTP or LTD for a synapse, 
-                % Don't undo it in the next iteration
-        for col_stdp=1:n_columns   
-            either_LTP_or_LTD_occured = zeros(n_excitatory, n_excitatory);
-            for N=1:n_excitatory
-                % N -> postyn : LTD
-                for postsyn_neuron=1:n_excitatory
-                    if spikes(iter,col_stdp,N,i) == 1 % if there is a spike
-                        found_spike_in_window_LTD = 0;
-
-                        for postsyn_spike_time=i-1:-1:i-20
-                            if postsyn_spike_time >= 1 && spikes(iter,col_stdp,postsyn_neuron,postsyn_spike_time) == 1 && spikes(iter,col_stdp,postsyn_neuron,i) == 0 
-                                exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron)*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
-                                % clipping weights
-                                if exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) < minimum_weight_exc_to_exc
-                                    exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = minimum_weight_exc_to_exc;
-                                end
-                                if exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) > maximum_weight_exc_to_exc
-                                    exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = maximum_weight_exc_to_exc;
-                                end
-                                num_of_LTDs(iter,col_stdp,i) = num_of_LTDs(iter,col_stdp,i) + 1;
-                                
-%                                 if N == 5 && (postsyn_neuron == 13 || postsyn_neuron == 12) && col_stdp == 2
-%                                     fprintf("\n postsyn_neuron is %d \n", postsyn_neuron)
-%                                     fprintf("\n LTD - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron))
-%                                     fprintf("\n due to same time ??? %d %d \n", spikes(iter,col_stdp,N,i), spikes(iter,col_stdp,postsyn_neuron,i))
-%                                     pause(1)
-%                                 end
-                                either_LTP_or_LTD_occured(N,postsyn_neuron) = 1;
-                                found_spike_in_window_LTD = 1;
-                                break;
-                            end
-                        end
-
-                        if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(N,postsyn_neuron) == 0
-                            exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron);
-%                             if N == 5 && (postsyn_neuron == 13 || postsyn_neuron == 12) && col_stdp == 2
-%                                     fprintf("\n postsyn_neuron is %d \n", postsyn_neuron)
-%                                     fprintf("\n LTD - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron))
-%                                     pause(1)
-%                             end
-                        end
-                    else % if there is no spike
-
-                        if either_LTP_or_LTD_occured(N,postsyn_neuron) == 0
-                               exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron);
-%                                 if N == 5 && (postsyn_neuron == 13 || postsyn_neuron == 12) && col_stdp == 2
-%                                     fprintf("\n postsyn_neuron is %d \n", postsyn_neuron)
-%                                     fprintf("\n LTD - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,col_stdp,i-1,N,postsyn_neuron),exc_to_exc_weight_matrix(iter,col_stdp,i,N,postsyn_neuron))
-%                                     pause(1)
-%                                 end
-                        end
-                        
-                    end
+	        % ------updating weights using STDP
+            either_LTP_or_LTD_occured = zeros(num_network_neurons, num_network_neurons);
+            for neuron_p=1:num_network_neurons % for all neurons in network
+                col_p = floor(neuron_p/n_total_neurons) + 1;
+                neuron_p_index_in_column = mod(neuron_p,n_total_neurons);
+                if neuron_p_index_in_column == 0
+                    neuron_p_index_in_column = 25;
                 end
 
+                if neuron_p_index_in_column > n_excitatory
+                    continue
+                end
 
-                % presyn -> N : LTP
-                for presyn_neuron=1:n_excitatory
-                    if spikes(iter,col_stdp,N,i) == 1 % if there is a spike
-                        found_spike_in_window_LTP = 0;
+                % neuron_p -> postsyn : LTD
+                for postsyn_neuron=1:num_network_neurons
+                    col_postsyn = floor(postsyn_neuron/n_total_neurons) + 1;
+                    % check that column is within range
+                    if abs(col_postsyn - col_p) > 2
+                        continue
+                    end
 
-                        for presyn_spike_time=i-1:-1:i-20
-                            if presyn_spike_time >= 1 && spikes(iter,col_stdp,presyn_neuron,presyn_spike_time) == 1 && spikes(iter,col_stdp,presyn_neuron,i) == 0
-                                    exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
-                                    % clipping weights 
-                                    if exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) < minimum_weight_exc_to_exc
-                                        exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = minimum_weight_exc_to_exc;
-                                    end
-                                    if exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) > maximum_weight_exc_to_exc
-                                        exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = maximum_weight_exc_to_exc;
-                                    end
+                    postsyn_neuron_index_in_column = mod(postsyn_neuron, n_total_neurons);
+                    if postsyn_neuron_index_in_column == 0
+                        postsyn_neuron_index_in_column = 25;
+                    end
 
-                                    num_of_LTPs(iter,col_stdp,i) = num_of_LTPs(iter,col_stdp,i) + 1; 
-%                                     if presyn_neuron == 5 && (N == 13 || N == 12) && col_stdp == 2
-%                                         fprintf("\n postsyn_neuron is %d \n", N)
-%                                         fprintf("\n LTP - !!! - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N))
-%                                         pause(1)
-%                                     end
+                    if postsyn_neuron_index_in_column > n_excitatory
+                        continue
+                    end
+
+                    if spikes(iter,col_p,neuron_p_index_in_column,i) == 1 % if there is a spike
+                        found_spike_in_window_LTD = 0;
+                        for postsyn_spike_time=i-1:-1:i-20
+                            if postsyn_spike_time >= 1 && spikes(iter,col_postsyn,postsyn_neuron_index_in_column,i) == 0 && spikes(iter,col_postsyn,postsyn_neuron_index_in_column,postsyn_spike_time) == 1
+                                network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron)*(1-Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
                                 
-                                    
+                                if network_weight_matrix(iter,i,neuron_p, postsyn_neuron) < minimum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = minimum_weight_exc_to_exc;
+                                end
+                                if network_weight_matrix(iter,i,neuron_p, postsyn_neuron) > maximum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = maximum_weight_exc_to_exc;
+                                end
                                 
-                                either_LTP_or_LTD_occured(presyn_neuron,N) = 1;
-                                found_spike_in_window_LTP = 1;
+                                found_spike_in_window_LTD = 1;
+                                either_LTP_or_LTD_occured(neuron_p, postsyn_neuron) = 1;
                                 break
                             end
                         end
 
-                        if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,N) == 0
-                            exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N);
-%                             if presyn_neuron == 5 && (N == 13 || N == 12) && col_stdp == 2
-%                                     fprintf("\n postsyn_neuron is %d \n", N)
-%                                     fprintf("\n LTP - @@@ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N))
-%                                     pause(1)
-%                             end
+                        if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(neuron_p, postsyn_neuron) == 0
+                            network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron);
                         end
-                    else % if there is no spike
-                        if either_LTP_or_LTD_occured(presyn_neuron,N) == 0
-                            exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N) = exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N);
-%                             if presyn_neuron == 5 && (N == 13 || N == 12)  && col_stdp == 2
-%                                     fprintf("\n postsyn_neuron is %d \n", N)
-%                                     fprintf("\n LTP - $$$ - old %f, new %f \n ",exc_to_exc_weight_matrix(iter,col_stdp,i-1,presyn_neuron,N),exc_to_exc_weight_matrix(iter,col_stdp,i,presyn_neuron,N))
-%                                     pause(1)
-%                             end
-                        end
-                     end
+                    else % if no spike
+                            network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron);
+                    end
                 end
 
-                
+                % presyn -> neuron_p : LTP
+                for presyn_neuron=1:num_network_neurons
+                    col_presyn = floor(presyn_neuron/n_total_neurons) + 1;
+                    if abs(col_presyn - col_p) > 2
+                        continue
+                    end
+                    presyn_neuron_index_in_column = mod(presyn_neuron, n_total_neurons);
+                    if presyn_neuron_index_in_column == 0
+                        presyn_neuron_index_in_column = 25;
+                    end
+                    
+                    if presyn_neuron_index_in_column > n_excitatory
+                        continue
+                    end
+%                     if i == 13
+%                         if presyn_neuron == 79 && neuron_p == 7
+%                             fprintf("\n  spikes(iter,col_p,neuron_p_index_in_column,i) %d \n",spikes(iter,col_p,neuron_p_index_in_column,i))
+%                             pause(1)
+%                         end
+%                     end
+                    
+                    if spikes(iter,col_p,neuron_p_index_in_column,i) == 1
+                        found_spike_in_window_LTP = 0;
+                        for presyn_spike_time=i-1:-1:i-20
+                            if presyn_spike_time >= 1 && spikes(iter,col_presyn,presyn_neuron_index_in_column,i) == 0 && spikes(iter,col_presyn,presyn_neuron_index_in_column,presyn_spike_time) == 1
+                                network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
+                                
+                                if network_weight_matrix(iter,i,presyn_neuron,neuron_p) < minimum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,presyn_neuron,neuron_p) = minimum_weight_exc_to_exc;
+                                end
+                                if network_weight_matrix(iter,i,presyn_neuron,neuron_p) > maximum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,presyn_neuron,neuron_p) = maximum_weight_exc_to_exc;
+                                end
+                                
+                                found_spike_in_window_LTP = 1;
+                                either_LTP_or_LTD_occured(presyn_neuron,neuron_p) = 1;
+                                break
+                            end
+                        end
 
-            end % end of for all excitatory neurons
-
-        end % end of stdp within column for all columns
-
+                        if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
+                        end
+                    else % if no spike
+                        network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
+                    end
+                end
+            end % end of all network neurons
         
+               
         % re-initialize at the end of token
         if ismember(i,token_start_times)
 %             disp("*******************token resest***************************")
@@ -842,62 +809,9 @@ for iter=1:n_iters
             i2_tensor(:, :, :, i) = 0.001;
             theta_tensor(:, :, :,i) = -50.0;
         end
-%	break % for testing only one iteration
     
     
-    either_LTP_or_LTD_occured = zeros(n_columns, n_columns, n_excitatory, n_excitatory);% pre, post
-    % plasticity across columns
-    for cc=1:num_connected_pairs
-        c1 = connected_columns_arr(cc,1);
-        c2 = connected_columns_arr(cc,2);
-       
-        for N=1:n_excitatory
-           % N -> postsyn : LTD
-           for postsyn_neuron=1:n_excitatory
-                if spikes(iter,c1,N,i) == 1
-                    found_spike_in_window_LTD = 0;
-                    for postsyn_spike_time=i-1:-1:i-20
-                        if postsyn_spike_time >= 1 && spikes(iter,c2,postsyn_neuron,i) == 0 && spikes(iter,c2,postsyn_neuron,postsyn_spike_time) == 1
-                            across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i,N,postsyn_neuron) = across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i-1,N,postsyn_neuron)*(1 - Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak)); 
-                            either_LTP_or_LTD_occured(c1,c2,N,postsyn_neuron) = 1;
-                            found_spike_in_window_LTD = 1;
-                        end
-                    end
-
-                    if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(c1,c2,N,postsyn_neuron) == 0
-                        across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i,N,postsyn_neuron) =  across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i-1,N,postsyn_neuron);
-                    end
-                else % if no spike
-                    across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i,N,postsyn_neuron) =  across_columns_exc_to_exc_weight_matrix(iter,c1,c2,i-1,N,postsyn_neuron);
-                end
-           end
-
-            % presyn -> N : LTP
-           for presyn_neuron=1:n_excitatory
-                if spikes(iter,c1,N,i) == 1
-
-                    found_spike_in_window_LTP = 0;
-                    for presyn_spike_time=i-1:-1:i-20
-                        if presyn_spike_time >= 1 && spikes(iter,c2,presyn_neuron,i) == 0 && spikes(iter,c2,presyn_neuron,presyn_spike_time) == 1
-                            across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i,presyn_neuron,N) = across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i-1,presyn_neuron,N)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
-                            found_spike_in_window_LTP = 1;
-                            either_LTP_or_LTD_occured(c2,c1,presyn_neuron,N) = 1;
-                        end
-                    end
-
-                    if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(c2,c1,presyn_neuron,N) == 0
-                        across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i,presyn_neuron,N) = across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i-1,presyn_neuron,N);
-                    end
-                else % if no spike
-                    across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i,presyn_neuron,N) = across_columns_exc_to_exc_weight_matrix(iter,c2,c1,i-1,presyn_neuron,N);
-                end
-           end
-
-          
-            
-        end % end of excitatory neurons in c1
-    end % end of connected pairs
-    
+     
 
     end % end of a single time step
 
