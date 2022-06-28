@@ -1,3 +1,4 @@
+
 clear all; close all;
 
 
@@ -74,22 +75,22 @@ for c=1:n_columns
     figure
         plot(transpose(squeeze(psth_avg_exc(c,:,:))));
         title(['col ',num2str(c)])
-        image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
-        saveas(gcf, image_name);
+%         image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
+%         saveas(gcf, image_name);
     grid
 
     figure
         plot(transpose(squeeze(psth_avg_pv(c,:,:))));
         title(['col ',num2str(c)])
-        image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
-        saveas(gcf, image_name);
+%         image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
+%         saveas(gcf, image_name);
     grid
 
     figure
         plot(transpose(squeeze(psth_avg_som(c,:,:))));
         title(['col ',num2str(c)])
-        image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
-        saveas(gcf, image_name);
+%         image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
+%         saveas(gcf, image_name);
     grid
 
     fprintf("\n writing col %d \n",c)
@@ -114,3 +115,13 @@ for c=1:n_columns
     grid
 end
 
+
+%% analyse spikes binned
+n_columns = 5;
+for c=1:n_columns
+    col_psth = squeeze(psth_all(:,c,1:20));
+    figure
+         plot(col_psth)
+         title(['all neurons batch wise avg-col-', num2str(c)])
+    grid
+end
