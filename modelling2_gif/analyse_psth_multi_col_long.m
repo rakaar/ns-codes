@@ -4,11 +4,11 @@ clear all; close all;
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
-batches = 200;
+batches = 50;
 iter=1;
 
-batch_data_path = "D:\7_multi_col_big_clip_range";
-images_path = "D:\7_multi_col_big_clip_images\";
+batch_data_path = "D:\1_multi_col_across_plastic";
+images_path = "D:\1_multi_col_across_col_plastic_images\";
 
 
 psth_all = zeros(batches, n_columns, n_neurons);
@@ -70,28 +70,47 @@ for b=1:batches
     end
 end
 
-% for c=1:n_columns
-%     figure
-%         imagesc(squeeze(psth_avg_exc(c,:,:)));
-%         title(['col ',num2str(c)])
-%         image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
-%         saveas(gcf, image_name);
-%     grid
-% 
-%     figure
-%         imagesc(squeeze(psth_avg_pv(c,:,:)));
-%         title(['col ',num2str(c)])
-%         image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
-%         saveas(gcf, image_name);
-%     grid
-% 
-%     figure
-%         imagesc(squeeze(psth_avg_som(c,:,:)));
-%         title(['col ',num2str(c)])
-%         image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
-%         saveas(gcf, image_name);
-%     grid
-% 
-%     fprintf("\n writing col %d \n",c)
-% end
+for c=1:n_columns
+    figure
+        plot(transpose(squeeze(psth_avg_exc(c,:,:))));
+        title(['col ',num2str(c)])
+        image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
+        saveas(gcf, image_name);
+    grid
+
+    figure
+        plot(transpose(squeeze(psth_avg_pv(c,:,:))));
+        title(['col ',num2str(c)])
+        image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
+        saveas(gcf, image_name);
+    grid
+
+    figure
+        plot(transpose(squeeze(psth_avg_som(c,:,:))));
+        title(['col ',num2str(c)])
+        image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
+        saveas(gcf, image_name);
+    grid
+
+    fprintf("\n writing col %d \n",c)
+end
+
+%% rate for non long code
+close all
+iter = 1;
+rate = zeros(n_columns, n_excitatory, (length(tspan)-1)/10);
+for c=1:n_columns
+    for n=1:n_excitatory
+        spikes_n = reshape(spikes(iter,c,n,1:length(tspan)-1),  10,(length(tspan)-1)/10);
+        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/10))/0.001;
+        rate(c,n,:) = spikes_avg;
+    end
+end
+
+for c=1:n_columns
+    figure
+        imagesc(squeeze(rate(c,:,:)))
+        title(['rates-col-',num2str(c)])
+    grid
+end
 

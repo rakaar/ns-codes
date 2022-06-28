@@ -25,7 +25,7 @@ for random_neuron=1:n_total_neurons
 figure(random_neuron)
     hold on
         spikes_neuron = squeeze(spikes(iter_to_see, col, random_neuron, :));
-        plot(spikes_neuron*100,'LineStyle','--', 'LineWidth',2);
+        plot(spikes_neuron*100,'LineStyle','--');
 
         % threshold
         threshold = squeeze(theta_tensor(iter_to_see, col, random_neuron, :));
@@ -41,13 +41,13 @@ figure(random_neuron)
         thalamic_curr_to_neuron = thalamic_epsc_tensor(iter_to_see, col, random_neuron, :);
         thalamic_curr_to_neuron = squeeze(thalamic_curr_to_neuron);
         thalamic_curr_to_neuron = [0; thalamic_curr_to_neuron];
-        plot(thalamic_curr_to_neuron,'g','LineWidth',5);
+        plot(thalamic_curr_to_neuron,'g');
     
         % exc epsc own col
         exc_epsc = recurrence_exc_self_column_epsc_tensor(iter_to_see, col, random_neuron, :) + recurrence_exc_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
         exc_epsc = squeeze(exc_epsc);
         exc_epsc = [0; exc_epsc];
-        plot(exc_epsc,'b');
+        plot(exc_epsc,'b', 'LineWidth',2);
 
         % inh epsc own col
         inh_epsc = recurrence_inh_self_column_epsc_tensor(iter_to_see, col, random_neuron, :) + recurrence_inh_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
@@ -59,11 +59,11 @@ figure(random_neuron)
         epsc_neigh = recurrence_exc_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
         epsc_neigh = squeeze(epsc_neigh);
         epsc_neigh = [0; epsc_neigh];
-        plot(epsc_neigh,'--s')
+        plot(epsc_neigh,'--s', 'LineWidth',2)
 
         % recurrence own column
         rec_epsc_own_col = exc_epsc + inh_epsc;
-        plot(rec_epsc_own_col,'y');
+        plot(rec_epsc_own_col,'y','LineWidth',3);
         
          % background
         i_back = I_background_tensor(iter_to_see, col, random_neuron, :);
@@ -73,7 +73,7 @@ figure(random_neuron)
 
         % all epsc
         all_epsc = rec_epsc_own_col + epsc_neigh + thalamic_curr_to_neuron;
-        plot(all_epsc, 'm','LineWidth',2);
+        plot(all_epsc, 'm');
 
         % protochol
         plot(squeeze(lamda(iter_to_see,col+2,1,:)))

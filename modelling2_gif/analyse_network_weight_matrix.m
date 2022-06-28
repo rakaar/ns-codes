@@ -10,6 +10,7 @@ figure
 grid
 
 %% within column 
+close all;
 n_columns=5;
 
 within_column_weight_matrices = zeros(n_columns, length(tspan),n_excitatory, n_excitatory);
@@ -34,7 +35,7 @@ for c1=1:n_columns
                     weights_stacked_side_by_side(:,t) = reshape(within_column_weights_tensor_squeezed(t,:,:),  n_excitatory*n_excitatory,1);
                     weights_stacked_side_by_side_diagonal_removed(:,t) = reshape(within_column_weights_tensor_squeezed_dia_removed(t,:,:), (n_excitatory-1)*n_excitatory,1);
                 end
-
+    
             
 %            figure
 %                 imagesc(weights_stacked_side_by_side);
@@ -42,7 +43,7 @@ for c1=1:n_columns
 %             grid
 
            figure
-                imagesc(weights_stacked_side_by_side_diagonal_removed);
+                plot(transpose(weights_stacked_side_by_side_diagonal_removed));
                 title(['col',num2str(c1), ' weight matrix'])
             grid
         else % c1 not equal to c2
@@ -72,7 +73,7 @@ close all
 iter = 1;
 pre = 5; 
 
-col = 4;
+col = 1;
 for post=1:20
     figure
         plot(squeeze(within_column_weight_matrices(col, :,pre,post)))

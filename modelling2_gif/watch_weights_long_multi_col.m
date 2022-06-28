@@ -89,10 +89,10 @@ end
 %% imagesc
 close all;clear all;
 iter = 1;
-batches = 200;
+batches = 50;
 n_excitatory = 20;
 n_cols = 5;
-batch_data_path ="D:\7_multi_col_big_clip_range";
+batch_data_path ="D:\1_multi_col_across_plastic";
 weights_stacked_side_by_side = zeros(n_cols, n_excitatory*n_excitatory, batches);
 for b=1:batches
         fprintf("\n batch is %d \n", b);
