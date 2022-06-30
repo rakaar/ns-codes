@@ -36,7 +36,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 % within column
 inc_inh_to_exc_factor = 2.5;
 
-J_ee_0 = 25;
+J_ee_0 = 30;
 J_pv_e_0 = 1.8750;
 J_som_e_0 = 1.8750*3;
 
@@ -49,7 +49,7 @@ J_som_som = 0;
 J_pv_som = -9.3750*inc_inh_to_exc_factor;
 
 % other column
-J_ee_1 = 10;
+J_ee_1 = 15;
 J_pv_e_1 = 0.0131;
 J_som_e_1 = 0.0131;
 

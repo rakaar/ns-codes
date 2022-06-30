@@ -1,10 +1,10 @@
 %% input recurrent current
 close all;
 n_columns = 5;
-batches = 30;
+batches = 5;
 n_excitatory = 20;
 iter=1;
-batch_data_path = "D:\2_multi_col_across_plastic";
+batch_data_path = "D:\3_multi_col_ap";
 images_path = "D:\2_multi_col_images\";
 
 % total_input_epsc = thalamic_epsc_tensor ...
