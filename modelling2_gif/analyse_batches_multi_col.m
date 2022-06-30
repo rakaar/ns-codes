@@ -1,6 +1,6 @@
 clear all;close all;
 
-batches = [1, 5, 10, 20, 30, 40, 45, 50];
+batches = [1, 5, 10, 20, 25, 30];
 
 
 for b=1:length(batches)
@@ -9,8 +9,8 @@ for b=1:length(batches)
     fprintf("\n batch num %d \n",batch_num);
     
 col = 1;
-batch_data_path = "D:\1_multi_col_across_plastic";
-batches_images_path = "D:\1_multi_col_across_col_plastic_images\";
+batch_data_path = "D:\2_multi_col_across_plastic";
+batches_images_path = "D:\2_multi_col_images\";
 batch_file_name = batch_data_path + "\batch_" + num2str(batch_num) + ".mat";
 folder_name = "batch_" + num2str(batch_num);
 mkdir(batches_images_path,folder_name)
