@@ -1,4 +1,4 @@
-for batch=2:50
+for batch=2:30
 
 % previous batch variables
 previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
@@ -40,7 +40,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 % within column
 inc_inh_to_exc_factor = 2.5;
 
-J_ee_0 = 135;
+J_ee_0 = 25;
 J_pv_e_0 = 1.8750;
 J_som_e_0 = 1.8750*3;
 
@@ -53,13 +53,13 @@ J_som_som = 0;
 J_pv_som = -9.3750*inc_inh_to_exc_factor;
 
 % other column
-J_ee_1 = 70;
+J_ee_1 = 10;
 J_pv_e_1 = 0.0131;
 J_som_e_1 = 0.0131;
 
 J_e_som_1 = -10;
 
-J_ee_2 = 35;
+J_ee_2 = 5;
 J_pv_e_2 = 0.0056;
 J_som_e_2 = 0.0056;
 
@@ -186,9 +186,10 @@ end
 % weight_thalamic_to_pv_l4 = 750;
 % weight_thalamic_to_som_l4 = 750;
 
-weight_thalamic_to_exc_l4_above_col = 880;
-weight_thalamic_to_exc_l4_side_col_1 = 440;
-weight_thalamic_to_exc_l4_side_col_2 = 220;
+
+weight_thalamic_to_exc_l4_above_col = 200;
+weight_thalamic_to_exc_l4_side_col_1 = 100;
+weight_thalamic_to_exc_l4_side_col_2 = 50;
 weight_thalamic_to_exc_l4_arr = [weight_thalamic_to_exc_l4_side_col_2, weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_above_col,weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_side_col_2];
 
 weight_thalamic_to_pv_l4_above_col = 1200;
