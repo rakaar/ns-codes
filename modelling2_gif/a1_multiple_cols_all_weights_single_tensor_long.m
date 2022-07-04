@@ -80,6 +80,7 @@ num_of_LTDs = zeros(n_iters, n_columns, length(tspan));
 Amp_strength = 0.015; Amp_weak = 0.021;
 tau_strength = 30; tau_weak = 50;
 
+
 % kernel for g(t)
 tau_syn = 10;
 kernel_kt = [0 exp(-[0:t_simulate])./tau_syn];
@@ -217,7 +218,7 @@ theta_tensor(:, :, :, 1:5) = -50.0;
 
 % weight matrix of all neurons in all columns
 num_network_neurons = n_columns*n_total_neurons;
-network_weight_matrix = zeros(iter, length(tspan), num_network_neurons, num_network_neurons);
+network_weight_matrix = zeros(n_iters, length(tspan), num_network_neurons, num_network_neurons);
 
 within_column_weights_map = containers.Map;
 within_column_weights_map('exc-to-exc') = J_ee_0;
@@ -319,6 +320,9 @@ for n1=1:num_network_neurons
     end % end of for n2
 end % end of for n1
 
+for nn=1:num_network_neurons
+    network_weight_matrix(:,:,nn,nn) = 0;
+end
 
 for inital_times=1:5
     network_weight_matrix(:,inital_times,:,:) = previous_batch_network_weight_matrix(:,end,:,:);
@@ -424,17 +428,13 @@ for iter=1:n_iters
     % simulation
     for i=6:length(tspan)
 
-% 	fprintf("i = %d\n", i);
 	for c=1:n_columns
 	            
-%         fprintf("\n +++++iter numm %d, column %d +++++++\n", iter, c);
             
       
 
 		for n=1:n_total_neurons
 					
-			% voltage sum from excitatory neighbouring columns, will be useful for inhib and exc neurons
-			% TODO - change column input neurons, if n is exc and if n is pv, som
             n_index_in_network = (c - 1)*n_total_neurons + n;
 
             epsc_ex_neuron_back_c2 = 0;
@@ -443,7 +443,7 @@ for iter=1:n_iters
 					    spike_train_exc = spikes(iter,c-2,j,:);
                         g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                         presyn_neuron_index_in_network = (c-2 - 1)*n_total_neurons + j;
-                        epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network); 
+                        epsc_ex_neuron_back_c2 = epsc_ex_neuron_back_c2 + g_t*xe(iter, c-2,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network); 
                  end
 			end
 
@@ -453,7 +453,7 @@ for iter=1:n_iters
 					        spike_train_exc = spikes(iter,c-1,j,:);
 					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                             presyn_neuron_index_in_network = (c-1 - 1)*n_total_neurons + j;
-                            epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network); 
+                            epsc_ex_neuron_back_c1 = epsc_ex_neuron_back_c1 + g_t*xe(iter,c-1,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network); 
                 end
             end
 
@@ -463,7 +463,7 @@ for iter=1:n_iters
 				            spike_train_exc = spikes(iter,c+1,j,:);
 					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                             presyn_neuron_index_in_network = (c+1 - 1)*n_total_neurons + j;
-                            epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                            epsc_ex_neuron_front_c1 = epsc_ex_neuron_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end	
 
@@ -474,7 +474,7 @@ for iter=1:n_iters
 					        spike_train_exc = spikes(iter,c+2,j,:);
 					        g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                             presyn_neuron_index_in_network = (c+2 - 1)*n_total_neurons + j;
-                            epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                            epsc_ex_neuron_front_c2 = epsc_ex_neuron_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end	
 
@@ -488,7 +488,7 @@ for iter=1:n_iters
                     g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     x_e_presyn_neuron = xe(iter,c,j,i-5);
                     presyn_neuron_index_in_network = (c - 1)*n_total_neurons + j;
-                    epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                    epsc_ex_own_column	= epsc_ex_own_column + g_t*x_e_presyn_neuron*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
             end
 			
 
@@ -501,7 +501,7 @@ for iter=1:n_iters
                 spike_train_inh = spikes(iter,c,j,:);
 				g_t = get_g_t(spike_train_inh, dt, i-5, tspan,kernel_kt);
                 presyn_neuron_index_in_network = (c - 1)*n_total_neurons + j;
-                epsc_pv_own_column = epsc_pv_own_column + g_t*xe(iter,c,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                epsc_pv_own_column = epsc_pv_own_column + g_t*xe(iter,c,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
             end
 
             epsc_som_own_column = 0;
@@ -512,7 +512,7 @@ for iter=1:n_iters
                 spike_train_inh = spikes(iter,c,j,:);
 				g_t = get_g_t(spike_train_inh, dt, i-5, tspan,kernel_kt);
                 presyn_neuron_index_in_network = (c - 1)*n_total_neurons + j;
-                epsc_som_own_column = epsc_som_own_column + g_t*xe(iter,c,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                epsc_som_own_column = epsc_som_own_column + g_t*xe(iter,c,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
             end
 
             epsc_som_back_c2 = 0;
@@ -521,7 +521,7 @@ for iter=1:n_iters
 					spike_train_exc = spikes(iter,c-2,j,:);
                     g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c-2 - 1)*n_total_neurons + j;
-                    epsc_som_back_c2 = epsc_som_back_c2 + g_t*xe(iter, c-2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                    epsc_som_back_c2 = epsc_som_back_c2 + g_t*xe(iter, c-2,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end
 
@@ -531,7 +531,7 @@ for iter=1:n_iters
 					spike_train_exc = spikes(iter,c-1,j,:);
                     g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c-1 - 1)*n_total_neurons + j;
-                    epsc_som_back_c1 = epsc_som_back_c1 + g_t*xe(iter, c-1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                    epsc_som_back_c1 = epsc_som_back_c1 + g_t*xe(iter, c-1,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
                 end
             end
 
@@ -541,7 +541,7 @@ for iter=1:n_iters
 				    spike_train_exc = spikes(iter,c+1,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c+1 - 1)*n_total_neurons + j;
-                    epsc_som_front_c1 = epsc_som_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                    epsc_som_front_c1 = epsc_som_front_c1 + g_t*xe(iter,c+1,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
 				end
             end
 
@@ -551,7 +551,7 @@ for iter=1:n_iters
 					spike_train_exc = spikes(iter,c+2,j,:);
 					g_t = get_g_t(spike_train_exc, dt, i-5, tspan,kernel_kt);
                     presyn_neuron_index_in_network = (c+2 - 1)*n_total_neurons + j;
-                    epsc_som_front_c2 = epsc_som_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i,presyn_neuron_index_in_network,n_index_in_network);
+                    epsc_som_front_c2 = epsc_som_front_c2 + g_t*xe(iter,c+2,j,i-5)*network_weight_matrix(iter,i-5,presyn_neuron_index_in_network,n_index_in_network);
 				end
 			end
 		

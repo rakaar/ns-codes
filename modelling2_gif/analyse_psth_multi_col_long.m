@@ -5,11 +5,11 @@ clear all; close all;
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
-batches = 30;
+batches = 50;
 iter=1;
 
-batch_data_path = "D:\2_multi_col_across_plastic";
-images_path = "D:\2_multi_col_images\";
+batch_data_path = "D:\4_multi_col_ap";
+images_path = "D:\4_multi_col_ap_images\";
 
 
 psth_all = zeros(batches, n_columns, n_neurons);
@@ -75,22 +75,22 @@ end
 %     figure
 %         plot(transpose(squeeze(psth_avg_exc(c,:,:))));
 %         title(['col ',num2str(c)])
-% %         image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
-% %         saveas(gcf, image_name);
+%         image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
+%         saveas(gcf, image_name);
 %     grid
 % 
 %     figure
 %         plot(transpose(squeeze(psth_avg_pv(c,:,:))));
 %         title(['col ',num2str(c)])
-% %         image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
-% %         saveas(gcf, image_name);
+%         image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
+%         saveas(gcf, image_name);
 %     grid
 % 
 %     figure
 %         plot(transpose(squeeze(psth_avg_som(c,:,:))));
 %         title(['col ',num2str(c)])
-% %         image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
-% %         saveas(gcf, image_name);
+%         image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
+%         saveas(gcf, image_name);
 %     grid
 % 
 %     fprintf("\n writing col %d \n",c)
@@ -124,28 +124,28 @@ for c=1:n_columns
     figure
          plot(col_psth)
          title(['all neurons psth batch wise avg-col-', num2str(c)])
-%          image_name = images_path + "psth-c-" + num2str(c) + ".fig"; 
-%          saveas(gcf, image_name);
+         image_name = images_path + "psth-c-" + num2str(c) + ".fig"; 
+         saveas(gcf, image_name);
     grid
 end
 
-for c=1:5
-    col_psth_a = squeeze(psth_a(:,c,1:20));
-    col_psth_a_mean = mean(col_psth_a,2);
-
-    col_psth_b = squeeze(psth_b(:,c,1:20));
-    col_psth_b_mean = mean(col_psth_b,2);
-
-    figure
-        hold on
-            plot(col_psth_a_mean)
-            plot(col_psth_b_mean)
-            legend('psth for a mean','psth for b mean')
-            title(['psth - a,b col ',num2str(c)])
+% for c=1:5
+%     col_psth_a = squeeze(psth_a(:,c,1:20));
+%     col_psth_a_mean = mean(col_psth_a,2);
+% 
+%     col_psth_b = squeeze(psth_b(:,c,1:20));
+%     col_psth_b_mean = mean(col_psth_b,2);
+% 
+%     figure
+%         hold on
+%             plot(col_psth_a_mean)
+%             plot(col_psth_b_mean)
+%             legend('psth for a mean','psth for b mean')
+%             title(['psth - a,b col ',num2str(c)])
 %             image_name = images_path + "psth-a-b-col-" + num2str(c) + ".fig"; 
 %             saveas(gcf, image_name);
-        hold off
-    grid
-end
-
+%         hold off
+%     grid
+% end
+% 
 

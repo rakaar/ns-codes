@@ -1,15 +1,15 @@
 close all;
 n_total_neurons = 25;
 num_network_neurons = 125;
-batches = 30;
-tspan = load("D:\2_multi_col_across_plastic\batch_1.mat", "tspan").tspan;
+batches = 50;
+tspan = load("D:\4_multi_col_ap\batch_1.mat", "tspan").tspan;
 
 batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
 % all_1ms_network_weights = zeros((batches*(length(tspan)-1))/10, num_network_neurons, num_network_neurons);
 n_exc = 20;
 
-batch_data_path = "D:\2_multi_col_across_plastic";
-images_path = "D:\2_multi_col_images\";
+batch_data_path = "D:\4_multi_col_ap";
+images_path = "D:\4_multi_col_ap_images\";
 
 
 iter=1;
@@ -20,7 +20,7 @@ for b=1:batches
     network_weight_matrix = load(batch_file_name, "network_weight_matrix").network_weight_matrix;
     for n1=1:num_network_neurons
         for n2=1:num_network_neurons
-             batch_avg_network_weights(b,n1,n2) = mean(network_weight_matrix(iter,:,n1,n2));
+             batch_avg_network_weights(b,n1,n2) = mean(squeeze(network_weight_matrix(iter,:,n1,n2)));
 %              all_1ms_network_weights((b-1)*length(tspan) + 1:(b-1)*length(tspan) + length(tspan)   ,n1,n2) =  network_weight_matrix(iter,:,n1,n2);
         end
     end
@@ -63,10 +63,10 @@ for c1=1:n_columns
 end
 
 
-function new_vec = make_bins_of_weights(vec, bin_size)
-    time_span = length(vec) - 1;
-    new_vec = zeros(time_span/10,1);
-    for i=1:bin_size:time_span-9
-        new_vec(i,1) = mean(vec(1,i:i+9));
-    end
-end
+% function new_vec = make_bins_of_weights(vec, bin_size)
+%     time_span = length(vec) - 1;
+%     new_vec = zeros(time_span/10,1);
+%     for i=1:bin_size:time_span-9
+%         new_vec(i,1) = mean(vec(1,i:i+9));
+%     end
+% end

@@ -1,3 +1,4 @@
+%% ******************* bekaar code, don't see this ************************************
 %% single batch
 weights_stacked_side_by_side = zeros(num_network_neurons*num_network_neurons, length(tspan));
 for t=1:length(tspan)
@@ -41,15 +42,15 @@ for c1=1:n_columns
                 end
     
             
-%            figure
-%                 imagesc(weights_stacked_side_by_side);
-%                 title(['col',num2str(c1), ' weight matrix'])
-%             grid
-
            figure
-                plot(transpose(weights_stacked_side_by_side_diagonal_removed));
+                imagesc(weights_stacked_side_by_side);
                 title(['col',num2str(c1), ' weight matrix'])
             grid
+
+%            figure
+%                 plot(transpose(weights_stacked_side_by_side_diagonal_removed));
+%                 title(['col',num2str(c1), ' weight matrix'])
+%             grid
         elseif abs(c1 - c2) == 1 || abs(c1 - c2) == 2
             c1_n1 = (c1-1)*25 + 1;
             c1_n2 = c1_n1 + 19;
@@ -71,15 +72,15 @@ for c1=1:n_columns
                 end
     
             
-%            figure
-%                 imagesc(weights_stacked_side_by_side);
-%                 title(['col',num2str(c1), ' weight matrix'])
-%             grid
-
            figure
-                plot(transpose(weights_stacked_side_by_side_diagonal_removed));
-                title(['c1-',num2str(c1),'-c2-',num2str(c2), ' weight matrix'])
+                imagesc(weights_stacked_side_by_side);
+                title([num2str(c1), '-',num2str(c2),'-','weight matrix'])
             grid
+
+%            figure
+%                 plot(transpose(weights_stacked_side_by_side_diagonal_removed));
+%                 title(['c1-',num2str(c1),'-c2-',num2str(c2), ' weight matrix'])
+%             grid
 
         else % c1 not equal to c2
             continue

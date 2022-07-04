@@ -1,11 +1,11 @@
 %% input recurrent current
 close all;
 n_columns = 5;
-batches = 5;
+batches = 50;
 n_excitatory = 20;
 iter=1;
-batch_data_path = "D:\3_multi_col_ap";
-images_path = "D:\2_multi_col_images\";
+batch_data_path = "D:\4_multi_col_ap";
+images_path = "D:\4_multi_col_ap_images\";
 
 % total_input_epsc = thalamic_epsc_tensor ...
 %                     + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
@@ -90,17 +90,33 @@ for c=1:n_columns
     recurrence_exc_col = squeeze(recurrence_exc(:,c,:));
     recurrence_exc_avg  = mean(recurrence_exc_col,2);
 
+    recurrence_exc_self_col = squeeze(recurrence_exc_self_column_epsc_tensor_batch_avg(:,c,:));
+    recurrence_exc_self_avg = mean(recurrence_exc_self_col,2);
+
+    recurrence_exc_neigh_col = squeeze(recurrence_exc_neighbour_column_epsc_tensor_batch_avg(:,c,:));
+    recurrence_exc_neigh_avg = mean(recurrence_exc_neigh_col,2);
+
     recurrence_inh = recurrence_inh_self_column_epsc_tensor_batch_avg + recurrence_inh_neighbour_column_epsc_tensor_batch_avg;
     recurrence_inh_col = squeeze(recurrence_inh(:,c,:));
     recurrence_inh_avg = mean(recurrence_inh_col, 2);
 
+%     figure
+%         hold on
+%             plot(thalamic_neurons_avg);
+%             plot(recurrence_exc_avg);
+%             plot(recurrence_inh_avg);
+%         hold off
+%         title(['epscs-col-', num2str(c)])
+%         legend('feedforward', 'recurrence exc','recurrence inh' )
+%     grid
+
     figure
         hold on
             plot(thalamic_neurons_avg);
-            plot(recurrence_exc_avg);
-            plot(recurrence_inh_avg);
+            plot(recurrence_exc_self_avg);
+            plot(recurrence_exc_neigh_avg);
         hold off
-        title(['epscs-col-', num2str(c)])
-        legend('feedforward', 'recurrence exc','recurrence inh' )
+        legend('thalamic','recurrence-self','recurrence-neigh')
+        title('epsc recurence-self,neigh,thalamic')
     grid
 end
