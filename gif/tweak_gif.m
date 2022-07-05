@@ -14,12 +14,14 @@
 %           'G': 0.05,             # Membrane potential decay term
 %           'C': 1.0,              # Membrane capacitance
 %           'ThetaInf': -50.0}       # Reverse threshold
-close all;
+close all;clear all;
 
 k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
 El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-t_simulate = 20000;
+% a = 0.005; A1 = 10; A2 = -0.6;
+
+t_simulate = 2000;
 dt = 1; % may be 1ms
 tspan = 0:dt:t_simulate;
 
@@ -30,13 +32,21 @@ theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
 % iext(1000:2000) = -65;
-iext(1000:1500) = 5;
+iext(950:1000) = 200;
 
 % params for phasic burst and rebound burst
-a = 0.009; A1 = 15; A2 = -0.6; 
+% a = 0.009; A1 = 15; A2 = -0.6; 
 
 % params fo tonic spike through spike for +ve current
 % a = 0; A1 = 0; A2 = 0; 
+
+% 
+a = 0.005; A1 = 10; A2 = -0.6;
+
+% adjusting for realistic voltage values
+C = 3;
+b = 0.001;
+a = 0.01;
 
 % IC=(0.01, 0.001, -70.0, -50.0)
 % initial conditions
@@ -49,8 +59,20 @@ theta(1) = -50.0;
 x = [];
 for t=2:length(tspan)
     i1(t) = i1(t-1) + dt*(-k1*i1(t-1));
+    if t > 940 && t < 960
+        disp("-----------------")
+        disp(dt*(-k1*i1(t-1)))
+    end
     i2(t) = i2(t-1) + dt*(-k2*i2(t-1));
     v(t) = v(t-1) + dt*(1/C)*(iext(t-1)+ i1(t-1) + i2(t-1) - G*(v(t-1) - El));
+%     if t > 1000 && t < 1050
+%         disp(dt*(1/C)*(iext(t-1)+ i1(t-1) + i2(t-1) - G*(v(t-1) - El)))
+%         disp(i1(t-1))
+%         disp(i2(t-1))
+%         disp(i2(t-1))
+%         disp(-G*(v(t-1) - El))
+%         disp('------------------------')
+%     end
     theta(t) = theta(t-1) + dt*( a*(v(t-1) - El) - b*(theta(t-1) - ThetaInf)  );
 
     if v(t) > theta(t)
@@ -65,8 +87,15 @@ for t=2:length(tspan)
 end
 
 figure
-    plot(v)
-    title('voltage')
+    hold on
+        plot(v)
+        plot(theta)
+        plot(spikes*100)
+        plot(i1)
+        plot(i2)
+        legend('v', 'theta', 'spikes','i1','i2')
+        title('voltage and threshold and spikes')
+    hold off
 grid
 
 a = x(1);b = length(x);c=x(end);
