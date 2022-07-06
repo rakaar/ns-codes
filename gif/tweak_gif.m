@@ -19,7 +19,10 @@ close all;clear all;
 k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
 El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-a = 0.005; A1 = 10; A2 = -0.6;
+% k2=0.01;
+
+% a = 0.005; A1 = 10; A2 = -0.6;
+a = 0.010; A1 = 10; A2 = -0.15;
 
 t_simulate = 2000;
 dt = 1; % may be 1ms
@@ -31,8 +34,8 @@ v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-% iext(950:1000) = -65;
-iext(950:1000) = 300;
+iext(950:1000) = -15;
+% iext(950:1000) = 300;
 
 % params for phasic burst and rebound burst
 % a = 0.009; A1 = 15; A2 = -0.6; 
@@ -74,7 +77,9 @@ for t=2:length(tspan)
 %         disp('------------------------')
 %     end
     theta(t) = theta(t-1) + dt*( a*(v(t-1) - El) - b*(theta(t-1) - ThetaInf)  );
-
+    if v(t) < -140
+        v(t)= -140;
+    end
     if v(t) > theta(t)
         i1(t) = R1*i1(t) + A1;
         i2(t) = R2*i2(t) + A2;
