@@ -1,15 +1,15 @@
 close all;
 n_total_neurons = 25;
 num_network_neurons = 125;
-batches = 100;
-tspan = load("D:\5_multi_col_across_ap\batch_1.mat", "tspan").tspan;
+batches = 50;
+tspan = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "tspan").tspan;
 
 batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
 % all_1ms_network_weights = zeros((batches*(length(tspan)-1))/10, num_network_neurons, num_network_neurons);
 n_exc = 20;
 
-batch_data_path = "D:\5_multi_col_across_ap";
-images_path = "D:\5_multi_col_across_ap_images\";
+batch_data_path = "D:\5_multi_col_across_ap_som_reduced";
+images_path = "D:\5_across_col_ap_som_reduced_images\";
 
 
 iter=1;

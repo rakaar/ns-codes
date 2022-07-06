@@ -5,11 +5,11 @@ clear all; close all;
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
-batches = 100;
+batches = 50;
 iter=1;
 
-batch_data_path = "D:\5_multi_col_across_ap";
-images_path = "D:\5_multi_col_across_ap_images\";
+batch_data_path = "D:\5_multi_col_across_ap_som_reduced";
+images_path = "D:\5_across_col_ap_som_reduced_images\";
 
 
 psth_all = zeros(batches, n_columns, n_neurons);
@@ -151,12 +151,11 @@ end
 %% binned rate
 
 bin_size = 100;
-batch_data_path = "D:\5_multi_col_across_ap";
-images_path = "D:\5_multi_col_across_ap_images\";
 
-t_simulate = load("D:\5_multi_col_across_ap\batch_1.mat", "t_simulate").t_simulate;
-n_columns = load("D:\5_multi_col_across_ap\batch_1.mat", "n_columns").n_columns;
-n_total_neurons = load("D:\5_multi_col_across_ap\batch_1.mat", "n_total_neurons").n_total_neurons;
+
+t_simulate = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "t_simulate").t_simulate;
+n_columns = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "n_columns").n_columns;
+n_total_neurons = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "n_total_neurons").n_total_neurons;
 n_bins = t_simulate/bin_size;
 psth_binned = zeros(n_columns, n_total_neurons, batches*n_bins);
 iter=1;
@@ -196,13 +195,10 @@ end
 
 %% for one AB 
 close all
-batch_data_path = "D:\5_multi_col_across_ap";
-images_path = "D:\5_multi_col_across_ap_images\";
-
-t_simulate = load("D:\5_multi_col_across_ap\batch_1.mat", "t_simulate").t_simulate;
-n_columns = load("D:\5_multi_col_across_ap\batch_1.mat", "n_columns").n_columns;
+t_simulate = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "t_simulate").t_simulate;
+n_columns = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "n_columns").n_columns;
 n_exc = 20;
-batches = 100;
+batches = 50;
 iter=1;
 rate_for_ab = zeros(n_columns, n_exc, (t_simulate/170)*batches);
 for b=1:batches
