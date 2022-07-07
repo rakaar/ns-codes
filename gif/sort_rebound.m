@@ -1,44 +1,12 @@
-% parameters
-% 	# Define simulation and model parameters dictionary
-% params = {'k1': 0.2,             # I₁ decay term
-%           'k2': 0.02,            # I₂ decay term
-%           'b': 0.01,             # Θ decay term
-%           'R1': 0.0,             # I₁ update constant
-%           'R2': 1.0,             # I₂ update constant
-%           'El': -70.0,           # Reverse potential
-%           'Vr': -70.0,           # Resting potential
-%           'Thetar': -60.0,       # Resting threshold
-%           'a': 0.000,            # Specifier of spike response
-%           'A1': 0.0,             # I₁ additive update constant
-%           'A2': 0.0,             # I₂ additive update constant
-%           'G': 0.05,             # Membrane potential decay term
-%           'C': 1.0,              # Membrane capacitance
-%           'ThetaInf': -50.0}       # Reverse threshold
-close all;clear all;
-
-k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
-El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
 iext_val = -25;
-% iext_val = -5;
-% a = 0.005; A1 = 10; A2 = -0.6;
-% a = 0.020; A1 = 5; A2 = -0.1; % with exp inc threshold, causing large num of spikes
-
-a = 0.020; A1 = 5; A2 = -0.15; % with inc A2, rebound spikes decrease
-
-% a = 0.020; A1 = 0; A2 = -0.1; % phasic sort
-
-t_simulate = 2000;
-dt = 1; % may be 1ms
-tspan = 0:dt:t_simulate;
-
 i1 = zeros(1, length(tspan));
 i2 = zeros(1, length(tspan));
 v = zeros(1, length(tspan));
 theta = zeros(1, length(tspan));
 spikes = zeros(1, length(tspan));
 iext = zeros(1, length(tspan));
-iext(950:1000) = iext_val;
+iext(950:1000) = negative_current;
 % iext(950:1000) = 5; % 2,3,4
 
 % params for phasic burst and rebound burst
@@ -115,13 +83,12 @@ figure
         plot(i2)
         plot(iext)
         legend('v', 'theta', 'spikes','i1','i2', 'iext')
-        title('voltage and threshold and spikes')
+        title(' rebound - voltage and threshold and spikes')
     hold off
 grid
 
+disp("rebound")
 a = x(1);b = length(x);c=x(end);
 disp(a)
 disp(c)
 disp(b)
-
-
