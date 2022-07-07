@@ -14,7 +14,7 @@ n_thalamic_neurons = 25;
 n_thalamic_cols = 9;
     
 % time step
-n_tokens = 10;
+n_tokens = 3;
 pre_stimulus_time = 0; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 50;
 pre_token_silence = 10;
@@ -34,33 +34,35 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0.1;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
+weight_scaling_factor = 0.1;
 
-J_ee_0 = 30;
-J_pv_e_0 = 1.8750;
-J_som_e_0 = 1.8750*3;
 
-J_e_pv = -100*inc_inh_to_exc_factor;
-J_pv_pv = -9.3750*inc_inh_to_exc_factor;
+J_ee_0 = 30*weight_scaling_factor;
+J_pv_e_0 = 1.8750*weight_scaling_factor;
+J_som_e_0 = 1.8750*3*weight_scaling_factor;
+
+J_e_pv = -100*inc_inh_to_exc_factor*weight_scaling_factor;
+J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor;
 J_som_pv = 0;
 
-J_e_som = -50*inc_inh_to_exc_factor*som_reduction_factor;
+J_e_som = -50*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor;
 J_som_som = 0;
-J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor;
+J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor;
 
 % other column
-J_ee_1 = 15;
-J_pv_e_1 = 0.0131;
-J_som_e_1 = 0.0131;
+J_ee_1 = 15*weight_scaling_factor;
+J_pv_e_1 = 0.0131*weight_scaling_factor;
+J_som_e_1 = 0.0131*weight_scaling_factor;
 
-J_e_som_1 = -10*som_reduction_factor;
+J_e_som_1 = -10*som_reduction_factor*weight_scaling_factor;
 
-J_ee_2 = 5;
-J_pv_e_2 = 0.0056;
-J_som_e_2 = 0.0056;
+J_ee_2 = 5*weight_scaling_factor;
+J_pv_e_2 = 0.0056*weight_scaling_factor;
+J_som_e_2 = 0.0056*weight_scaling_factor;
 
-J_e_som_2 = -2*som_reduction_factor;
+J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
 exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
@@ -411,7 +413,7 @@ for iter=1:n_iters
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
-            epsc_thalamic(iter,thal_col,thal_n,:) = reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
+            epsc_thalamic(iter,thal_col,thal_n,:) = 0.15*reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
         end
     end
 
