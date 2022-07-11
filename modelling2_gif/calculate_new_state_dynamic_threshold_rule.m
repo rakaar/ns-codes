@@ -7,15 +7,13 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_dynamic_threshold_ru
 %         is_spike = 1;
 %      end
 
+    
     k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
-    El=-70.0;Vr=-70.0;Thetar=-40.0;G=0.05;C=1.0;ThetaInf=-50.0;
+    El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-a = 0.005; A1 = 10; A2 = -0.6;
+    a = 0.020;
 
-% adjusting for realistic voltage values
-C = 3;
-b = 0.001;
-a = 0.01;
+
 
 
 iext = total_epsc + I_background;
@@ -38,6 +36,11 @@ iext = total_epsc + I_background;
     end
     
     if v >= theta
+        A1 = abs(iext)/5;
+        A2 = min(-0.1, -0.4 + abs(-iext/10)); % stll causing the same old
+%         problem
+%         A2 = min(-0.01, -0.4 + abs(-iext/10));
+
         i1 = R1*i1 + A1;
         i2 = R2*i2 + A2;
         v = Vr;
@@ -48,8 +51,8 @@ iext = total_epsc + I_background;
     
 
     % biological limits on threshold and voltage values
-    if v < -140
-        v = -140;
+    if v < -100
+        v = -100;
     end
 
     if theta > 60

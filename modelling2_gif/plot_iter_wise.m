@@ -1,6 +1,6 @@
 % for a random neuron
 close all;
-col = 4;
+col = 1;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 
@@ -21,7 +21,7 @@ for i=1:n_iters
 end
 
 for random_neuron=1:n_total_neurons
-    clf
+    
 figure(random_neuron)
     hold on
         spikes_neuron = squeeze(spikes(iter_to_see, col, random_neuron, :));
@@ -82,6 +82,5 @@ figure(random_neuron)
         title('random neuron epsc*100 and psth')
         legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc','protochol')
 grid
-pause
-clf
+
 end
