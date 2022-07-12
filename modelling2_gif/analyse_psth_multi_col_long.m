@@ -97,25 +97,57 @@ for c=1:n_columns
 end
 
 %% rate for non long code
-% close all
-% bin_size = 20;
-% iter = 1;
-% rate = zeros(n_columns, n_excitatory, (length(tspan)-1)/bin_size);
-% for c=1:n_columns
-%     for n=1:n_excitatory
-%         spikes_n = reshape(spikes(iter,c,n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
-%         spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
-%         rate(c,n,:) = spikes_avg;
-%     end
-% end
-% 
+close all
+bin_size = 10;
+iter = 1;
+rate = zeros(n_columns, n_excitatory, (length(tspan)-1)/bin_size);
+for c=1:n_columns
+  for n=1:n_excitatory
+        spikes_n = reshape(spikes(iter,c,n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
+        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
+        rate(c,n,:) = spikes_avg;
+    end
+end
+
+
 % for c=1:n_columns
 %     figure
 %         plot(transpose(squeeze(rate(c,:,:))))
 %         title(['rates-col-',num2str(c)])
 %     grid
 % end
+bin_size = 5;
+iter = 1;
+rate_binned = zeros(n_columns, n_excitatory, (size(rate,3))/bin_size);
+for c=1:n_columns
+  for n=1:n_excitatory
+        spikes_avg = reshape(squeeze(rate(c,n,:)), bin_size, (size(rate,3))/bin_size);
+        spikes_avg2 = mean(spikes_avg, 1);
+        rate_binned(c,n,:) = spikes_avg2;
+    end
+end
 
+for c=1:n_columns
+    figure
+        plot(mean(transpose(squeeze(rate_binned(c,:,:))), 2))
+        title(['rates-col-',num2str(c)])
+    grid
+end
+
+
+%% non long - rate for a,b
+% n_columns = 5;
+% for c=1:n_columns
+%     col_spike_a = [];
+%     col_spike_b = [];
+%     for t=1:length(tspan)
+%         if lamda(1,4,1,t) == 300
+%             col_spike_a = [col_spike_a, sum(spikes(1,c,:, t))]
+%         elseif lamda(1,4,1,t) == 50
+%         end
+%     end
+%     
+% end
 
 %% analyse spikes binned
 n_columns = 5;
