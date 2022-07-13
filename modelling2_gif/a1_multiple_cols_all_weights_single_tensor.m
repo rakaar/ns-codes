@@ -203,6 +203,7 @@ weight_thalamic_to_som_l4_arr = [weight_thalamic_to_som_l4_side_col_2,weight_tha
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
 tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
+% tau_re_thalamic = 0.1; tau_ir_thalamic = 100; tau_ei_thalamic = 10;
     
 % initialize
 v0 = -70;  

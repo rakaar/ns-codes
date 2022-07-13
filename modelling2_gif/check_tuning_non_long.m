@@ -25,9 +25,16 @@ for c=1:n_columns
     for c_thal=1:n_thalamic_cols
         thalamic_epsc_to_c_col(1, c_thal) = mean(squeeze(thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,:,c_thal)));
     end
-    
+
     figure
         plot(thalamic_epsc_to_c_col)
         title(['thalamic inputs to col-', num2str(c)])
     grid
 end
+
+%% thalamic xe
+iter=1;
+figure
+    plot(squeeze(xe_thalamic(iter,4,1,:)))
+    title('xe thalamic')
+grid
