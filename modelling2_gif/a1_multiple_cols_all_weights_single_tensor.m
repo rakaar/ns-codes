@@ -96,6 +96,7 @@ spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 lamda = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
 thalamic_spikes = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
 epsc_thalamic = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
+thalamic_epsc_to_neuron_thalamic_column_wise = zeros(n_iters, n_columns, n_total_neurons, n_thalamic_cols);
 
 I_background_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 thalamic_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
@@ -554,17 +555,20 @@ for iter=1:n_iters
                for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_exc_l4_arr(col_index);
+                    thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_exc_l4_arr(col_index);
                end
           elseif n > n_excitatory && n <= n_excitatory + n_pv
              for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_pv_l4_arr(col_index);
+                    thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_pv_l4_arr(col_index);
              end
           else
               for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
-             end
+                    thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
+              end
           end
 
           thalamic_epsc_tensor(iter,c,n,i-5) = epsc_from_thalamic;

@@ -98,7 +98,7 @@ end
 
 %% rate for non long code
 close all
-bin_size = 10;
+bin_size = 15;
 iter = 1;
 rate = zeros(n_columns, n_excitatory, (length(tspan)-1)/bin_size);
 for c=1:n_columns

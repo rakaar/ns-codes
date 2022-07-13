@@ -67,3 +67,18 @@ for c=1:n_columns
         legend('spike rate a', 'spike rate b')
     grid
 end
+
+col = 4;
+figure
+    hold on
+        imagesc(squeeze(spike_rate_a(col,:,:)))
+    hold off
+    title(['spike rate a-col-', num2str(col)])
+grid
+
+figure
+    hold on
+        imagesc(squeeze(spike_rate_b(col,:,:)))
+    hold off
+    title(['spike rate b-col-', num2str(col)])
+grid

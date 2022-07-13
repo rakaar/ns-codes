@@ -107,12 +107,11 @@ end
 %% within column individual synapses
 close all
 iter = 1;
-pre = 5; 
-
-col = 1;
+pre = 11; 
+col = 2;
 for post=1:20
     figure
-        plot(squeeze(within_column_weight_matrices(col, :,pre,post)))
+        plot(squeeze(network_weight_matrix(iter, :,(col-1)*n_total_neurons + pre,(col-1)*n_total_neurons + post)))
         title(['pre ', num2str(pre), ' post ', num2str(post)])
     grid
 end
