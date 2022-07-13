@@ -1,6 +1,6 @@
 % for a random neuron
 close all;
-col = 4;
+col = 2;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
 

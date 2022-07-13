@@ -37,7 +37,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
-inhibition_reduction_factor = 0.8;
+inhibition_reduction_factor = 0.9;
 
 
 J_ee_0 = 30*weight_scaling_factor;
@@ -413,6 +413,9 @@ for iter=1:n_iters
             end
         end
     end
+
+    % temporary to see what happens if thalamic depression is removed
+    xe_thalamic(:,:,:,:) = 1;
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
