@@ -107,7 +107,7 @@ end
 %% within column individual synapses
 close all
 iter = 1;
-pre = 11; 
+pre = 7; 
 col = 2;
 for post=1:20
     figure

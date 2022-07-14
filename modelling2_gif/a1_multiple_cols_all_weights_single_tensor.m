@@ -37,7 +37,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
-inhibition_reduction_factor = 0.9;
+inhibition_reduction_factor = 0.6;
 
 
 J_ee_0 = 30*weight_scaling_factor;
@@ -202,7 +202,8 @@ weight_thalamic_to_som_l4_side_col_2 = 65;
 weight_thalamic_to_som_l4_arr = [weight_thalamic_to_som_l4_side_col_2,weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_above_col, weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_side_col_2];
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
-tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
+% tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
+tau_re_thalamic = 0.3; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
 % tau_re_thalamic = 0.1; tau_ir_thalamic = 100; tau_ei_thalamic = 10;
     
 % initialize
@@ -415,7 +416,7 @@ for iter=1:n_iters
     end
 
     % temporary to see what happens if thalamic depression is removed
-    xe_thalamic(:,:,:,:) = 1;
+%     xe_thalamic(:,:,:,:) = 1;
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
