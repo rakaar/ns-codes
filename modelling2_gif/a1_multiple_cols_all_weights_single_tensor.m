@@ -34,7 +34,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 1;
+som_reduction_factor = 0;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 0.6;
@@ -104,6 +104,9 @@ recurrence_exc_self_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neuro
 recurrence_inh_self_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_exc_neighbour_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_inh_neighbour_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+
+recurrence_inh_pv_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+recurrence_inh_som_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 
 % synaptic resources
 % --- l4 ---
@@ -600,7 +603,14 @@ for iter=1:n_iters
                                                                             epsc_som_back_c1 + ...
                                                                             epsc_som_front_c1 + ...
                                                                             epsc_som_front_c2;          
-		    total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
+		recurrence_inh_pv_epsc_tensor(iter,c,n,i-1)  = epsc_pv_own_column;  
+		recurrence_inh_som_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2  + ...
+                                                        epsc_som_back_c1 + ...
+                                                        epsc_som_front_c1 + ...
+                                                        epsc_som_front_c2 + ...
+                                                        epsc_som_own_column ;
+   
+        total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
             % clip test - to see whether the later spike(s) is due to
             % params or really disihibition
             % uncomment and see if spikes comes or not

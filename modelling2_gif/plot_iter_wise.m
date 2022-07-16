@@ -75,12 +75,18 @@ figure(random_neuron)
         all_epsc = rec_epsc_own_col + epsc_neigh + thalamic_curr_to_neuron;
         plot(all_epsc, 'm');
 
+        % pv epsc
+        plot(squeeze(recurrence_inh_pv_epsc_tensor(iter_to_see, col, random_neuron, :)), '--g')
+        
+        % som epsc
+        plot(squeeze(recurrence_inh_som_epsc_tensor(iter_to_see, col, random_neuron, :)), '--b')
+
         % protochol
         plot(squeeze(lamda(iter_to_see,col+2,1,:)))
       
     hold off
         title('random neuron epsc*100 and psth')
-        legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc','protochol')
+        legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc','pv epsc', 'som epsc','protochol')
 grid
 
 end
