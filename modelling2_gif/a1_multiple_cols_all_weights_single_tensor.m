@@ -37,8 +37,8 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 som_reduction_factor = 0;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
-inhibition_reduction_factor = 0.6;
-
+inhibition_reduction_factor = 0.8;
+imbalance_factor_pv_som = 10; % unequalise som -> pv and pv -> pv weights
 
 J_ee_0 = 30*weight_scaling_factor;
 J_pv_e_0 = 1.8750*weight_scaling_factor;
@@ -50,7 +50,7 @@ J_som_pv = 0;
 
 J_e_som = -50*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_som = 0;
-J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor*imbalance_factor_pv_som;
 
 % other column
 J_ee_1 = 15*weight_scaling_factor;
@@ -830,5 +830,7 @@ for iter=1:n_iters
 
 end % end of an iter
 
-save('batch_1.mat')
+% save('batch_1.mat')
+filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
+save(filename)
 toc

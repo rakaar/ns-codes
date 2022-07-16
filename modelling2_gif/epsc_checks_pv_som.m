@@ -21,7 +21,7 @@ end
 %% negative current avg
 close all;
 iter_to_see = 1;
-images_path = "D:\trail-2-all-neg-epsc\";
+images_path = "D:\10-ratio-epsc\";
 bin_size = 100;
 for col=1:n_columns
     figure
@@ -41,7 +41,7 @@ end
 
 close all;
 iter_to_see = 1;
-images_path = "D:\trial-2-pv-epsc\";
+images_path = "D:\10-ratio-pv\";
 bin_size = 100;
 for col=1:n_columns
     figure
