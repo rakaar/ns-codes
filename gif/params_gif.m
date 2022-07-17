@@ -8,7 +8,9 @@ El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 % positive_current = 4;
 % negative_current = -25;
 
+% current = -2; 
 current = 5; 
+% current = 1.8; 
 % +ve - 2,3,4
 % -ve - -15 to -24
 

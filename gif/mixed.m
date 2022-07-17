@@ -53,15 +53,24 @@ for t=2:length(tspan)
     if t - latest_spike_time <= 5 && latest_spike_time ~= -1
         theta(t) = theta(t-1) + (Thetar-theta(t-1))*exp(-(t+1-latest_spike_time)/time_constant);
     end
-    v_limit = -100;
-    if v(t) < v_limit
-        v(t)= v_limit;
+    
+    % abs/rel refractory period
+    if t - latest_spike_time >= 1 && t - latest_spike_time <= 5
+        v(t) = v(t-1) + 100*exp(-(t-latest_spike_time)/1);
     end
+
+%     v_limit = -100;
+%     if v(t) < v_limit
+%         v(t)= v_limit;
+%     end
     
     if v(t) > theta(t)
+        disp("time of spike")
+        disp(t)
         i1(t) = R1*i1(t) + A1;
         i2(t) = R2*i2(t) + A2;
-        v(t) = Vr;
+        v(t) = Vr - 50; % abs/rel refractory period
+%         v(t) = Vr; 
 %         theta(t) = max(Thetar, theta(t));
         theta(t) = theta(t-1) + (Thetar-theta(t-1))*exp(-(t+1-latest_spike_time)/time_constant);
         spikes(t) = 1;
