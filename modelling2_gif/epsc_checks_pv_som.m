@@ -21,7 +21,7 @@ end
 %% negative current avg
 close all;
 iter_to_see = 1;
-images_path = "D:\10-ratio-epsc\";
+images_path = "D:\pv-when-som-off\";
 bin_size = 100;
 for col=1:n_columns
     figure
@@ -41,7 +41,7 @@ end
 
 close all;
 iter_to_see = 1;
-images_path = "D:\10-ratio-pv\";
+images_path = "D:\pv-when-som-off\";
 bin_size = 100;
 for col=1:n_columns
     figure
@@ -52,7 +52,7 @@ for col=1:n_columns
         binned_pv_epsc = mean(reshaped_pv_epsc,1);
         plot(binned_pv_epsc);
         title(['pv-epsc-20-neurons-som-red-fac-',num2str(som_reduction_factor),'-col-',num2str(col)])
-        image_name = images_path + "col-" + num2str(col) + "---" + num2str(som_reduction_factor) + "---" + 'bin-size-' + num2str(bin_size) + '--' +  "-neg_epsc.fig"; 
+        image_name = images_path + "col-" + num2str(col) + "---" + num2str(som_reduction_factor) + "---" + 'bin-size-' + num2str(bin_size) + '--' +  "-pv-epsc.fig"; 
         saveas(gcf, image_name);
     grid
 end

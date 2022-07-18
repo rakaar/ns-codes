@@ -98,7 +98,7 @@ end
 
 %% rate for non long code
 close all
-bin_size = 15;
+bin_size = 50;
 iter = 1;
 rate = zeros(n_columns, n_excitatory, (length(tspan)-1)/bin_size);
 for c=1:n_columns
@@ -116,7 +116,7 @@ end
 %         title(['rates-col-',num2str(c)])
 %     grid
 % end
-bin_size = 5;
+bin_size = 1;
 iter = 1;
 rate_binned = zeros(n_columns, n_excitatory, (size(rate,3))/bin_size);
 for c=1:n_columns
@@ -132,6 +132,46 @@ for c=1:n_columns
         plot(mean(transpose(squeeze(rate_binned(c,:,:))), 2))
         title(['rates-col-',num2str(c)])
     grid
+end
+%% rate pv, som
+close all
+bin_size = 100;
+iter = 1;
+% pv 
+rate = zeros(n_columns, n_pv, (length(tspan)-1)/bin_size);
+for c=1:n_columns
+  for n=1:3
+        spikes_n = reshape(spikes(iter,c,20+n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
+        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
+        rate(c,n,:) = spikes_avg;
+    end
+end
+
+for c=1:5
+        figure('Name', 'PV')
+            hold on
+                plot(mean(squeeze(rate(c,:,:)), 1));
+                
+             hold off
+            title(['pv neurons spike rate-col-', num2str(c)])
+        grid
+end
+% som
+rate = zeros(n_columns, n_som, (length(tspan)-1)/bin_size);
+for c=1:n_columns
+  for n=1:2
+        spikes_n = reshape(spikes(iter,c,23+n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
+        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
+        rate(c,n,:) = spikes_avg;
+    end
+end
+for c=1:5
+        figure('Name','SOM')
+            hold on
+                 plot(mean(squeeze(rate(c,:,:)), 1));
+            hold off
+            title(['som neurons spike rate-col-', num2str(c)])
+        grid
 end
 
 

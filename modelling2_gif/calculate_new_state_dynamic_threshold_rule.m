@@ -35,15 +35,18 @@ iext = total_epsc + I_background;
         theta = theta_old + (Thetar-theta_old)*exp(-(t+1-t_spike)/time_constant);
     end
     
+     % abs/rel refractory period
+    if t - t_spike >= 1 && t - t_spike <= 5
+        v = v_old + 100*exp(-(t-t_spike)/1);
+    end
+
     if v >= theta
         A1 = abs(iext)/5;
-        A2 = min(-0.1, -0.4 + abs(-iext/10)); % stll causing the same old
-%         problem
-%         A2 = min(-0.01, -0.4 + abs(-iext/10));
-
+        A2 = min(-0.1, -0.4 + abs(-iext/10)); 
         i1 = R1*i1 + A1;
         i2 = R2*i2 + A2;
-        v = Vr;
+        %         v = Vr; % w/o refractory period
+        v = Vr - 50; % abs/rel refractory period
         theta = theta_old + (Thetar-theta_old)*exp(-(t+1-t_spike)/time_constant);
         is_spike = 1;
     end
@@ -51,11 +54,11 @@ iext = total_epsc + I_background;
     
 
     % biological limits on threshold and voltage values
-    if v < -100
-        v = -100;
-    end
-
-    if theta > 60
-        theta = 60;
-    end
+%     if v < -100
+%         v = -100;
+%     end
+% 
+%     if theta > 60
+%         theta = 60;
+%     end
 end
