@@ -34,7 +34,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -66,11 +66,8 @@ J_som_e_2 = 0.0056*weight_scaling_factor;
 J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
-exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
 minimum_weight_exc_to_exc = 0.01;
 maximum_weight_exc_to_exc = 500;
-across_columns_exc_to_exc_weight_matrix = zeros(n_iters, n_columns, n_columns, length(tspan), n_excitatory, n_excitatory);
-
 
 % analysis of weights
 num_of_LTPs = zeros(n_iters, n_columns, length(tspan));
@@ -219,7 +216,6 @@ i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
 J_ee_0_initial = 100;
-exc_to_exc_weight_matrix(:, :, 1:5, :,:) = J_ee_0_initial;
 
 % weight matrix of all neurons in all columns
 num_network_neurons = n_columns*n_total_neurons;
@@ -831,6 +827,7 @@ for iter=1:n_iters
 end % end of an iter
 
 % save('batch_1.mat')
-filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
+% filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
+filename = 'batch_1.mat';
 save(filename)
 toc

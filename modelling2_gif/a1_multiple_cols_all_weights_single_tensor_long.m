@@ -1,4 +1,4 @@
-for batch=2:100
+for batch=2:50
 
 % previous batch variables
 previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
@@ -35,43 +35,43 @@ tspan = 0:dt:t_simulate;
 spike_rate_dt = 1*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
-
 % connection strength
 % within column
-som_reduction_factor = 0.1;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
+weight_scaling_factor = 0.2;
+inhibition_reduction_factor = 1.2;
+imbalance_factor_pv_som = 15; % unequalise som -> pv and pv -> pv weights
 
-J_ee_0 = 30;
-J_pv_e_0 = 1.8750;
-J_som_e_0 = 1.8750*3;
+J_ee_0 = 30*weight_scaling_factor;
+J_pv_e_0 = 1.8750*weight_scaling_factor;
+J_som_e_0 = 1.8750*3*weight_scaling_factor;
 
-J_e_pv = -100*inc_inh_to_exc_factor;
-J_pv_pv = -9.3750*inc_inh_to_exc_factor;
+J_e_pv = -100*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_pv = 0;
 
-J_e_som = -50*inc_inh_to_exc_factor*som_reduction_factor;
+J_e_som = -50*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_som = 0;
-J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor;
+J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor*imbalance_factor_pv_som;
 
 % other column
-J_ee_1 = 15;
-J_pv_e_1 = 0.0131;
-J_som_e_1 = 0.0131;
+J_ee_1 = 15*weight_scaling_factor;
+J_pv_e_1 = 0.0131*weight_scaling_factor;
+J_som_e_1 = 0.0131*weight_scaling_factor;
 
-J_e_som_1 = -10*som_reduction_factor;
+J_e_som_1 = -10*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 
-J_ee_2 = 5;
-J_pv_e_2 = 0.0056;
-J_som_e_2 = 0.0056;
+J_ee_2 = 5*weight_scaling_factor;
+J_pv_e_2 = 0.0056*weight_scaling_factor;
+J_som_e_2 = 0.0056*weight_scaling_factor;
 
-J_e_som_2 = -2*som_reduction_factor;
+J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
+
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
-exc_to_exc_weight_matrix = zeros(n_iters, n_columns, length(tspan),n_excitatory, n_excitatory);
-minimum_weight_exc_to_exc = 5;
+minimum_weight_exc_to_exc = 0.01;
 maximum_weight_exc_to_exc = 500;
-across_columns_exc_to_exc_weight_matrix = zeros(n_iters, n_columns, n_columns, length(tspan), n_excitatory, n_excitatory);
-
 
 % analysis of weights
 num_of_LTPs = zeros(n_iters, n_columns, length(tspan));
@@ -98,6 +98,7 @@ spike_rates = zeros(n_iters, n_columns, n_total_neurons, spike_rate_length);
 lamda = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
 thalamic_spikes = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
 epsc_thalamic = zeros(n_iters, n_thalamic_cols, n_thalamic_neurons, length(tspan));
+thalamic_epsc_to_neuron_thalamic_column_wise = zeros(n_iters, n_columns, n_total_neurons, n_thalamic_cols);
 
 I_background_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 thalamic_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
@@ -105,6 +106,10 @@ recurrence_exc_self_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neuro
 recurrence_inh_self_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_exc_neighbour_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_inh_neighbour_column_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+
+recurrence_inh_pv_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+recurrence_inh_som_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
+
 
 % synaptic resources
 % --- l4 ---
@@ -189,23 +194,23 @@ end
 % weight_thalamic_to_som_l4 = 750;
 
 
-weight_thalamic_to_exc_l4_above_col = 200;
-weight_thalamic_to_exc_l4_side_col_1 = 100;
-weight_thalamic_to_exc_l4_side_col_2 = 50;
+weight_thalamic_to_exc_l4_above_col = 220;
+weight_thalamic_to_exc_l4_side_col_1 = 110;
+weight_thalamic_to_exc_l4_side_col_2 = 55;
 weight_thalamic_to_exc_l4_arr = [weight_thalamic_to_exc_l4_side_col_2, weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_above_col,weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_side_col_2];
 
-weight_thalamic_to_pv_l4_above_col = 1200;
-weight_thalamic_to_pv_l4_side_col_1 = 600;
-weight_thalamic_to_pv_l4_side_col_2 = 300;
+weight_thalamic_to_pv_l4_above_col = 310;
+weight_thalamic_to_pv_l4_side_col_1 = 155;
+weight_thalamic_to_pv_l4_side_col_2 = 77.5;
 weight_thalamic_to_pv_l4_arr = [weight_thalamic_to_pv_l4_side_col_2,weight_thalamic_to_pv_l4_side_col_1,weight_thalamic_to_pv_l4_above_col,weight_thalamic_to_pv_l4_side_col_1,weight_thalamic_to_pv_l4_side_col_2];
 
-weight_thalamic_to_som_l4_above_col = 1200;
-weight_thalamic_to_som_l4_side_col_1 = 600;
-weight_thalamic_to_som_l4_side_col_2 = 300;
+weight_thalamic_to_som_l4_above_col = 260;
+weight_thalamic_to_som_l4_side_col_1 = 130;
+weight_thalamic_to_som_l4_side_col_2 = 65;
 weight_thalamic_to_som_l4_arr = [weight_thalamic_to_som_l4_side_col_2,weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_above_col, weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_side_col_2];
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
-tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 35;
+tau_re_thalamic = 0.3; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
     
 % initialize
 v0 = -70;  
@@ -337,7 +342,7 @@ for iter=1:n_iters
         for n=1:n_total_neurons
                 background_lamda = 0.75*ones(1, length(tspan));
                 background_spikes = poisson_generator(background_lamda, 1);
-                background_epsc1 = 500*get_g_t_vector_background(background_spikes, length(tspan));
+                background_epsc1 = 5*get_g_t_vector_background(background_spikes, length(tspan));
                 background_epsc_reshaped = reshape(background_epsc1, 1,1,1,length(tspan));
                 background_epsc(iter,col,n,:) = background_epsc_reshaped;
         end
@@ -420,7 +425,7 @@ for iter=1:n_iters
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
-            epsc_thalamic(iter,thal_col,thal_n,:) = reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
+            epsc_thalamic(iter,thal_col,thal_n,:) = 0.25*reshape(get_g_t_vector(thalamic_spikes(iter,thal_col,thal_n,:), length(tspan)) .* reshape(xe_thalamic(iter,thal_col,thal_n,:), 1, length(tspan)),  1,1,length(tspan));
         end
     end
 
@@ -563,16 +568,19 @@ for iter=1:n_iters
                for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_exc_l4_arr(col_index);
+                    thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_exc_l4_arr(col_index);
                end
           elseif n > n_excitatory && n <= n_excitatory + n_pv
              for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_pv_l4_arr(col_index);
+                    thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_pv_l4_arr(col_index);
              end
           else
               for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
+                    thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
              end
           end
 
@@ -599,7 +607,15 @@ for iter=1:n_iters
         recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2 + ...
                                                                             epsc_som_back_c1 + ...
                                                                             epsc_som_front_c1 + ...
-                                                                            epsc_som_front_c2;          
+                                                                            epsc_som_front_c2;
+
+        recurrence_inh_pv_epsc_tensor(iter,c,n,i-1)  = epsc_pv_own_column;  
+		recurrence_inh_som_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2  + ...
+                                                        epsc_som_back_c1 + ...
+                                                        epsc_som_front_c1 + ...
+                                                        epsc_som_front_c2 + ...
+                                                        epsc_som_own_column ;
+
 		    total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
             % clip test - to see whether the later spike(s) is due to
             % params or really disihibition
