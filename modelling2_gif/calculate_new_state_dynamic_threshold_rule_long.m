@@ -1,4 +1,4 @@
-function [v, i1, i2, theta, is_spike] = calculate_new_state_dynamic_threshold_rule(v_old, i1_old, i2_old, theta_old,total_epsc, I_background,dt,t,gap)
+function [v, i1, i2, theta, is_spike] = calculate_new_state_dynamic_threshold_rule_long(v_old, i1_old, i2_old, theta_old,total_epsc, I_background,dt,t,gap)
      is_spike = 0;
     
 %      background element causing spike
@@ -7,15 +7,10 @@ function [v, i1, i2, theta, is_spike] = calculate_new_state_dynamic_threshold_ru
 %         is_spike = 1;
 %      end
 
-    k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
-    El=-70.0;Vr=-70.0;Thetar=-40.0;G=0.05;C=1.0;ThetaInf=-50.0;
+   k1=0.2;k2=0.02;b=0.01;R1=0.0;R2=1.0;
+    El=-70.0;Vr=-70.0;Thetar=-60.0;G=0.05;C=1.0;ThetaInf=-50.0;
 
-a = 0.005; A1 = 10; A2 = -0.6;
-
-% adjusting for realistic voltage values
-C = 3;
-b = 0.001;
-a = 0.01;
+    a = 0.020;
 
 
 iext = total_epsc + I_background;
@@ -36,11 +31,19 @@ iext = total_epsc + I_background;
     if gap <= 5 && gap ~= -1
         theta = theta_old + (Thetar-theta_old)*exp(-(gap+1)/time_constant);
     end
+
+      % abs/rel refractory period
+    if gap >= 1 && gap <= 5
+        v = v_old + 100*exp(-(gap)/1);
+    end
     
     if v >= theta
+        A1 = abs(iext)/5;
+        A2 = min(-0.1, -0.4 + abs(-iext/10));
         i1 = R1*i1 + A1;
         i2 = R2*i2 + A2;
-        v = Vr;
+%         v = Vr; % w/o refractory period
+        v = Vr - 50; % abs/rel refractory period
         theta = theta_old + (Thetar-theta_old)*exp(-(gap+1)/time_constant);
         is_spike = 1;
     end
@@ -48,11 +51,11 @@ iext = total_epsc + I_background;
     
 
     % biological limits on threshold and voltage values
-    if v < -140
-        v = -140;
-    end
-
-    if theta > 60
-        theta = 60;
-    end
+%     if v < -140
+%         v = -140;
+%     end
+% 
+%     if theta > 60
+%         theta = 60;
+%     end
 end
