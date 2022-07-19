@@ -21,8 +21,8 @@ end
 %% negative current avg
 close all;
 iter_to_see = 1;
-images_path = "D:\pv-when-som-off\";
-bin_size = 100;
+images_path = "D:\20-ration\";
+bin_size = 50;
 for col=1:n_columns
     figure
         inh_epsc = recurrence_inh_self_column_epsc_tensor(iter_to_see, col, 1:20, :) + recurrence_inh_neighbour_column_epsc_tensor(iter_to_see, col, 1:20, :);
