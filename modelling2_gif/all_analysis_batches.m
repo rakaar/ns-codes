@@ -1,18 +1,14 @@
-
-
-clear all; close all;
-
-
+%% basic vars
+batches = 50;
+data_path = 'D:\50batches-som-on';
+images_path = 'D:\50som-on-analysis\';
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
-batches = 50;
 iter=1;
 
-batch_data_path = "D:\5_multi_col_across_ap_som_reduced";
-images_path = "D:\5_across_col_ap_som_reduced_images\";
 
-
+%% rate of exc, pv, som
 psth_all = zeros(batches, n_columns, n_neurons);
 
 psth_avg_exc = zeros(n_columns,n_excitatory, batches);
@@ -25,7 +21,7 @@ psth_b = zeros(batches, n_columns, n_neurons);
 for b=1:batches
     fprintf("\n batch num %d \n",b);
 
-    batch_file_name = batch_data_path + "\batch_" + num2str(b) + ".mat";
+    batch_file_name = data_path + "\batch_" + num2str(b) + ".mat";
     spikes = load(batch_file_name,"spikes").spikes;
     lamda = load(batch_file_name,"lamda").lamda;
     t_simulate = load(batch_file_name,"t_simulate").t_simulate;
@@ -97,100 +93,7 @@ for c=1:n_columns
     fprintf("\n writing col %d \n",c)
 end
 
-%% rate for non long code
-close all
-bin_size = 50;
-iter = 1;
-rate = zeros(n_columns, n_excitatory, (length(tspan)-1)/bin_size);
-for c=1:n_columns
-  for n=1:n_excitatory
-        spikes_n = reshape(spikes(iter,c,n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
-        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
-        rate(c,n,:) = spikes_avg;
-    end
-end
-
-
-% for c=1:n_columns
-%     figure
-%         plot(transpose(squeeze(rate(c,:,:))))
-%         title(['rates-col-',num2str(c)])
-%     grid
-% end
-bin_size = 1;
-iter = 1;
-rate_binned = zeros(n_columns, n_excitatory, (size(rate,3))/bin_size);
-for c=1:n_columns
-  for n=1:n_excitatory
-        spikes_avg = reshape(squeeze(rate(c,n,:)), bin_size, (size(rate,3))/bin_size);
-        spikes_avg2 = mean(spikes_avg, 1);
-        rate_binned(c,n,:) = spikes_avg2;
-    end
-end
-
-for c=1:n_columns
-    figure
-        plot(mean(transpose(squeeze(rate_binned(c,:,:))), 2))
-        title(['rates-col-',num2str(c)])
-    grid
-end
-%% rate pv, som
-close all
-bin_size = 100;
-iter = 1;
-% pv 
-rate = zeros(n_columns, n_pv, (length(tspan)-1)/bin_size);
-for c=1:n_columns
-  for n=1:3
-        spikes_n = reshape(spikes(iter,c,20+n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
-        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
-        rate(c,n,:) = spikes_avg;
-    end
-end
-
-for c=1:5
-        figure('Name', 'PV')
-            hold on
-                plot(mean(squeeze(rate(c,:,:)), 1));
-                
-             hold off
-            title(['pv neurons spike rate-col-', num2str(c)])
-        grid
-end
-% som
-rate = zeros(n_columns, n_som, (length(tspan)-1)/bin_size);
-for c=1:n_columns
-  for n=1:2
-        spikes_n = reshape(spikes(iter,c,23+n,1:length(tspan)-1),  bin_size,(length(tspan)-1)/bin_size);
-        spikes_avg = mean(spikes_n(:, 1:(length(tspan)-1)/bin_size))/0.001;
-        rate(c,n,:) = spikes_avg;
-    end
-end
-for c=1:5
-        figure('Name','SOM')
-            hold on
-                 plot(mean(squeeze(rate(c,:,:)), 1));
-            hold off
-            title(['som neurons spike rate-col-', num2str(c)])
-        grid
-end
-
-
-%% non long - rate for a,b
-% n_columns = 5;
-% for c=1:n_columns
-%     col_spike_a = [];
-%     col_spike_b = [];
-%     for t=1:length(tspan)
-%         if lamda(1,4,1,t) == 300
-%             col_spike_a = [col_spike_a, sum(spikes(1,c,:, t))]
-%         elseif lamda(1,4,1,t) == 50
-%         end
-%     end
-%     
-% end
-
-%% analyse spikes binned
+%% rate for a stimulus, b stimulus 
 n_columns = 5;
 for c=1:n_columns
     col_psth = squeeze(psth_all(:,c,1:20));
@@ -221,19 +124,18 @@ for c=1:5
     grid
 end
 
-%% binned rate
-
+%% rate in bins
 bin_size = 100;
 
 
-t_simulate = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "t_simulate").t_simulate;
-n_columns = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "n_columns").n_columns;
-n_total_neurons = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "n_total_neurons").n_total_neurons;
+t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
+n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
+n_total_neurons = load(strcat(data_path, '\', 'batch_1.mat'), "n_total_neurons").n_total_neurons;
 n_bins = t_simulate/bin_size;
 psth_binned = zeros(n_columns, n_total_neurons, batches*n_bins);
 iter=1;
 for b=1:batches
-    batch_file_name = batch_data_path + "\batch_" + num2str(b) + ".mat";
+    batch_file_name = data_path + "\batch_" + num2str(b) + ".mat";
     spikes = load(batch_file_name,"spikes").spikes;
     
     for c=1:n_columns
@@ -266,17 +168,17 @@ for c=1:n_columns
     grid
 end
 
-%% for one AB 
+%% for each token AB 
 close all
-t_simulate = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "t_simulate").t_simulate;
-n_columns = load("D:\5_multi_col_across_ap_som_reduced\batch_1.mat", "n_columns").n_columns;
+t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
+n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
 n_exc = 20;
 batches = 50;
 iter=1;
 rate_for_ab = zeros(n_columns, n_exc, (t_simulate/170)*batches);
 for b=1:batches
     fprintf("\n batch is %d \n",b)
-    batch_file_name = batch_data_path + "\batch_" + num2str(b) + ".mat";
+    batch_file_name = data_path + "\batch_" + num2str(b) + ".mat";
     spikes = load(batch_file_name,"spikes").spikes;
 
     for c=1:n_columns
@@ -308,6 +210,64 @@ for c=1:n_columns
         image_name = images_path + "-rate-avg-over-neurons-ab-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
+end
+
+%% weights
+tspan = load(strcat(data_path, '\', 'batch_1.mat'), "tspan").tspan;
+num_network_neurons = 125;
+batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
+n_exc = 20;
+
+
+
+iter=1;
+
+for b=1:batches
+    fprintf("\n batch is %d \n",b)
+    batch_file_name = data_path + "\batch_" + num2str(b) + ".mat";
+    network_weight_matrix = load(batch_file_name, "network_weight_matrix").network_weight_matrix;
+    for n1=1:num_network_neurons
+        for n2=1:num_network_neurons
+             batch_avg_network_weights(b,n1,n2) = mean(squeeze(network_weight_matrix(iter,:,n1,n2)));
+%              all_1ms_network_weights((b-1)*length(tspan) + 1:(b-1)*length(tspan) + length(tspan)   ,n1,n2) =  network_weight_matrix(iter,:,n1,n2);
+        end
+    end
+
+
+end
+
+% plot weight matrix
+n_columns = 5;
+for c1=1:n_columns
+    for c2=1:n_columns
+        if c1 - c2 == 0
+            % within column matrix
+            within_column_matrix = batch_avg_network_weights(:,(c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc, (c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc);
+            fprintf("\n %d %d %d %d \n ",(c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc, (c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc)
+            reshaped_within_column_matrix = reshape(within_column_matrix, batches, n_exc*n_exc);
+            figure
+                plot(reshaped_within_column_matrix)
+                title(['weights batches wise', num2str(c1)])
+                image_name = images_path + "w_batch_avg-c-" + num2str(c1) + ".fig"; 
+                saveas(gcf, image_name);
+
+            grid
+        elseif abs(c1 - c2) == 1 || abs(c1 - c2) == 2
+            % c1 pre ,c2 post
+            across_column_matrix = batch_avg_network_weights(:,(c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc, (c2-1)*n_total_neurons + 1:(c2-1)*n_total_neurons + n_exc);
+            fprintf("\n %d %d %d %d \n ",(c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc, (c2-1)*n_total_neurons + 1,(c2-1)*n_total_neurons + n_exc)
+            reshaped_across_column_matrix = reshape(across_column_matrix, batches, n_exc*n_exc);
+            figure
+                plot(reshaped_across_column_matrix)
+                title(['weights batches wise', num2str(c1), '-',num2str(c2)])
+                image_name = images_path + "w_batch_avg-c1-" + num2str(c1) + "-c2-" + num2str(c2)+ ".fig"; 
+                saveas(gcf, image_name);
+            grid
+
+        else
+            continue
+        end
+    end
 end
 
 
