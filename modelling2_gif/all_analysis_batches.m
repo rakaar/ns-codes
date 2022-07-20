@@ -1,7 +1,7 @@
 %% basic vars
-batches = 50;
-data_path = 'D:\50batches-som-on';
-images_path = 'D:\50som-on-analysis\';
+batches = 100;
+data_path = 'D:\100-som-off';
+images_path = 'D:\100-som-off-analysis\';
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -9,6 +9,7 @@ iter=1;
 
 
 %% rate of exc, pv, som
+close all;
 psth_all = zeros(batches, n_columns, n_neurons);
 
 psth_avg_exc = zeros(n_columns,n_excitatory, batches);
@@ -93,7 +94,8 @@ for c=1:n_columns
     fprintf("\n writing col %d \n",c)
 end
 
-%% rate for a stimulus, b stimulus 
+%% rate for a stimulus, b stimulus
+close all;
 n_columns = 5;
 for c=1:n_columns
     col_psth = squeeze(psth_all(:,c,1:20));
@@ -125,6 +127,7 @@ for c=1:5
 end
 
 %% rate in bins
+close all;
 bin_size = 100;
 
 
@@ -173,7 +176,6 @@ close all
 t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
 n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
 n_exc = 20;
-batches = 50;
 iter=1;
 rate_for_ab = zeros(n_columns, n_exc, (t_simulate/170)*batches);
 for b=1:batches
@@ -196,8 +198,8 @@ end
 for c=1:n_columns
     figure
         plot(transpose(squeeze(rate_for_ab(c,:,:))))
-        title(['rate-ab-c-',num2str(c)])
-        image_name = images_path + "-rate-ab-c-" + num2str(c) + ".fig"; 
+        title(['rate-170ms-c-',num2str(c)])
+        image_name = images_path + "-rate-170ms-bin-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
 end
@@ -206,13 +208,14 @@ for c=1:n_columns
     figure
         mean_rate_over_neurons = mean(squeeze(rate_for_ab(c,:,:)), 1);
         plot(mean_rate_over_neurons)
-        title(['rate-ab-c-',num2str(c)])
-        image_name = images_path + "-rate-avg-over-neurons-ab-c-" + num2str(c) + ".fig"; 
+        title(['rate-170ms-c-',num2str(c)])
+        image_name = images_path + "-rate-avg-over-neurons-170ms-bin-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
 end
 
 %% weights
+close all;
 tspan = load(strcat(data_path, '\', 'batch_1.mat'), "tspan").tspan;
 num_network_neurons = 125;
 batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
