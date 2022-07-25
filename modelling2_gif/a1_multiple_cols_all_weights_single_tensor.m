@@ -34,7 +34,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.3;
@@ -191,9 +191,9 @@ weight_thalamic_to_exc_l4_side_col_1 = 110;
 weight_thalamic_to_exc_l4_side_col_2 = 55;
 weight_thalamic_to_exc_l4_arr = [weight_thalamic_to_exc_l4_side_col_2, weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_above_col,weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_side_col_2];
 
-weight_thalamic_to_pv_l4_above_col = 270;
-weight_thalamic_to_pv_l4_side_col_1 = 135;
-weight_thalamic_to_pv_l4_side_col_2 = 67.5;
+weight_thalamic_to_pv_l4_above_col = 300;
+weight_thalamic_to_pv_l4_side_col_1 = 150;
+weight_thalamic_to_pv_l4_side_col_2 = 75;
 weight_thalamic_to_pv_l4_arr = [weight_thalamic_to_pv_l4_side_col_2,weight_thalamic_to_pv_l4_side_col_1,weight_thalamic_to_pv_l4_above_col,weight_thalamic_to_pv_l4_side_col_1,weight_thalamic_to_pv_l4_side_col_2];
 
 weight_thalamic_to_som_l4_above_col = 260;
