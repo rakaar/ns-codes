@@ -53,7 +53,7 @@ figure(random_neuron)
         inh_epsc = recurrence_inh_self_column_epsc_tensor(iter_to_see, col, random_neuron, :) + recurrence_inh_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
         inh_epsc = squeeze(inh_epsc);
         inh_epsc = [0; inh_epsc];
-        plot(inh_epsc,'k');
+        plot(inh_epsc,'k', 'LineWidth', 4);
 
         % epsc from neighbour
         epsc_neigh = recurrence_exc_neighbour_column_epsc_tensor(iter_to_see, col, random_neuron, :);
@@ -73,7 +73,7 @@ figure(random_neuron)
 
         % all epsc
         all_epsc = rec_epsc_own_col + epsc_neigh + thalamic_curr_to_neuron;
-        plot(all_epsc, 'm');
+        plot(all_epsc, 'm', 'LineWidth',6);
 
         % pv epsc
         plot(squeeze(recurrence_inh_pv_epsc_tensor(iter_to_see, col, random_neuron, :)), '--g')
