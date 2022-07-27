@@ -1,7 +1,7 @@
 %% basic vars
-batches = 100;
-data_path = 'D:\100-som-off-new-params';
-images_path = 'D:\100-som-off-new-params-analysis\';
+batches = 50;
+data_path = "D:\just-a-test";
+images_path = "D:\just-a-test-analysis\";
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;

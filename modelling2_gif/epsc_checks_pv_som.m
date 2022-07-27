@@ -21,7 +21,7 @@ end
 %% negative current avg
 close all;
 iter_to_see = 1;
-images_path = "D:\reduce-imbalance\";
+images_path = "D:\on-modified\";
 bin_size = 50;
 for col=1:n_columns
     figure
@@ -41,7 +41,7 @@ end
 
 close all;
 iter_to_see = 1;
-images_path = "D:\reduce-imbalance\";
+images_path = "D:\on-modified\";
 bin_size = 50;
 for col=1:n_columns
     figure
@@ -51,8 +51,28 @@ for col=1:n_columns
         reshaped_pv_epsc = reshape(mean_over_all_exc_neurons_pv_epsc, bin_size, length(mean_over_all_exc_neurons_pv_epsc)/bin_size);
         binned_pv_epsc = mean(reshaped_pv_epsc,1);
         plot(binned_pv_epsc);
-        title(['old-pv-epsc-20-neurons-som-red-fac-',num2str(som_reduction_factor),'-col-',num2str(col)])
+        title(['pv-epsc-20-neurons-som-red-fac-',num2str(som_reduction_factor),'-col-',num2str(col)])
         image_name = images_path + "col-" + num2str(col) + "---" + num2str(som_reduction_factor) + "---" + 'bin-size-' + num2str(bin_size) + '--' +  "-pv-epsc.fig"; 
+        saveas(gcf, image_name);
+    grid
+end
+
+%% som current average
+
+close all;
+iter_to_see = 1;
+images_path = "D:\on-modified\";
+bin_size = 50;
+for col=1:n_columns
+    figure
+        som_epsc = recurrence_inh_som_epsc_tensor(iter_to_see, col, 1:20, :);
+        som_epsc_squeezed = squeeze(som_epsc);
+        mean_over_all_exc_neurons_som_epsc = mean(som_epsc_squeezed, 1); 
+        reshaped_som_epsc = reshape(mean_over_all_exc_neurons_som_epsc, bin_size, length(mean_over_all_exc_neurons_som_epsc)/bin_size);
+        binned_som_epsc = mean(reshaped_som_epsc,1);
+        plot(binned_som_epsc);
+        title(['som-epsc-20-neurons-som-red-fac-',num2str(som_reduction_factor),'-col-',num2str(col)])
+        image_name = images_path + "col-" + num2str(col) + "---" + num2str(som_reduction_factor) + "---" + 'bin-size-' + num2str(bin_size) + '--' +  "-som-epsc.fig"; 
         saveas(gcf, image_name);
     grid
 end
