@@ -1,4 +1,4 @@
-for batch=2:50
+for batch=51:100
 
 % previous batch variables
 previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
