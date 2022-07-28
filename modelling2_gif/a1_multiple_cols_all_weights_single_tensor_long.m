@@ -1,4 +1,4 @@
-for batch=51:100
+for batch=2:100
 
 % previous batch variables
 previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
@@ -47,11 +47,11 @@ J_ee_0 = 30*weight_scaling_factor;
 J_pv_e_0 = 1.8750*weight_scaling_factor;
 J_som_e_0 = 1.8750*3*weight_scaling_factor;
 
-J_e_pv = -80*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_pv = -90*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_pv = 0;
 
-J_e_som = -40*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_som = -20*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_som = 0;
 J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor*imbalance_factor_pv_som;
 
