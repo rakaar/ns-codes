@@ -1,7 +1,7 @@
 %% basic vars
-batches = 50;
-data_path = "D:\28june-test";
-images_path = "D:\28june-test-analysis\";
+batches = 100;
+data_path = "D:\29uly-morning";
+images_path = "D:\29july-morning-analysis\";
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
