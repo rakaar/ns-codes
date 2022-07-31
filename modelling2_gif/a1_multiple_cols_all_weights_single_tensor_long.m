@@ -1,7 +1,7 @@
 for batch=2:100
 
 % previous batch variables
-previous_batch_file = "batch_" + num2str(batch-1) + ".mat";
+previous_batch_file = strcat('batch_', num2str(batch-1), '.mat');
 previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
 previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
   
@@ -368,7 +368,7 @@ xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
 
 for iter=1:n_iters
     
-%     fprintf("------iter numm %d -----", iter);
+%     fprintf('------iter numm %d -----', iter);
 
     % thalamic
     for thal_col=1:n_thalamic_cols
@@ -674,7 +674,7 @@ for iter=1:n_iters
 		
             
             
-            %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
+            %	fprintf('voltage returned from function is %f \n', voltages(c,n,i));
     
             % update synaptic resources
             
@@ -713,7 +713,7 @@ for iter=1:n_iters
         end
     
    
-%     fprintf("xr %f, xe %f, xi %f\n", xr(c,n,i),xe(c,n,i), xi(c,n,i));
+%     fprintf('xr %f, xe %f, xi %f\n', xr(c,n,i),xe(c,n,i), xi(c,n,i));
    % pause(0.4);
     
     end
@@ -793,7 +793,7 @@ for iter=1:n_iters
                     end
 %                     if i == 13
 %                         if presyn_neuron == 79 && neuron_p == 7
-%                             fprintf("\n  spikes(iter,col_p,neuron_p_index_in_column,i) %d \n",spikes(iter,col_p,neuron_p_index_in_column,i))
+%                             fprintf('\n  spikes(iter,col_p,neuron_p_index_in_column,i) %d \n',spikes(iter,col_p,neuron_p_index_in_column,i))
 %                             pause(1)
 %                         end
 %                     end
@@ -832,7 +832,7 @@ for iter=1:n_iters
                
         % re-initialize at the end of token
         if ismember(i,token_start_times)
-%             disp("*******************token resest***************************")
+%             disp('*******************token resest***************************')
             voltages(:,:,:,i) = v0;  
             xr(:, :, :, i) = 1;
             xe(:, :, :, i) = 0;
@@ -850,7 +850,7 @@ for iter=1:n_iters
 end % end of an iter
 
 
-filename = "batch_" + num2str(batch) + ".mat";
+filename = 'batch_' + num2str(batch) + '.mat';
 save(filename);
 
 clear all;
