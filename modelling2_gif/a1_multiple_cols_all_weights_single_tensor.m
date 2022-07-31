@@ -34,8 +34,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-space_of_parameter = 0.95;
-som_reduction_factor = 1;
+som_reduction_factor = 0;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -67,16 +66,18 @@ J_som_e_2 = 0.0056*weight_scaling_factor;
 J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 
 % space of params
-J_e_pv = J_e_pv*space_of_parameter;
-J_pv_pv = J_pv_pv*space_of_parameter;
-J_som_pv = J_som_pv*space_of_parameter;
+pv_space_of_parameter = 1.05;
+som_space_of_parameter = 1.05;
+J_e_pv = J_e_pv*pv_space_of_parameter;
+J_pv_pv = J_pv_pv*pv_space_of_parameter;
+J_som_pv = J_som_pv*pv_space_of_parameter;
 
-J_e_som = J_e_som*space_of_parameter;
-J_som_som = J_som_som*space_of_parameter;
-J_pv_som = J_pv_som*space_of_parameter;
+J_e_som = J_e_som*som_space_of_parameter;
+J_som_som = J_som_som*som_space_of_parameter;
+J_pv_som = J_pv_som*som_space_of_parameter;
 
-J_e_som_1 = J_e_som_1*space_of_parameter; 
-J_e_som_2 =  J_e_som_2*space_of_parameter;
+J_e_som_1 = J_e_som_1*som_space_of_parameter; 
+J_e_som_2 =  J_e_som_2*som_space_of_parameter;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
 minimum_weight_exc_to_exc = 0.01;
