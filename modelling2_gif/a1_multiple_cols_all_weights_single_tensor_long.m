@@ -37,7 +37,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 1;
+som_reduction_factor = 0;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -70,7 +70,7 @@ J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_f
 
 % space of params
 pv_space_of_parameter = 1.05;
-som_space_of_parameter = 1.05;
+som_space_of_parameter = 0.95;
 J_e_pv = J_e_pv*pv_space_of_parameter;
 J_pv_pv = J_pv_pv*pv_space_of_parameter;
 J_som_pv = J_som_pv*pv_space_of_parameter;
