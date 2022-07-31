@@ -850,7 +850,7 @@ for iter=1:n_iters
 end % end of an iter
 
 
-filename = 'batch_' + num2str(batch) + '.mat';
+filename = strcat('batch_', num2str(batch), '.mat');
 save(filename);
 
 clear all;
