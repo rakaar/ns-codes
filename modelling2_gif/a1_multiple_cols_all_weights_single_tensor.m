@@ -66,7 +66,7 @@ J_som_e_2 = 0.0056*weight_scaling_factor;
 J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 
 % space of params
-pv_space_of_parameter = 1.05;
+pv_space_of_parameter = 0.95;
 som_space_of_parameter = 1.05;
 J_e_pv = J_e_pv*pv_space_of_parameter;
 J_pv_pv = J_pv_pv*pv_space_of_parameter;
