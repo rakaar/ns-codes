@@ -213,6 +213,17 @@ for c=1:n_columns
     grid
 end
 
+bin_size = 10;
+for c=1:n_columns
+    figure
+        mean_rate_over_neurons = mean(squeeze(rate_for_ab(c,:,:)), 1);
+        mean_rate_binned_10_tokens = mean(reshape(mean_rate_over_neurons,  bin_size, length(mean_rate_over_neurons)/bin_size),  1); 
+        plot(mean_rate_binned_10_tokens)
+        title(['rate-1700ms--c-',num2str(c)])
+        image_name = images_path + "-rate-avg-over-neurons-1700ms-bin-c-" + num2str(c) + ".fig"; 
+        saveas(gcf, image_name);
+    grid
+end
 %% weights
 close all;
 tspan = load(strcat(data_path, '\', 'batch_1.mat'), "tspan").tspan;
