@@ -1,7 +1,8 @@
 %% imagesc of weights
+close all;
 batches = 100;
-data_path = "D:\new-final-working-baseline-params-som-off";
-images_path = "D:\new-final-working-baseline-params-som-off-analysis\";
+data_path = "D:\both-pv-som-0.20-increase-som-off";
+% images_path = "D:\new-final-working-baseline-params-som-off-analysis\";
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
 n_total_neurons = load(strcat(data_path, '\', 'batch_1.mat'), "n_total_neurons").n_total_neurons;
@@ -52,10 +53,21 @@ end
 
 %% too see pre post weight over batches
 close all
-pre_col = 2;
-post_col = 4;
-pre_neuron = 4;
-post_neuron = 1;
+index_in_imagesc_plot = 188;
+pre_col = 4;
+post_col = 5;
+
+pre_neuron = mod(index_in_imagesc_plot, 20);
+if pre_neuron == 0
+    pre_neuron = 20;
+end 
+
+post_neuron = floor(index_in_imagesc_plot/20) + 1;
+if post_neuron == 21
+    post_neuron = 20;
+end
+
+
 
 pre_index_in_matrix = (pre_col-1)*n_total_neurons + pre_neuron;
 post_index_in_matrix = (post_col-1)*n_total_neurons + post_neuron;
@@ -71,12 +83,6 @@ tau_strength = 30; tau_weak = 50;
 
 delta_t = [];
 delta_w_by_w = [];
-
-iter = 1;
-pre_col = 2;
-post_col = 4;
-pre_neuron = 4;
-post_neuron = 1;
 
 for b=1:batches
     fprintf("\n batch num %d \n",b);
