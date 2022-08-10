@@ -1,4 +1,4 @@
-for batch=2:100
+for batch=2:200
 
 % previous batch variables
 previous_batch_file = strcat('batch_', num2str(batch-1), '.mat');
@@ -69,8 +69,8 @@ J_som_e_2 = 0.0056*weight_scaling_factor;
 J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 
 % space of params
-pv_space_of_parameter = 1.20;
-som_space_of_parameter = 1.20;
+pv_space_of_parameter = 1.5;
+som_space_of_parameter = 1.5;
 J_e_pv = J_e_pv*pv_space_of_parameter;
 J_pv_pv = J_pv_pv*pv_space_of_parameter;
 J_som_pv = J_som_pv*pv_space_of_parameter;
