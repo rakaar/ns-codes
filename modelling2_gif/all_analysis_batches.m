@@ -1,7 +1,7 @@
 %% basic vars
 batches = 200;
-data_path = "D:\both-pv-som-0.50-increase-som-on";
-images_path = "D:\both-pv-som-0.50-increase-som-on-analysis\";
+data_path = "D:\both-pv-som-scale-1-200b-som-off";
+images_path = "D:\both-pv-som-scale-1-200b-som-off-analysis\";
 n_columns = 5;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
