@@ -1,8 +1,10 @@
 % for a random neuron
 close all;
-col = 4;
+col = 7;
 iter_to_see=1;
 n_bins = spike_rate_dt/dt;
+
+folder_path = "D:\9vs5\9";
 
 total_input_epsc = thalamic_epsc_tensor ...
                     + recurrence_exc_self_column_epsc_tensor + recurrence_inh_self_column_epsc_tensor ...
@@ -88,5 +90,9 @@ figure(random_neuron)
         title('random neuron epsc*100 and psth')
         legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc','pv epsc', 'som epsc','protochol')
 grid
+
+        image_name = strcat(folder_path, '\', num2str(random_neuron), '.fig'); 
+        saveas(gcf, image_name);
+
 
 end

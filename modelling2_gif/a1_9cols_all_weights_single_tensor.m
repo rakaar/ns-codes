@@ -5,16 +5,16 @@ tic
 n_iters = 1;
 
 % basic variables;
-n_columns = 5;
+n_columns = 9; % 5->9
 n_excitatory = 20;
 n_pv = 3; n_som = 2;
 n_inhibitory = n_pv + n_som;
 n_total_neurons = n_excitatory + n_inhibitory;
 n_thalamic_neurons = 25;
-n_thalamic_cols = 9;
+n_thalamic_cols = 13;
     
 % time step
-n_tokens = 5;
+n_tokens = 10;
 pre_stimulus_time = 0; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 50;
 pre_token_silence = 10;
@@ -154,13 +154,19 @@ for iter=1:n_iters
         token_first_half_end_time = token_first_half_start_time+single_stimulus_duration-1;
 
         lamda(iter,1,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,2,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
-        lamda(iter,3,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        lamda(iter,4,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
+        lamda(iter,2,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,3,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,4,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
         lamda(iter,5,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        lamda(iter,6,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
-        lamda(iter,7:9,:,token_first_half_start_time:ind+pre_token_silence+single_stimulus_duration-1) = lamda_i;
-
+        lamda(iter,6,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
+        lamda(iter,7,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        lamda(iter,8,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,9,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,10,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,11,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,12,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,13,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+       
         % posttoken silence
         token_gap_duration_start = ind+pre_token_silence+single_stimulus_duration;
         token_gap_duration_end = token_gap_duration_start+gap_duration-1;
@@ -173,12 +179,16 @@ for iter=1:n_iters
         lamda(iter,1,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
         lamda(iter,2,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
         lamda(iter,3,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        lamda(iter,4,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
-        lamda(iter,5,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
-        lamda(iter,6,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        lamda(iter,4,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,5,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,6,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
         lamda(iter,7,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
-        lamda(iter,8,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
-        lamda(iter,9,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,8,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        lamda(iter,9,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,10,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,11,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,12,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,13,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
         % silence - saving time computationally
         
         
@@ -282,11 +292,11 @@ for n1=1:num_network_neurons
         c1 = floor(n1/n_total_neurons) + 1;
         c2 = floor(n2/n_total_neurons) + 1;
         
-        if c1 == 6
-            c1 = 5;
+        if c1 == n_columns + 1
+            c1 = n_columns;
         end
-        if c2 == 6
-            c2 = 5;
+        if c2 == n_columns + 1
+            c2 = n_columns;
         end
 
         n1_index_in_column = mod(n1,n_total_neurons);
@@ -842,6 +852,6 @@ end % end of an iter
 
 % save('batch_1.mat')
 % filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
-filename = 'batch_1_5.mat';
+filename = 'batch_1_9.mat';
 save(filename)
 toc
