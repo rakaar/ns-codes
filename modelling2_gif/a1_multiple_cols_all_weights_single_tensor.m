@@ -842,6 +842,6 @@ end % end of an iter
 
 % save('batch_1.mat')
 % filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
-filename = 'batch_1_5.mat';
+filename = 'batch_1.mat';
 save(filename)
 toc
