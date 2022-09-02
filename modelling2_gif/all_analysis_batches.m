@@ -1,8 +1,8 @@
 %% basic vars
-batches = 200;
-data_path = "D:\both-pv-som-scale-1-200b-som-off";
-images_path = "D:\both-pv-som-scale-1-200b-som-off-analysis\";
-n_columns = 5;
+batches = 100;
+data_path = "D:\a1-9cols-som-off-data";
+images_path = "D:\a1-9cols-som-off-data-analysis\";
+n_columns = 9;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
 iter=1;
@@ -95,7 +95,7 @@ end
 
 %% rate for a stimulus, b stimulus
 close all;
-n_columns = 5;
+n_columns = 9;
 for c=1:n_columns
     col_psth = squeeze(psth_all(:,c,1:20));
     figure
@@ -127,7 +127,7 @@ end
 
 %% rate in bins
 close all;
-bin_size = 100;
+bin_size = 50;
 
 
 t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
@@ -175,6 +175,7 @@ close all
 t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
 n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
 n_exc = 20;
+bin_size = 10;
 iter=1;
 rate_for_ab = zeros(n_columns, n_exc, (t_simulate/170)*batches);
 for b=1:batches
@@ -185,8 +186,8 @@ for b=1:batches
     for c=1:n_columns
         for n=1:n_exc
             spikes_cn = squeeze(spikes(iter,c,n,1:t_simulate));
-            spikes_cn_reshaped = reshape(spikes_cn,   10, 170);
-            spikes_cn_reshaped_avg = sum(spikes_cn_reshaped, 2)/(170*0.001);
+            spikes_cn_reshaped = reshape(spikes_cn,   bin_size, t_simulate/bin_size);
+            spikes_cn_reshaped_avg = sum(spikes_cn_reshaped, 2)/((t_simulate/bin_size)*0.001);
             rate_for_ab(c,n,(b-1)*10 + 1:(b-1)*10 + 10) = reshape(spikes_cn_reshaped_avg,  1,1,10);
         end
     end
@@ -213,21 +214,23 @@ for c=1:n_columns
     grid
 end
 
-bin_size = 10;
-for c=1:n_columns
+% bin_size = 10;
+bin_size = 10; % shift from 5 to 9 cols
+ for c=1:n_columns
     figure
         mean_rate_over_neurons = mean(squeeze(rate_for_ab(c,:,:)), 1);
         mean_rate_binned_10_tokens = mean(reshape(mean_rate_over_neurons,  bin_size, length(mean_rate_over_neurons)/bin_size),  1); 
         plot(mean_rate_binned_10_tokens)
-        title(['rate-1700ms--c-',num2str(c)])
-        image_name = images_path + "-rate-avg-over-neurons-1700ms-bin-c-" + num2str(c) + ".fig"; 
+        title(['rate-850ms--c-',num2str(c)])
+        image_name = images_path + "-rate-avg-over-neurons-850ms-bin-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
 end
 %% weights
 close all;
 tspan = load(strcat(data_path, '\', 'batch_1.mat'), "tspan").tspan;
-num_network_neurons = 125;
+n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
+num_network_neurons = n_columns*n_total_neurons;
 batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
 n_exc = 20;
 
@@ -250,7 +253,7 @@ for b=1:batches
 end
 
 % plot weight matrix
-n_columns = 5;
+n_columns = 9;
 for c1=1:n_columns
     for c2=1:n_columns
         if c1 - c2 == 0

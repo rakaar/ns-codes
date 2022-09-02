@@ -1,4 +1,4 @@
-for batch=2:100
+for batch=101:200
 
 % previous batch variables
 previous_batch_file = strcat('batch_', num2str(batch-1), '.mat');
