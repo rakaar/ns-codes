@@ -19,7 +19,6 @@ n_thalamic_cols = 13;
     
 % time step
 n_tokens = 5;
-pre_stimulus_time = 0; post_stimulus_time = 0;
 single_stimulus_duration = 50; gap_duration = 50;
 pre_token_silence = 10;
 post_token_silence = 10;
@@ -142,7 +141,6 @@ lamda_b = 50;
 lamda_m = 100;
 lamda_s = 0;
 
-lamda(:,:,:,1:pre_stimulus_time) = lamda_s;
 
 for iter=1:n_iters
     for tok=1:n_tokens
