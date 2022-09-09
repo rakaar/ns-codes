@@ -91,8 +91,8 @@ figure(random_neuron)
         legend('spike rate','threshold','voltage','thalamic col','exc own col','inh own col','epsc neighbour','recurrence own column','i background','all epsc','pv epsc', 'som epsc','protochol')
 grid
 
-        image_name = strcat(folder_path, '\', num2str(random_neuron), '.fig'); 
-        saveas(gcf, image_name);
+%         image_name = strcat(folder_path, '\', num2str(random_neuron), '.fig'); 
+%         saveas(gcf, image_name);
 
 
 end

@@ -1,7 +1,7 @@
 %% basic vars
-batches = 4;
-data_path = "D:\ab-trained-ba-data";
-images_path = "D:\ab-trained-ba-data-analysis\";
+batches = 400;
+data_path = "D:\som-on-9col-data";
+images_path = strcat("D:\som-on-9col-data-analysis", '\');
 n_columns = 9;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -228,17 +228,17 @@ bin_size = 5; % shift from 5 to 9 cols
  end
 
 %  % bin_size = 10;
-% bin_size = 20; % shift from 5 to 9 cols
-%  for c=1:n_columns
-%     figure
-%         mean_rate_over_neurons = mean(squeeze(rate_for_ab(c,:,:)), 1);
-%         mean_rate_binned_10_tokens = mean(reshape(mean_rate_over_neurons,  bin_size, length(mean_rate_over_neurons)/bin_size),  1); 
-%         plot(mean_rate_binned_10_tokens)
-%         title(['20binsize-rate-850ms--c-',num2str(c)])
-%         image_name = images_path + "20binsize-rate-avg-over-neurons-850ms-bin-c-" + num2str(c) + ".fig"; 
-%         saveas(gcf, image_name);
-%     grid
-%  end
+bin_size = 20; % shift from 5 to 9 cols
+ for c=1:n_columns
+    figure
+        mean_rate_over_neurons = mean(squeeze(rate_for_ab(c,:,:)), 1);
+        mean_rate_binned_10_tokens = mean(reshape(mean_rate_over_neurons,  bin_size, length(mean_rate_over_neurons)/bin_size),  1); 
+        plot(mean_rate_binned_10_tokens)
+        title(['20binsize-rate-850ms--c-',num2str(c)])
+        image_name = images_path + "20binsize-rate-avg-over-neurons-850ms-bin-c-" + num2str(c) + ".fig"; 
+        saveas(gcf, image_name);
+    grid
+ end
 
  
 %% weights
@@ -309,6 +309,7 @@ n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
 n_exc = 20;
 bin_size = 5;
 iter=1;
+
 
 rates_vs_cols = zeros(batches, n_columns, n_exc);
 
