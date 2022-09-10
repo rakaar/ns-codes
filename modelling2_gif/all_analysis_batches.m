@@ -1,7 +1,7 @@
 %% basic vars
 batches = 400;
-data_path = "D:\som-on-9col-data";
-images_path = strcat("D:\som-on-9col-data-analysis", '\');
+data_path = "D:\som-off-9cols-6-6-data";
+images_path = strcat("D:\som-off-9cols-6-6-data-analysis", '\');
 n_columns = 9;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -25,19 +25,21 @@ for b=1:batches
     spikes = load(batch_file_name,"spikes").spikes;
     lamda = load(batch_file_name,"lamda").lamda;
     t_simulate = load(batch_file_name,"t_simulate").t_simulate;
+    lamda_a = load(batch_file_name,"lamda_a").lamda_a;
+    lamda_b = load(batch_file_name,"lamda_b").lamda_b;
     
     for c=1:n_columns
         t_a = 0;
         t_b = 0;
         for t=1:t_simulate
-            if lamda(1,4,1,t) == 300
+            if lamda(1,4,1,t) == lamda_a
                 t_a = t_a + 1;
                 for N=1:25
                     psth_a(b,c,N) = psth_a(b,c,N) + spikes(1,c,N,t);
                 end
             end
 
-            if lamda(1,4,1,t) == 50
+            if lamda(1,4,1,t) == lamda_b
                 t_b = t_b + 1;
                 for N=1:25
                     psth_b(b,c,N) = psth_b(b,c,N) + spikes(1,c,N,t);
@@ -72,21 +74,21 @@ for c=1:n_columns
     figure
         plot(transpose(squeeze(psth_avg_exc(c,:,:))));
         title(['exc-col ',num2str(c)])
-        image_name = images_path + "col-" + num2str(c) + "psth_exc_imagesc.fig"; 
+        image_name = strcat(images_path,'col-',num2str(c),'-all-exc-rates.fig');
         saveas(gcf, image_name);
     grid
 
     figure
         plot(transpose(squeeze(psth_avg_pv(c,:,:))));
         title(['pv-col ',num2str(c)])
-        image_name = images_path + "col-" + num2str(c) + "psth_pv_imagesc.fig"; 
+        image_name = strcat(images_path,'col-',num2str(c),'-all-pv-rates.fig');
         saveas(gcf, image_name);
     grid
 
     figure
         plot(transpose(squeeze(psth_avg_som(c,:,:))));
         title(['som-col ',num2str(c)])
-        image_name = images_path + "col-" + num2str(c) + "psth_som_imagesc.fig"; 
+        image_name = strcat(images_path,'col-',num2str(c),'-all-som-rates.fig');
         saveas(gcf, image_name);
     grid
 
@@ -119,7 +121,7 @@ for c=1:5
             plot(col_psth_b_mean)
             legend('psth for 1st stim','psth for 2nd stim')
             title(['psth - a,b col ',num2str(c)])
-            image_name = images_path + "psth-a-b-col-" + num2str(c) + ".fig"; 
+            image_name = strcat(images_path, 'col-',num2str(c),'-avg-rates-a-b.fig');
             saveas(gcf, image_name);
         hold off
     grid
@@ -156,8 +158,8 @@ for c=1:n_columns
     rate_c_avg = sum(rate_c, 1);
     figure
         plot(rate_c_avg);
-        title(['rate 100ms binned-col-', num2str(c)])
-        image_name = images_path + "rate-100ms-avg-col-" + num2str(c) + ".fig"; 
+        title(['rate  binned-',num2str(bin_size),'-col-', num2str(c)])
+        image_name = images_path + "avg-rate-" + num2str(bin_size) + "-col-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
 
     grid
@@ -165,7 +167,7 @@ for c=1:n_columns
     figure
         plot(rate_c.');
         title(['rate 100ms binned-col-', num2str(c)])
-        image_name = images_path + "rate-100ms-all-neurons-col-" + num2str(c) + ".fig"; 
+        image_name = images_path + "all-rate-" + num2str(bin_size) + "-col-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
 end
@@ -199,7 +201,7 @@ for c=1:n_columns
     figure
         plot(transpose(squeeze(rate_for_ab(c,:,:))))
         title(['rate-170ms-c-',num2str(c)])
-        image_name = images_path + "-rate-170ms-bin-c-" + num2str(c) + ".fig"; 
+        image_name = images_path + "all-rates-per-token-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
 end
@@ -209,7 +211,7 @@ for c=1:n_columns
         mean_rate_over_neurons = mean(squeeze(rate_for_ab(c,:,:)), 1);
         plot(mean_rate_over_neurons)
         title(['rate-170ms-c-',num2str(c)])
-        image_name = images_path + "-rate-avg-over-neurons-170ms-bin-c-" + num2str(c) + ".fig"; 
+        image_name = images_path + "-avg-rate-per-token -bin-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
 end
@@ -222,7 +224,7 @@ bin_size = 5; % shift from 5 to 9 cols
         mean_rate_binned_10_tokens = mean(reshape(mean_rate_over_neurons,  bin_size, length(mean_rate_over_neurons)/bin_size),  1); 
         plot(mean_rate_binned_10_tokens)
         title(['rate-850ms--c-',num2str(c)])
-        image_name = images_path + "-rate-avg-over-neurons-850ms-bin-c-" + num2str(c) + ".fig"; 
+        image_name = images_path + "-avg-rate-per-batch-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
  end
@@ -235,7 +237,7 @@ bin_size = 20; % shift from 5 to 9 cols
         mean_rate_binned_10_tokens = mean(reshape(mean_rate_over_neurons,  bin_size, length(mean_rate_over_neurons)/bin_size),  1); 
         plot(mean_rate_binned_10_tokens)
         title(['20binsize-rate-850ms--c-',num2str(c)])
-        image_name = images_path + "20binsize-rate-avg-over-neurons-850ms-bin-c-" + num2str(c) + ".fig"; 
+        image_name = images_path + "avg-rate-bin-" + num2str(bin_size) +  "-c-" + num2str(c) + ".fig"; 
         saveas(gcf, image_name);
     grid
  end
