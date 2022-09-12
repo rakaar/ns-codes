@@ -30,20 +30,19 @@ tspan = 0:dt:t_simulate;
 spike_rate_dt = 1*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
-
 % connection strength
 % within column
 som_reduction_factor = 0;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
-imbalance_factor_pv_som = 4; % unequalise som -> pv and pv -> pv weights
+imbalance_factor_pv_som = 6; % unequalise som -> pv and pv -> pv weights
 
 J_ee_0 = 30*weight_scaling_factor;
 J_pv_e_0 = 1.8750*weight_scaling_factor;
 J_som_e_0 = 1.8750*3*weight_scaling_factor;
 
-J_e_pv = -90*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_pv = -120*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_pv = 0;
 

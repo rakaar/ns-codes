@@ -1,7 +1,8 @@
 %% basic vars
-batches = 400;
-data_path = "D:\som-off-9cols-6-6-data";
-images_path = strcat("D:\som-off-9cols-6-6-data-analysis", '\');
+clear all
+batches = 2;
+data_path = "D:\som-off-6-6-tunings\trained B";
+images_path = strcat("D:\som-off-6-6-tunings\trained B", '\');
 n_columns = 9;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -343,6 +344,6 @@ end
 figure
     plot(rate_over_batches)
     title('rates vs cols')
-    image_name = strcat(images_path, 'rates-vs-cols.fig');
+    image_name = strcat(images_path, '2-rates-vs-cols.fig');
     saveas(gcf, image_name);
 grid
