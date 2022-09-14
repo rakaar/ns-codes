@@ -1,9 +1,9 @@
 %% basic vars
 clear all
-batches = 2;
-data_path = "D:\som-off-6-6-tunings\trained B";
-images_path = strcat("D:\som-off-6-6-tunings\trained B", '\');
-n_columns = 9;
+batches = 500;
+data_path = "D:\som-off-21cols-data";
+images_path = strcat("D:\som-off-21cols-data-analysis", '\');
+n_columns = 21;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
 iter=1;
@@ -98,7 +98,6 @@ end
 
 %% rate for a stimulus, b stimulus
 close all;
-n_columns = 9;
 for c=1:n_columns
     col_psth = squeeze(psth_all(:,c,1:20));
     figure
@@ -130,7 +129,8 @@ end
 
 %% rate in bins
 close all;
-bin_size = 50;
+% bin_size = 50;
+bin_size = 20;
 
 
 t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
