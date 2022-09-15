@@ -130,7 +130,7 @@ end
 %% rate in bins
 close all;
 % bin_size = 50;
-bin_size = 20;
+bin_size = 20;                                                                         
 
 
 t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
