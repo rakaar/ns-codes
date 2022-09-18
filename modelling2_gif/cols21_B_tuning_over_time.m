@@ -736,8 +736,8 @@ end % end of an iter
         col_spike_rates_per_subatch(ccc,sub_col) = mean(mean(squeeze(spikes(1,sub_col,:,:)) , 1));
     end
 
-    file_number_b = (bbb-1)*5 + ccc;
-    save(strcat('spikes_',num2str(file_number_b),'.mat'), 'spikes');
+%     file_number_b = (bbb-1)*5 + ccc;
+%     save(strcat('spikes_',num2str(file_number_b),'.mat'), 'spikes');
     end % end of ccc
 
     for sub_col=1:n_columns
