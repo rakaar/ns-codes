@@ -30,16 +30,20 @@ end % end of bbb
 save('ba_from_middle_tuning_over_time.mat', 'ba_from_middle')
 
 %% 
+close all
 
-for i=1:10:50
+batch_set=1:10:50;
+for i=1:length(batch_set)
     figure
         hold on
             plot(initial_ab_col_spike_rates, 'LineStyle','--','color','b','LineWidth',3)
-            plot(ab_col_spike_rates(i,:), 'b','LineWidth',4)
+            plot(ab_col_spike_rates(batch_set(i),:), 'b','LineWidth',4)
             plot(initial_ba_col_spike_rates,'LineStyle','--','color','r','LineWidth',3)
-            plot(ba_col_spike_rates(i,:),'r','LineWidth',4)
-            plot(ba_from_middle(i,:), 'LineWidth',4)
+            plot(ba_col_spike_rates(batch_set(i),:),'r','LineWidth',4)
+            plot(ba_from_middle(batch_set(i),:), 'LineWidth',4)
+            plot(ba_given_ab_col_spike_rates(i,:),'LineWidth',5)
         hold off
-        legend('inital ab','ab','initial ba','ba','BA from Middle')
+        legend('inital ab','ab','initial ba','ba','BA from Middle', 'BA given AB')
     grid
+    disp(i)
 end
