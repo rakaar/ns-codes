@@ -1,14 +1,14 @@
 close all;
 % every 5 batches
 n_columns = 21;
-n_steps = 50;
-a_col_spike_rates = zeros(n_steps,n_columns);
-starting_bbb = 251:5:500;
+n_steps = 1;
+initial_a_col_spike_rates = zeros(n_steps,n_columns);
+starting_bbb = 1;
 
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
-    previous_batch_file = strcat('batch_', num2str(starting_bbb(bbb)), '.mat');
+    previous_batch_file = strcat("D:\som-off-21cols-data\",'batch_', num2str(starting_bbb(bbb)), '.mat');
     previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
     previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
 
@@ -739,9 +739,9 @@ end % end of an iter
     end % end of ccc
 
     for sub_col=1:n_columns
-        a_col_spike_rates(bbb,sub_col) = mean(col_spike_rates_per_subatch(:,sub_col));
+        initial_a_col_spike_rates(bbb,sub_col) = mean(col_spike_rates_per_subatch(:,sub_col));
     end
 
 end % end of bbb
 
-save('A_tuning_over_time.mat', 'a_col_spike_rates')
+save('initial_A_tuning_over_time.mat', 'initial_a_col_spike_rates')

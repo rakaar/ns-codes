@@ -1,8 +1,8 @@
 %% basic vars
 clear all
 batches = 500;
-data_path = "D:\som-off-21cols-data";
-images_path = strcat("D:\som-off-21cols-data-analysis", '\');
+data_path = "D:\som-off-21cols-9-13-data";
+images_path = strcat("D:\som-off-21cols-9-13-data-analysis", '\');
 n_columns = 21;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -108,24 +108,24 @@ for c=1:n_columns
     grid
 end
 
-for c=1:5
-    col_psth_a = squeeze(psth_a(:,c,1:20));
-    col_psth_a_mean = mean(col_psth_a,2);
-
-    col_psth_b = squeeze(psth_b(:,c,1:20));
-    col_psth_b_mean = mean(col_psth_b,2);
-
-    figure
-        hold on
-            plot(col_psth_a_mean)
-            plot(col_psth_b_mean)
-            legend('psth for 1st stim','psth for 2nd stim')
-            title(['psth - a,b col ',num2str(c)])
-            image_name = strcat(images_path, 'col-',num2str(c),'-avg-rates-a-b.fig');
-            saveas(gcf, image_name);
-        hold off
-    grid
-end
+% for c=1:5
+%     col_psth_a = squeeze(psth_a(:,c,1:20));
+%     col_psth_a_mean = mean(col_psth_a,2);
+% 
+%     col_psth_b = squeeze(psth_b(:,c,1:20));
+%     col_psth_b_mean = mean(col_psth_b,2);
+% 
+%     figure
+%         hold on
+%             plot(col_psth_a_mean)
+%             plot(col_psth_b_mean)
+%             legend('psth for 1st stim','psth for 2nd stim')
+%             title(['psth - a,b col ',num2str(c)])
+%             image_name = strcat(images_path, 'col-',num2str(c),'-avg-rates-a-b.fig');
+%             saveas(gcf, image_name);
+%         hold off
+%     grid
+% end
 
 %% rate in bins
 close all;

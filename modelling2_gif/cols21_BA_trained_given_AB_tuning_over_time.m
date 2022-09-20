@@ -1,14 +1,13 @@
 close all;
 % every 5 batches
 n_columns = 21;
-n_steps = 1;
-initial_b_col_spike_rates = zeros(n_steps,n_columns);
-starting_bbb = 1;
-
+n_steps = 5;
+ba_given_ab_col_spike_rates = zeros(n_steps,n_columns);
+starting_bbb = 251:50:500;
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
-    previous_batch_file = strcat("D:\som-off-21cols-data\",'batch_', num2str(starting_bbb(bbb)), '.mat');
+    previous_batch_file = strcat('batch_', num2str(starting_bbb(bbb)), '.mat');
     previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
     previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
 
@@ -28,15 +27,15 @@ n_thalamic_cols = 25;
     
 % time step
 n_tokens = 2; % 21 cols
-single_stimulus_duration = 50;
+single_stimulus_duration = 50; gap_duration = 50;
 pre_token_silence = 10;
-post_token_silence = 110;
+post_token_silence = 10;
 
 token_start_times = zeros(n_tokens,1);
 
 physical_time_in_ms = 1; %dt time step
 dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
-t_simulate = n_tokens*(pre_token_silence + single_stimulus_duration + post_token_silence);
+t_simulate = n_tokens*(2*single_stimulus_duration + gap_duration + pre_token_silence + post_token_silence);
 tspan = 0:dt:t_simulate;
 
 % making bins
@@ -152,7 +151,7 @@ lamda_s = 0;
 
 for iter=1:n_iters
     for tok=1:n_tokens
-        ind =  (tok-1)*(pre_token_silence + single_stimulus_duration + post_token_silence) + 1;
+        ind =  (tok-1)*(2*single_stimulus_duration + 1*gap_duration + pre_token_silence + post_token_silence) + 1;
         
 
         % ---- first half of token
@@ -165,22 +164,40 @@ for iter=1:n_iters
         token_first_half_end_time = token_first_half_start_time+single_stimulus_duration-1;
 
         lamda(iter,1:9,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,10,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,11,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,12,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,10,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,11,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        lamda(iter,12,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
         lamda(iter,13,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        lamda(iter,14,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
-        lamda(iter,15,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        lamda(iter,16,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,14,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,15,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,16,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
         lamda(iter,17:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
         
        
         % posttoken silence
-        token_gap_duration_start = token_first_half_end_time+1;
-        token_gap_duration_end = token_gap_duration_start+post_token_silence-1;
+        token_gap_duration_start = ind+pre_token_silence+single_stimulus_duration;
+        token_gap_duration_end = token_gap_duration_start+gap_duration-1;
         lamda(iter,:,:,token_gap_duration_start:token_gap_duration_end) = 0;
+
+        % ---- second half of token
+        % stimulus
+        token_second_half_start_time = token_gap_duration_end;
+        token_second_half_end_time = token_second_half_start_time + single_stimulus_duration - 1;
+        lamda(iter,1:9,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,10,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,11,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,12,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,13,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,14,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        lamda(iter,15,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,16,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,17:25,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % silence - saving time computationally
         
-        token_start_times(tok,1) = token_first_half_end_time+post_token_silence;
+        
+        lamda(iter,:,:,token_second_half_end_time:token_second_half_end_time+post_token_silence-1) = 0;
+        
+        token_start_times(tok,1) = token_second_half_end_time+post_token_silence;
     end
 end
 
@@ -736,14 +753,12 @@ end % end of an iter
         col_spike_rates_per_subatch(ccc,sub_col) = mean(mean(squeeze(spikes(1,sub_col,:,:)) , 1));
     end
 
-%     file_number_b = (bbb-1)*5 + ccc;
-%     save(strcat('spikes_',num2str(file_number_b),'.mat'), 'spikes');
     end % end of ccc
 
     for sub_col=1:n_columns
-        initial_b_col_spike_rates(bbb,sub_col) = mean(col_spike_rates_per_subatch(:,sub_col));
+        ba_given_ab_col_spike_rates(bbb,sub_col) = mean(col_spike_rates_per_subatch(:,sub_col));
     end
 
 end % end of bbb
 
-save('initial_B_tuning_over_time.mat', 'initial_b_col_spike_rates')
+save('BA_given_AB_tuning_over_time.mat', 'ba_given_ab_col_spike_rates')

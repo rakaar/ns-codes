@@ -2,9 +2,9 @@ close all;
 % every 5 batches
 n_columns = 21;
 n_steps = 50;
-ab_col_spike_rates = zeros(n_steps,n_columns);
+ba_from_middle = zeros(n_steps,n_columns);
 starting_bbb = 251:5:500;
-data_path = "D:\som-off-21cols-data";
+data_path = "D:\21cols-som-off-BA-training-from-middle";
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
@@ -22,18 +22,24 @@ for bbb=1:length(starting_bbb)
     end % end of b2
 
     for ccc=1:n_columns
-         ab_col_spike_rates(bbb, ccc) = mean(cols_spike_rates_subatch(:,ccc));
+         ba_from_middle(bbb, ccc) = mean(cols_spike_rates_subatch(:,ccc));
     end
     
 
 end % end of bbb
+save('ba_from_middle_tuning_over_time.mat', 'ba_from_middle')
 
+%% 
 
-%% generate imagesc
-figure
-    imagesc(ab_col_spike_rates.')
-title('ab')
-load('BA_tuning_over_time.mat')
-figure
-    imagesc(ba_col_spike_rates.')
-title('ba')
+for i=1:10:50
+    figure
+        hold on
+            plot(initial_ab_col_spike_rates, 'LineStyle','--','color','b','LineWidth',3)
+            plot(ab_col_spike_rates(i,:), 'b','LineWidth',4)
+            plot(initial_ba_col_spike_rates,'LineStyle','--','color','r','LineWidth',3)
+            plot(ba_col_spike_rates(i,:),'r','LineWidth',4)
+            plot(ba_from_middle(i,:), 'LineWidth',4)
+        hold off
+        legend('inital ab','ab','initial ba','ba','BA from Middle')
+    grid
+end
