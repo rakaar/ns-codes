@@ -1,8 +1,8 @@
 %% basic vars
 clear all
 batches = 500;
-data_path = "D:\som-off-21cols-9-13-data";
-images_path = strcat("D:\som-off-21cols-9-13-data-analysis", '\');
+data_path = "D:\som-on-21cols-10-12-data";
+images_path = strcat("D:\som-on-21cols-10-12-data-analysis", '\');
 n_columns = 21;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -345,5 +345,98 @@ figure
     plot(rate_over_batches)
     title('rates vs cols')
     image_name = strcat(images_path, '2-rates-vs-cols.fig');
+    saveas(gcf, image_name);
+grid
+
+%% LAST 10 - all cols on x axis, rates on y-axis
+close all
+t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
+n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
+n_exc = 20;
+bin_size = 5;
+iter=1;
+
+
+sub_batches = 496:500;
+n_sub_batches = length(sub_batches);
+
+rates_vs_cols = zeros(n_sub_batches, n_columns, n_exc);
+
+
+for b=1:length(sub_batches)
+    fprintf("\n batch is %d \n",sub_batches(b))
+    batch_file_name = data_path + "\batch_" + num2str(sub_batches(b)) + ".mat";
+    spikes = load(batch_file_name,"spikes").spikes;
+
+    for c=1:n_columns
+        for n=1:n_exc
+            rates_vs_cols(b,c,n) = mean(squeeze(spikes(iter,c,n,:)));
+        end
+    end
+end
+
+rates_cols_over_avg_all_exc = zeros(n_sub_batches, n_columns);
+for b=1:n_sub_batches
+    for c=1:n_columns
+        rates_cols_over_avg_all_exc(b,c) = mean(rates_vs_cols(b,c,:));
+    end
+end
+
+rate_over_batches = zeros(1, n_columns);
+for c=1:n_columns
+    rate_over_batches(1,c) = mean(rates_cols_over_avg_all_exc(:,c));
+end
+
+figure
+    plot(rate_over_batches)
+    title('rates vs cols')
+    image_name = strcat(images_path, 'last-10-2-rates-vs-cols.fig');
+    saveas(gcf, image_name);
+grid
+
+
+%% FIRST 10 - all cols on x axis, rates on y-axis
+close all
+t_simulate = load(strcat(data_path, '\', 'batch_1.mat'), "t_simulate").t_simulate;
+n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
+n_exc = 20;
+bin_size = 5;
+iter=1;
+
+
+sub_batches = 1:5;
+n_sub_batches = length(sub_batches);
+
+rates_vs_cols = zeros(n_sub_batches, n_columns, n_exc);
+
+
+for b=1:length(sub_batches)
+    fprintf("\n batch is %d \n",sub_batches(b))
+    batch_file_name = data_path + "\batch_" + num2str(sub_batches(b)) + ".mat";
+    spikes = load(batch_file_name,"spikes").spikes;
+
+    for c=1:n_columns
+        for n=1:n_exc
+            rates_vs_cols(b,c,n) = mean(squeeze(spikes(iter,c,n,:)));
+        end
+    end
+end
+
+rates_cols_over_avg_all_exc = zeros(n_sub_batches, n_columns);
+for b=1:n_sub_batches
+    for c=1:n_columns
+        rates_cols_over_avg_all_exc(b,c) = mean(rates_vs_cols(b,c,:));
+    end
+end
+
+rate_over_batches = zeros(1, n_columns);
+for c=1:n_columns
+    rate_over_batches(1,c) = mean(rates_cols_over_avg_all_exc(:,c));
+end
+
+figure
+    plot(rate_over_batches)
+    title('rates vs cols')
+    image_name = strcat(images_path, 'first-10-2-rates-vs-cols.fig');
     saveas(gcf, image_name);
 grid
