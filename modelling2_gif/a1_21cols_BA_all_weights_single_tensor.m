@@ -1,11 +1,7 @@
-for batch=2:500
+clear all;
+close all;
 
-% previous batch variables
-previous_batch_file = strcat('batch_', num2str(batch-1), '.mat');
-previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
-previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
-  
-
+tic
 n_iters = 1;
 
 % basic variables;
@@ -33,6 +29,7 @@ tspan = 0:dt:t_simulate;
 % making bins
 spike_rate_dt = 1*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
+
 
 % connection strength
 % within column
@@ -93,7 +90,6 @@ num_of_LTDs = zeros(n_iters, n_columns, length(tspan));
 Amp_strength = 0.015; Amp_weak = 0.021;
 tau_strength = 30; tau_weak = 50;
 
-
 % kernel for g(t)
 tau_syn = 10;
 kernel_kt = [0 exp(-[0:t_simulate])./tau_syn];
@@ -122,7 +118,6 @@ recurrence_inh_neighbour_column_epsc_tensor = zeros(n_iters, n_columns, n_total_
 recurrence_inh_pv_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_inh_som_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 
-
 % synaptic resources
 % --- l4 ---
 xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -140,6 +135,7 @@ lamda_a = 300;
 lamda_b = 50;
 lamda_m = 100;
 lamda_s = 0;
+
 
 for iter=1:n_iters
     for tok=1:n_tokens
@@ -197,7 +193,6 @@ end
 n_input_thalamic = 5;
 thalamic_connections = zeros(n_total_neurons,n_input_thalamic);
 
-
 for n=1:n_total_neurons
     thalamic_connections(n,:) = randperm(n_thalamic_neurons,n_input_thalamic);
 end
@@ -205,7 +200,6 @@ end
 % weight_thalamic_to_exc_l4 = 550;
 % weight_thalamic_to_pv_l4 = 750;
 % weight_thalamic_to_som_l4 = 750;
-
 
 weight_thalamic_to_exc_l4_above_col = 220;
 weight_thalamic_to_exc_l4_side_col_1 = 110;
@@ -223,7 +217,9 @@ weight_thalamic_to_som_l4_side_col_2 = 65;
 weight_thalamic_to_som_l4_arr = [weight_thalamic_to_som_l4_side_col_2,weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_above_col, weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_side_col_2];
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
+% tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
 tau_re_thalamic = 0.3; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
+% tau_re_thalamic = 0.1; tau_ir_thalamic = 100; tau_ei_thalamic = 10;
     
 % initialize
 v0 = -70;  
@@ -234,6 +230,7 @@ i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
+J_ee_0_initial = 100;
 
 % weight matrix of all neurons in all columns
 num_network_neurons = n_columns*n_total_neurons;
@@ -343,11 +340,7 @@ for nn=1:num_network_neurons
     network_weight_matrix(:,:,nn,nn) = 0;
 end
 
-for inital_times=1:5
-    network_weight_matrix(:,inital_times,:,:) = previous_batch_network_weight_matrix(:,end,:,:);
-end
-
-
+    
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
 for iter=1:n_iters
@@ -368,7 +361,7 @@ xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
 
 for iter=1:n_iters
     
-%     fprintf('------iter numm %d -----', iter);
+%     fprintf("------iter numm %d -----", iter);
 
     % thalamic
     for thal_col=1:n_thalamic_cols
@@ -435,6 +428,9 @@ for iter=1:n_iters
             end
         end
     end
+
+    % temporary to see what happens if thalamic depression is removed
+%     xe_thalamic(:,:,:,:) = 1;
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
@@ -449,9 +445,6 @@ for iter=1:n_iters
 
 	for c=1:n_columns
 	            
-            
-      
-
 		for n=1:n_total_neurons
 					
             n_index_in_network = (c - 1)*n_total_neurons + n;
@@ -594,7 +587,7 @@ for iter=1:n_iters
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
                     thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
-             end
+              end
           end
 
           thalamic_epsc_tensor(iter,c,n,i-5) = epsc_from_thalamic;
@@ -620,16 +613,15 @@ for iter=1:n_iters
         recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2 + ...
                                                                             epsc_som_back_c1 + ...
                                                                             epsc_som_front_c1 + ...
-                                                                            epsc_som_front_c2;
-
-        recurrence_inh_pv_epsc_tensor(iter,c,n,i-1)  = epsc_pv_own_column;  
+                                                                            epsc_som_front_c2;          
+		recurrence_inh_pv_epsc_tensor(iter,c,n,i-1)  = epsc_pv_own_column;  
 		recurrence_inh_som_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2  + ...
                                                         epsc_som_back_c1 + ...
                                                         epsc_som_front_c1 + ...
                                                         epsc_som_front_c2 + ...
                                                         epsc_som_own_column ;
-
-		    total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
+   
+        total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
             % clip test - to see whether the later spike(s) is due to
             % params or really disihibition
             % uncomment and see if spikes comes or not
@@ -674,7 +666,7 @@ for iter=1:n_iters
 		
             
             
-            %	fprintf('voltage returned from function is %f \n', voltages(c,n,i));
+            %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
     
             % update synaptic resources
             
@@ -713,7 +705,7 @@ for iter=1:n_iters
         end
     
    
-%     fprintf('xr %f, xe %f, xi %f\n', xr(c,n,i),xe(c,n,i), xi(c,n,i));
+%     fprintf("xr %f, xe %f, xi %f\n", xr(c,n,i),xe(c,n,i), xi(c,n,i));
    % pause(0.4);
     
     end
@@ -793,7 +785,7 @@ for iter=1:n_iters
                     end
 %                     if i == 13
 %                         if presyn_neuron == 79 && neuron_p == 7
-%                             fprintf('\n  spikes(iter,col_p,neuron_p_index_in_column,i) %d \n',spikes(iter,col_p,neuron_p_index_in_column,i))
+%                             fprintf("\n  spikes(iter,col_p,neuron_p_index_in_column,i) %d \n",spikes(iter,col_p,neuron_p_index_in_column,i))
 %                             pause(1)
 %                         end
 %                     end
@@ -818,11 +810,11 @@ for iter=1:n_iters
                         end
 
                         if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
-                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-5,presyn_neuron,neuron_p); 
                         end
                     else % if no spike
                         if either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
-                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-5,presyn_neuron,neuron_p); 
                         end
                         
                     end
@@ -832,7 +824,7 @@ for iter=1:n_iters
                
         % re-initialize at the end of token
         if ismember(i,token_start_times)
-%             disp('*******************token resest***************************')
+%             disp("*******************token resest***************************")
             voltages(:,:,:,i) = v0;  
             xr(:, :, :, i) = 1;
             xe(:, :, :, i) = 0;
@@ -849,10 +841,8 @@ for iter=1:n_iters
 
 end % end of an iter
 
-
-filename = strcat('batch_', num2str(batch), '.mat');
-save(filename);
-
-clear all;
-
-end % end of all batches
+% save('batch_1.mat')
+% filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
+filename = 'batch_1.mat';
+save(filename)
+toc
