@@ -1,8 +1,8 @@
 %% basic vars
 clear all
 batches = 500;
-data_path = "D:\som-on-21cols-10-12-data";
-images_path = strcat("D:\som-on-21cols-10-12-data-analysis", '\');
+data_path = "D:\som-on-21cols-9-13-data";
+images_path = strcat("D:\som-on-21cols-9-13-data-analysis", '\');
 n_columns = 21;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
