@@ -1,8 +1,8 @@
 %% basic vars
 clear all
 batches = 500;
-data_path = "D:\som-on-21cols-9-13-data";
-images_path = strcat("D:\som-on-21cols-9-13-data-analysis", '\');
+data_path = "D:\som-on-21cols-10-12-data";
+images_path = strcat("D:\som-on-21cols-10-12-data-analysis", '\');
 n_columns = 21;
 n_excitatory=20; n_pv = 3; n_som  = 2;
 n_neurons = n_excitatory + n_pv + n_som;
@@ -245,65 +245,65 @@ bin_size = 20; % shift from 5 to 9 cols
 
  
 %% weights
-close all;
-tspan = load(strcat(data_path, '\', 'batch_1.mat'), "tspan").tspan;
-n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
-num_network_neurons = n_columns*n_total_neurons;
-batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
-n_exc = 20;
-
-
-
-iter=1;
-
-for b=1:batches
-    fprintf("\n batch is %d \n",b)
-    batch_file_name = data_path + "\batch_" + num2str(b) + ".mat";
-    network_weight_matrix = load(batch_file_name, "network_weight_matrix").network_weight_matrix;
-    for n1=1:num_network_neurons
-        for n2=1:num_network_neurons
-             batch_avg_network_weights(b,n1,n2) = mean(squeeze(network_weight_matrix(iter,:,n1,n2)));
-%              all_1ms_network_weights((b-1)*length(tspan) + 1:(b-1)*length(tspan) + length(tspan)   ,n1,n2) =  network_weight_matrix(iter,:,n1,n2);
-        end
-    end
-
-
-end
-
-% plot weight matrix
-n_columns = 9;
-for c1=1:n_columns
-    for c2=1:n_columns
-        if c1 - c2 == 0
-            % within column matrix
-            within_column_matrix = batch_avg_network_weights(:,(c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc, (c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc);
-            fprintf("\n %d %d %d %d \n ",(c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc, (c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc)
-            reshaped_within_column_matrix = reshape(within_column_matrix, batches, n_exc*n_exc);
-            figure
-                plot(reshaped_within_column_matrix)
-                title(['weights batches wise', num2str(c1)])
-                image_name = images_path + "w_batch_avg-c-" + num2str(c1) + ".fig"; 
-                saveas(gcf, image_name);
-
-            grid
-        elseif abs(c1 - c2) == 1 || abs(c1 - c2) == 2
-            % c1 pre ,c2 post
-            across_column_matrix = batch_avg_network_weights(:,(c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc, (c2-1)*n_total_neurons + 1:(c2-1)*n_total_neurons + n_exc);
-            fprintf("\n %d %d %d %d \n ",(c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc, (c2-1)*n_total_neurons + 1,(c2-1)*n_total_neurons + n_exc)
-            reshaped_across_column_matrix = reshape(across_column_matrix, batches, n_exc*n_exc);
-            figure
-                plot(reshaped_across_column_matrix)
-                title(['weights batches wise', num2str(c1), '-',num2str(c2)])
-                image_name = images_path + "w_batch_avg-c1-" + num2str(c1) + "-c2-" + num2str(c2)+ ".fig"; 
-                saveas(gcf, image_name);
-            grid
-
-        else
-            continue
-        end
-    end
-end
-
+% close all;
+% tspan = load(strcat(data_path, '\', 'batch_1.mat'), "tspan").tspan;
+% n_columns = load(strcat(data_path, '\', 'batch_1.mat'), "n_columns").n_columns;
+% num_network_neurons = n_columns*n_total_neurons;
+% batch_avg_network_weights = zeros(batches, num_network_neurons, num_network_neurons);
+% n_exc = 20;
+% 
+% 
+% 
+% iter=1;
+% 
+% for b=1:batches
+%     fprintf("\n batch is %d \n",b)
+%     batch_file_name = data_path + "\batch_" + num2str(b) + ".mat";
+%     network_weight_matrix = load(batch_file_name, "network_weight_matrix").network_weight_matrix;
+%     for n1=1:num_network_neurons
+%         for n2=1:num_network_neurons
+%              batch_avg_network_weights(b,n1,n2) = mean(squeeze(network_weight_matrix(iter,:,n1,n2)));
+% %              all_1ms_network_weights((b-1)*length(tspan) + 1:(b-1)*length(tspan) + length(tspan)   ,n1,n2) =  network_weight_matrix(iter,:,n1,n2);
+%         end
+%     end
+% 
+% 
+% end
+% 
+% % plot weight matrix
+% n_columns = 9;
+% for c1=1:n_columns
+%     for c2=1:n_columns
+%         if c1 - c2 == 0
+%             % within column matrix
+%             within_column_matrix = batch_avg_network_weights(:,(c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc, (c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc);
+%             fprintf("\n %d %d %d %d \n ",(c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc, (c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc)
+%             reshaped_within_column_matrix = reshape(within_column_matrix, batches, n_exc*n_exc);
+%             figure
+%                 plot(reshaped_within_column_matrix)
+%                 title(['weights batches wise', num2str(c1)])
+%                 image_name = images_path + "w_batch_avg-c-" + num2str(c1) + ".fig"; 
+%                 saveas(gcf, image_name);
+% 
+%             grid
+%         elseif abs(c1 - c2) == 1 || abs(c1 - c2) == 2
+%             % c1 pre ,c2 post
+%             across_column_matrix = batch_avg_network_weights(:,(c1-1)*n_total_neurons + 1:(c1-1)*n_total_neurons + n_exc, (c2-1)*n_total_neurons + 1:(c2-1)*n_total_neurons + n_exc);
+%             fprintf("\n %d %d %d %d \n ",(c1-1)*n_total_neurons + 1,(c1-1)*n_total_neurons + n_exc, (c2-1)*n_total_neurons + 1,(c2-1)*n_total_neurons + n_exc)
+%             reshaped_across_column_matrix = reshape(across_column_matrix, batches, n_exc*n_exc);
+%             figure
+%                 plot(reshaped_across_column_matrix)
+%                 title(['weights batches wise', num2str(c1), '-',num2str(c2)])
+%                 image_name = images_path + "w_batch_avg-c1-" + num2str(c1) + "-c2-" + num2str(c2)+ ".fig"; 
+%                 saveas(gcf, image_name);
+%             grid
+% 
+%         else
+%             continue
+%         end
+%     end
+% end
+% 
 
 %% all cols on x axis, rates on y-axis
 close all

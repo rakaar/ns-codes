@@ -761,4 +761,4 @@ end % end of an iter
 
 end % end of bbb
 
-save('BA_given_AB_tuning_over_time.mat', 'ba_given_ab_col_spike_rates')
+save('a1_21col_10_12_BA_given_AB_tuning_over_time.mat', 'ba_given_ab_col_spike_rates')
