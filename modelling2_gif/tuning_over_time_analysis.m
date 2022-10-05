@@ -1,10 +1,11 @@
 close all;
 % every 5 batches
 n_columns = 21;
-n_steps = 50;
-ba_from_middle = zeros(n_steps,n_columns);
-starting_bbb = 251:5:500;
-data_path = "D:\21cols-som-off-BA-training-from-middle";
+n_steps = 5;
+ba_from_last = zeros(n_steps,n_columns);
+starting_bbb = 251:50:500;
+% starting_bbb = 1:5;
+data_path = "D:\som-on-21cols-10-12-BA-data";
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
@@ -22,12 +23,12 @@ for bbb=1:length(starting_bbb)
     end % end of b2
 
     for ccc=1:n_columns
-         ba_from_middle(bbb, ccc) = mean(cols_spike_rates_subatch(:,ccc));
+         ba_from_last(bbb, ccc) = mean(cols_spike_rates_subatch(:,ccc));
     end
     
 
 end % end of bbb
-save('ba_from_middle_tuning_over_time.mat', 'ba_from_middle')
+save('ba_last.mat', 'ba_from_last')
 
 %% 
 close all
@@ -47,3 +48,33 @@ for i=1:length(batch_set)
     grid
     disp(i)
 end
+
+%% rough
+close all
+for i=1:5
+figure
+    hold on
+    plot(initial_ab_col_spike_rates(5,:),'Color','b','LineStyle','--')
+    plot(ba_given_ab_col_spike_rates(i,:), 'Color','r','LineStyle','--')
+
+    plot(ba_from_initial(5,:),'Color','b','LineWidth',2)
+    plot(ba_from_last(i,:),'Color','r','LineWidth',2)
+    hold off
+    legend('AB initial', 'AB later','BA initial','BA later')
+    title('for BA tuned')
+grid
+end
+%% test
+close all
+figure
+    hold on
+        plot(a_initial,'Color','b','LineStyle','--')
+        plot(a_final, 'Color','r','LineStyle','--')
+
+        plot(b_initial, 'Color','b','LineWidth',2)
+        plot(b_final, 'Color','r','LineWidth',2)
+    hold off
+    legend('A initial', 'A final','B initial','B final')
+    title('BA trained')
+grid
+

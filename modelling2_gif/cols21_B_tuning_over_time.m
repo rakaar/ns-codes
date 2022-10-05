@@ -3,12 +3,12 @@ close all;
 n_columns = 21;
 n_steps = 1;
 initial_b_col_spike_rates = zeros(n_steps,n_columns);
-starting_bbb = 1;
+starting_bbb = 500;
 
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
-    previous_batch_file = strcat("D:\som-off-21cols-data\",'batch_', num2str(starting_bbb(bbb)), '.mat');
+    previous_batch_file = strcat("D:\som-on-21cols-10-12-BA-data\",'batch_', num2str(starting_bbb(bbb)), '.mat');
     previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
     previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
 
@@ -45,7 +45,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -746,4 +746,4 @@ end % end of an iter
 
 end % end of bbb
 
-save('initial_B_tuning_over_time.mat', 'initial_b_col_spike_rates')
+save('BA_given_B_final.mat', 'initial_b_col_spike_rates')
