@@ -1,13 +1,14 @@
 close all;
 % every 5 batches
 n_columns = 21;
-n_steps = 5;
+n_steps = 1;
 initial_ab_col_spike_rates = zeros(n_steps,n_columns);
-starting_bbb = 1:5;
+starting_bbb = 5;
+data_path = strcat(, "\");
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
-    previous_batch_file = strcat("D:\som-on-21cols-10-12-BA-data\",'batch_', num2str(starting_bbb(bbb)), '.mat');
+    previous_batch_file = strcat(data_path,'batch_', num2str(starting_bbb(bbb)), '.mat');
     previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
     previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
 
@@ -761,4 +762,4 @@ end % end of an iter
 
 end % end of bbb
 
-save('initial_BA_tuning_over_time.mat', 'initial_ab_col_spike_rates')
+save('c21_10_12_AB_trained_given_AB_initial .mat', 'initial_ab_col_spike_rates')

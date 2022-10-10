@@ -1,9 +1,9 @@
 close all;
 % every 5 batches
 n_columns = 21;
-n_steps = 5;
+n_steps = 1;
 ba_from_last = zeros(n_steps,n_columns);
-starting_bbb = 251:50:500;
+starting_bbb = 5;
 % starting_bbb = 1:5;
 data_path = "D:\som-on-21cols-10-12-BA-data";
 
@@ -12,7 +12,7 @@ for bbb=1:length(starting_bbb)
 
     cols_spike_rates_subatch = zeros(5,n_columns);
 
-    b2_starting = starting_bbb(bbb):starting_bbb(bbb)+4;
+    b2_starting = starting_bbb(bbb)+1:starting_bbb(bbb)+5;
     for b2=1:length(b2_starting)
         previous_batch_file = strcat(data_path,'\batch_', num2str(b2_starting(b2)), '.mat');
         spikes = load(previous_batch_file, 'spikes').spikes;
@@ -28,7 +28,7 @@ for bbb=1:length(starting_bbb)
     
 
 end % end of bbb
-save('ba_last.mat', 'ba_from_last')
+save('AB_initial.mat', 'ba_from_last')
 
 %% 
 close all
@@ -65,16 +65,39 @@ figure
 grid
 end
 %% test
-close all
+close all;
 figure
     hold on
-        plot(a_initial,'Color','b','LineStyle','--')
-        plot(a_final, 'Color','r','LineStyle','--')
+        plot(ab_i,'Color','b','LineStyle','--')
+        plot(ab_f, 'Color','r','LineStyle','--')
 
-        plot(b_initial, 'Color','b','LineWidth',2)
-        plot(b_final, 'Color','r','LineWidth',2)
+        plot(ba_i, 'Color','b','LineWidth',2)
+        plot(ba_f, 'Color','r','LineWidth',2)
     hold off
-    legend('A initial', 'A final','B initial','B final')
-    title('BA trained')
+    legend('AB initial', 'AB final','BA initial','BA final')
+    title('9 13 on BA trained')
 grid
 
+%% ab trained    matrix
+
+AB_trained_matrix = [...
+    c21_10_12_on_ABi;...
+    c21_10_12_on_ABf;...
+    c21_10_12_on_BAi;...
+    c21_10_12_on_BAf;...
+
+    c21_10_12_off_ABi;...
+    c21_10_12_off_ABf;...
+    c21_10_12_off_BAi;...
+    c21_10_12_off_BAf;...
+
+    c21_9_13_on_ABi;...
+    c21_9_13_on_ABf;...
+    c21_9_13_on_BAi;...
+    c21_9_13_on_BAf;...
+
+    c21_9_13_off_ABi;...
+    c21_9_13_off_ABf;...
+    c21_9_13_off_BAi;...
+    c21_9_13_off_BAf;...
+    ];
