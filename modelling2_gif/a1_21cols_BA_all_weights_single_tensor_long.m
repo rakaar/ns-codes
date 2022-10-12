@@ -36,7 +36,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 1;
+som_reduction_factor = 0;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;

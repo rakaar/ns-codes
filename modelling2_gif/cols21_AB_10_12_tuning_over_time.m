@@ -5,9 +5,9 @@ n_columns = 21;
 n_steps = 1;
 initial_ab_col_spike_rates = zeros(n_steps,n_columns);
 starting_bbb = 495;
-data_path = strcat("D:\som-on-21cols-9-13-BA-data", "\");
-som_reduction_factor = 1;
-fname = 'c21_9_13_on_BA_trained_AB_final.mat';
+data_path = strcat("D:\som-off-21cols-9-13-BA-data", "\");
+som_reduction_factor = 0;
+fname = 'c21_9_13_off_BA_trained_AB_final.mat';
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
