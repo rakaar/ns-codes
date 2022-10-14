@@ -5,8 +5,8 @@ n_steps = 1;
 ba_from_last = zeros(n_steps,n_columns);
 starting_bbb = 495;
 % starting_bbb = 1:5;
-data_path = "D:\som-off-21cols-9-13-BA-data";
-fname = 'c21_9_13_off_BA_trained_BA_final.mat';
+data_path = "D:\som-off-21cols-10-12-BA-data";
+fname = 'c21_10_12_off_BA_trained_BA_final.mat';
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
