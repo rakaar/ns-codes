@@ -36,7 +36,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -206,15 +206,12 @@ for n=1:n_total_neurons
     thalamic_connections(n,:) = randperm(n_thalamic_neurons,n_input_thalamic);
 end
 
-% weight_thalamic_to_exc_l4 = 550;
-% weight_thalamic_to_pv_l4 = 750;
-% weight_thalamic_to_som_l4 = 750;
-
-
-weight_thalamic_to_exc_l4_above_col = pick_rand_uniformly(220,10);
-weight_thalamic_to_exc_l4_side_col_1 = pick_rand_uniformly(110,10);
-weight_thalamic_to_exc_l4_side_col_2 = pick_rand_uniformly(55,10);
-weight_thalamic_to_exc_l4_arr = [weight_thalamic_to_exc_l4_side_col_2, weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_above_col,weight_thalamic_to_exc_l4_side_col_1,weight_thalamic_to_exc_l4_side_col_2];
+weight_thalamic_to_exc_l4_matrix = zeros(5, n_columns*n_excitatory);
+weight_thalamic_to_exc_l4_matrix(1,:) = make_rand_vector(55,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(2,:) = make_rand_vector(110,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(3,:) = make_rand_vector(220,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(4,:) = make_rand_vector(110,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(5,:) = make_rand_vector(55,10,[1 n_columns*n_excitatory]);
 
 weight_thalamic_to_pv_l4_above_col = 310;
 weight_thalamic_to_pv_l4_side_col_1 = 155;
@@ -586,7 +583,7 @@ for iter=1:n_iters
           if n <= n_excitatory
                for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
-                    rand_w_thalamus_to_exc = weight_thalamic_to_exc_l4_arr(col_index);
+                    rand_w_thalamus_to_exc = weight_thalamic_to_exc_l4_matrix(col_index,((c-1)*n_excitatory) + n);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*rand_w_thalamus_to_exc;
                     thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*rand_w_thalamus_to_exc;
                end
