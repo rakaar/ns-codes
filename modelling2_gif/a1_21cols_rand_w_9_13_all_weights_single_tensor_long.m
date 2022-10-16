@@ -5,7 +5,7 @@ previous_batch_file = strcat('batch_', num2str(batch-1), '.mat');
 previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
 previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
   
-previous_batch_weight_thalamic_to_exc_l4_matrix = load(previous_batch_file, 'weight_thalamic_to_exc_l4_matrix').weight_thalamic_to_exc_l4_matrix;
+previous_batch_weight_thalamic_to_exc_l4_matrix = load('batch_1.mat', 'weight_thalamic_to_exc_l4_matrix').weight_thalamic_to_exc_l4_matrix;
 
 n_iters = 1;
 
@@ -37,7 +37,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
