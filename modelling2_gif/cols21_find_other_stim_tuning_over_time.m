@@ -5,9 +5,9 @@ n_columns = 21;
 n_steps = 1;
 initial_ab_col_spike_rates = zeros(n_steps,n_columns);
 starting_bbb = 495;
-data_path = strcat("D:\som-off-21cols-10-12-BA-data", "\");
-som_reduction_factor = 0;
-fname = 'c21_10_12_off_BA_trained_AB_final.mat';
+data_path = strcat("D:\som-on-21cols-9-13-AB-trained-rand-w-data", "\");
+som_reduction_factor = 1;
+fname = 'c21_9_13_on_AB_trained_BA_final.mat';
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
@@ -167,15 +167,18 @@ for iter=1:n_iters
         token_first_half_start_time = ind+pre_token_silence;
         token_first_half_end_time = token_first_half_start_time+single_stimulus_duration-1;
 
-        lamda(iter,1:9,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,10,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
-        lamda(iter,11,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        lamda(iter,12,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
-        lamda(iter,13,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        lamda(iter,14,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
-        lamda(iter,15,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,16,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        lamda(iter,17:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,1:8,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,9,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,10,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,11,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,12,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        lamda(iter,13,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,14,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        lamda(iter,15,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
+        lamda(iter,16,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        lamda(iter,17,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        lamda(iter,18:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+
         
        
         % posttoken silence
@@ -187,15 +190,17 @@ for iter=1:n_iters
         % stimulus
         token_second_half_start_time = token_gap_duration_end;
         token_second_half_end_time = token_second_half_start_time + single_stimulus_duration - 1;
-        lamda(iter,1:9,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        lamda(iter,10,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        lamda(iter,11,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        lamda(iter,12,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
-        lamda(iter,13,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
-        lamda(iter,14,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
-        lamda(iter,15,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
-        lamda(iter,16,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
-        lamda(iter,17:25,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,1:8,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,9,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,10,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,11,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        lamda(iter,12,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        lamda(iter,13,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        lamda(iter,14,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,15,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,16,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,17,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        lamda(iter,18:25,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
         % silence - saving time computationally
         
         

@@ -101,3 +101,27 @@ AB_trained_matrix = [...
     c21_9_13_off_BAi;...
     c21_9_13_off_BAf;...
     ];
+
+%% ab - ba final
+figure
+hold on
+    plot(d_10_12_on_ab_train,'r')  % 10 12 on AB trained
+    plot(d_10_12_off_ab_train,'g')  % 10 12 off AB trained
+    
+    plot(d_10_12_on_ba_train,'b')  % 10 12 on BA trained
+    plot(d_10_12_off_ba_train,'m')  % 10 12 off BA trained
+    
+    plot(d_9_13_on_ab_train,'r','LineStyle','--')  % 9 13 on AB trained
+    plot(d_9_13_off_ab_train,'g','LineStyle','--')  % 9 13 off AB trained
+   
+    plot(d_9_13_on_ba_train,'b','LineStyle','--')  % 9 13 on BA trained
+    plot(d_9_13_off_ba_train,'m','LineStyle','--')  % 9 13 off BA trained
+hold off
+
+legend('10 12 on AB trained', '10 12 off AB trained', ...
+        '10 12 on BA trained', '10 12 off BA trained', ...
+        '9 13 on AB trained', '9 13 off AB trained',...
+        '9 13 on BA trained', '9 13 off BA trained'...
+        )
+title('ab - ba final')
+grid
