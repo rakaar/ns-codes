@@ -75,7 +75,7 @@ figure
         plot(ba_f, 'Color','r','LineWidth',2)
     hold off
     legend('AB initial', 'AB final','BA initial','BA final')
-    title('10 12 off BA trained')
+    title('rand w 9 13 on AB trained')
 grid
 
 %% ab trained    matrix

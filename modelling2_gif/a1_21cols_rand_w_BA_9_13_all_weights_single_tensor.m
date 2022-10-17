@@ -1,26 +1,9 @@
+clear all;
 close all;
+
 tic
-% every 5 batches
-n_columns = 21;
-n_steps = 1;
-xxx = zeros(n_steps,n_columns); % rates of all cols, for easy access named xxx
-starting_bbb = 495;
-data_path = strcat("D:\som-on-21cols-9-13-AB-trained-rand-w-data", "\");
-som_reduction_factor = 1;
-fname = 'c21_rand_w_9_13_on_AB_trained_BA_final.mat';
+n_iters = 1;
 
-for bbb=1:length(starting_bbb)
-    fprintf("\n bbb is %d \n", bbb)
-    previous_batch_file = strcat(data_path,'batch_', num2str(starting_bbb(bbb)), '.mat');
-    previous_batch_network_weight_matrix_struct = load(previous_batch_file,'network_weight_matrix');
-    previous_batch_network_weight_matrix = previous_batch_network_weight_matrix_struct.network_weight_matrix;
-
-    previous_batch_weight_thalamic_to_exc_l4_matrix = load(strcat(data_path,'batch_1.mat'), 'weight_thalamic_to_exc_l4_matrix').weight_thalamic_to_exc_l4_matrix;
-    col_spike_rates_per_subatch = zeros(5,n_columns);
-
-    for ccc=1:5 % 10 tokens
-        n_iters = 1;
-    fprintf("\n ccc is %d \n", ccc)
 % basic variables;
 n_columns = 21; % 5->9->21
 n_excitatory = 20;
@@ -47,9 +30,10 @@ tspan = 0:dt:t_simulate;
 spike_rate_dt = 1*dt;
 spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
+
 % connection strength
 % within column
-
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -106,7 +90,6 @@ num_of_LTDs = zeros(n_iters, n_columns, length(tspan));
 Amp_strength = 0.015; Amp_weak = 0.021;
 tau_strength = 30; tau_weak = 50;
 
-
 % kernel for g(t)
 tau_syn = 10;
 kernel_kt = [0 exp(-[0:t_simulate])./tau_syn];
@@ -135,7 +118,6 @@ recurrence_inh_neighbour_column_epsc_tensor = zeros(n_iters, n_columns, n_total_
 recurrence_inh_pv_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 recurrence_inh_som_epsc_tensor = zeros(n_iters, n_columns, n_total_neurons, length(tspan)-1);
 
-
 % synaptic resources
 % --- l4 ---
 xr = zeros(n_iters, n_columns, n_total_neurons, length(tspan));
@@ -153,6 +135,7 @@ lamda_a = 300;
 lamda_b = 50;
 lamda_m = 100;
 lamda_s = 0;
+
 
 for iter=1:n_iters
     for tok=1:n_tokens
@@ -179,7 +162,6 @@ for iter=1:n_iters
         lamda(iter,16,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
         lamda(iter,17,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
         lamda(iter,18:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-
         
        
         % posttoken silence
@@ -215,16 +197,17 @@ end
 n_input_thalamic = 5;
 thalamic_connections = zeros(n_total_neurons,n_input_thalamic);
 
-
 for n=1:n_total_neurons
     thalamic_connections(n,:) = randperm(n_thalamic_neurons,n_input_thalamic);
 end
 
-% weight_thalamic_to_exc_l4 = 550;
-% weight_thalamic_to_pv_l4 = 750;
-% weight_thalamic_to_som_l4 = 750;
 
-
+weight_thalamic_to_exc_l4_matrix = zeros(5, n_columns*n_excitatory);
+weight_thalamic_to_exc_l4_matrix(1,:) = make_rand_vector(55,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(2,:) = make_rand_vector(110,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(3,:) = make_rand_vector(220,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(4,:) = make_rand_vector(110,10,[1 n_columns*n_excitatory]);
+weight_thalamic_to_exc_l4_matrix(5,:) = make_rand_vector(55,10,[1 n_columns*n_excitatory]);
 
 weight_thalamic_to_pv_l4_above_col = 310;
 weight_thalamic_to_pv_l4_side_col_1 = 155;
@@ -237,7 +220,9 @@ weight_thalamic_to_som_l4_side_col_2 = 65;
 weight_thalamic_to_som_l4_arr = [weight_thalamic_to_som_l4_side_col_2,weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_above_col, weight_thalamic_to_som_l4_side_col_1, weight_thalamic_to_som_l4_side_col_2];
 %% time constant for synaptic resources
 tau_re = 0.6; tau_ir = 700; tau_ei = 15;
+% tau_re_thalamic = 0.6; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
 tau_re_thalamic = 0.3; tau_ir_thalamic = 300; tau_ei_thalamic = 50;
+% tau_re_thalamic = 0.1; tau_ir_thalamic = 100; tau_ei_thalamic = 10;
     
 % initialize
 v0 = -70;  
@@ -248,11 +233,123 @@ i1_tensor(:, :, :, 1:5) = 0.01;
 i2_tensor(:, :, :, 1:5) = 0.001;
 theta_tensor(:, :, :, 1:5) = -50.0;
 
+J_ee_0_initial = 100;
 
 % weight matrix of all neurons in all columns
 num_network_neurons = n_columns*n_total_neurons;
-network_weight_matrix = previous_batch_network_weight_matrix;
+network_weight_matrix = zeros(n_iters, length(tspan), num_network_neurons, num_network_neurons);
 
+within_column_weights_map = containers.Map;
+within_column_weights_map('exc-to-exc') = J_ee_0;
+within_column_weights_map('exc-to-pv') = J_pv_e_0;
+within_column_weights_map('exc-to-som') = J_som_e_0;
+
+within_column_weights_map('pv-to-exc') = J_e_pv;
+within_column_weights_map('pv-to-pv') = J_pv_pv;
+within_column_weights_map('pv-to-som') = J_som_pv;
+
+within_column_weights_map('som-to-exc') = J_e_som;
+within_column_weights_map('som-to-som') = J_som_som;
+within_column_weights_map('som-to-pv') = J_pv_som;
+
+% neighbouring column
+beside_column_weights_map = containers.Map;
+beside_column_weights_map('exc-to-exc') = J_ee_1;
+beside_column_weights_map('exc-to-pv') = J_pv_e_1;
+beside_column_weights_map('exc-to-som') = J_som_e_1;
+
+beside_column_weights_map('som-to-exc') = J_e_som_1;
+beside_column_weights_map('som-to-pv') = 0;
+beside_column_weights_map('som-to-som') = 0;
+
+beside_column_weights_map('pv-to-exc') = 0;
+beside_column_weights_map('pv-to-pv') = 0;
+beside_column_weights_map('pv-to-som') = 0;
+
+% neighbouring neihbouring column
+beside_beside_column_weights_map = containers.Map;
+beside_beside_column_weights_map('exc-to-exc') = J_ee_2;
+beside_beside_column_weights_map('exc-to-pv') = J_pv_e_2;
+beside_beside_column_weights_map('exc-to-som') = J_som_e_2;
+
+beside_beside_column_weights_map('som-to-exc') = J_e_som_2;
+beside_beside_column_weights_map('som-to-pv') = 0;
+beside_beside_column_weights_map('som-to-som') = 0;
+
+beside_beside_column_weights_map('pv-to-exc') = 0;
+beside_beside_column_weights_map('pv-to-pv') = 0;
+beside_beside_column_weights_map('pv-to-som') = 0;
+
+% initialize weights within column
+for n1=1:num_network_neurons
+    for n2=1:num_network_neurons
+        c1 = floor(n1/n_total_neurons) + 1;
+        c2 = floor(n2/n_total_neurons) + 1;
+        
+        if c1 == n_columns + 1
+            c1 = n_columns;
+        end
+        if c2 == n_columns + 1
+            c2 = n_columns;
+        end
+
+        n1_index_in_column = mod(n1,n_total_neurons);
+        if n1_index_in_column == 0
+            n1_index_in_column = 25;
+        end
+
+        n2_index_in_column = mod(n2,n_total_neurons);
+        if n2_index_in_column == 0
+            n2_index_in_column = 25;
+        end
+            
+        if n1_index_in_column <= n_excitatory
+            n1_type = 'exc';
+        elseif n1_index_in_column > n_excitatory && n1_index_in_column <= n_excitatory + n_pv
+            n1_type = 'pv';
+        elseif n1_index_in_column > n_excitatory + n_pv
+            n1_type = 'som';
+        end
+
+        if n2_index_in_column <= n_excitatory
+            n2_type = 'exc';
+        elseif n2_index_in_column > n_excitatory && n2_index_in_column <= n_excitatory + n_pv
+            n2_type = 'pv';
+        elseif n2_index_in_column > n_excitatory + n_pv
+            n2_type = 'som';
+        end
+
+        
+        connection_type = strcat(n1_type,'-to-',n2_type);
+        
+        if c1 == c2 % within column weights
+                weight_value = within_column_weights_map(connection_type);
+        elseif abs(c1 - c2) == 1 % beside column weights
+                weight_value = beside_column_weights_map(connection_type);
+        elseif abs(c1 - c2) == 2 % beside beside column weights 
+                weight_value = beside_beside_column_weights_map(connection_type);
+        else % out of reach column 
+            weight_value = 0;
+        end
+    
+%         if n1 == n2
+%             weight_value = 0;
+%         end
+    if strcmp(n1_type,'exc') && strcmp(n2_type,'exc')
+        network_weight_matrix(:,:,n1,n2) = pick_rand_uniformly(weight_value,10);
+    else
+        network_weight_matrix(:,:,n1,n2) = weight_value;
+    end
+
+       
+    end % end of for n2
+end % end of for n1
+
+for nn=1:num_network_neurons
+    network_weight_matrix(:,:,nn,nn) = 0;
+end
+
+    
 % sponataneous current into l4 neurons
 background_epsc = zeros(n_iters,n_columns,n_total_neurons, length(tspan));
 for iter=1:n_iters
@@ -273,7 +370,7 @@ xe(:,:,n_excitatory+1:n_total_neurons,:) = 1;
 
 for iter=1:n_iters
     
-%     fprintf('------iter numm %d -----', iter);
+%     fprintf("------iter numm %d -----", iter);
 
     % thalamic
     for thal_col=1:n_thalamic_cols
@@ -340,6 +437,9 @@ for iter=1:n_iters
             end
         end
     end
+
+    % temporary to see what happens if thalamic depression is removed
+%     xe_thalamic(:,:,:,:) = 1;
     
     for thal_col=1:n_thalamic_cols
         for thal_n=1:n_thalamic_neurons
@@ -354,9 +454,6 @@ for iter=1:n_iters
 
 	for c=1:n_columns
 	            
-            
-      
-
 		for n=1:n_total_neurons
 					
             n_index_in_network = (c - 1)*n_total_neurons + n;
@@ -485,7 +582,7 @@ for iter=1:n_iters
           if n <= n_excitatory
                for col_index=1:length(cols_giving_input)
                     neuron_num = thalamic_connections(n,col_index);
-                    rand_w_thalamus_to_exc = previous_batch_weight_thalamic_to_exc_l4_matrix(col_index,((c-1)*n_excitatory) + n);
+                    rand_w_thalamus_to_exc = weight_thalamic_to_exc_l4_matrix(col_index,((c-1)*n_excitatory) + n);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*rand_w_thalamus_to_exc;
                     thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*rand_w_thalamus_to_exc;
                end
@@ -500,7 +597,7 @@ for iter=1:n_iters
                     neuron_num = thalamic_connections(n,col_index);
                     epsc_from_thalamic = epsc_from_thalamic + epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
                     thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index)) = thalamic_epsc_to_neuron_thalamic_column_wise(iter,c,n,cols_giving_input(col_index))  +  epsc_thalamic(iter,cols_giving_input(col_index),neuron_num,i)*weight_thalamic_to_som_l4_arr(col_index);
-             end
+              end
           end
 
           thalamic_epsc_tensor(iter,c,n,i-5) = epsc_from_thalamic;
@@ -526,16 +623,15 @@ for iter=1:n_iters
         recurrence_inh_neighbour_column_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2 + ...
                                                                             epsc_som_back_c1 + ...
                                                                             epsc_som_front_c1 + ...
-                                                                            epsc_som_front_c2;
-
-        recurrence_inh_pv_epsc_tensor(iter,c,n,i-1)  = epsc_pv_own_column;  
+                                                                            epsc_som_front_c2;          
+		recurrence_inh_pv_epsc_tensor(iter,c,n,i-1)  = epsc_pv_own_column;  
 		recurrence_inh_som_epsc_tensor(iter,c,n,i-1) = epsc_som_back_c2  + ...
                                                         epsc_som_back_c1 + ...
                                                         epsc_som_front_c1 + ...
                                                         epsc_som_front_c2 + ...
                                                         epsc_som_own_column ;
-
-		    total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
+   
+        total_epsc = total_epsc + epsc_from_thalamic; % recurrence + thalamic
             % clip test - to see whether the later spike(s) is due to
             % params or really disihibition
             % uncomment and see if spikes comes or not
@@ -580,7 +676,7 @@ for iter=1:n_iters
 		
             
             
-            %	fprintf('voltage returned from function is %f \n', voltages(c,n,i));
+            %	fprintf("voltage returned from function is %f \n", voltages(c,n,i));
     
             % update synaptic resources
             
@@ -619,16 +715,126 @@ for iter=1:n_iters
         end
     
    
-%     fprintf('xr %f, xe %f, xi %f\n', xr(c,n,i),xe(c,n,i), xi(c,n,i));
+%     fprintf("xr %f, xe %f, xi %f\n", xr(c,n,i),xe(c,n,i), xi(c,n,i));
    % pause(0.4);
     
     end
 
-	    
+	        % ------updating weights using STDP
+            either_LTP_or_LTD_occured = zeros(num_network_neurons, num_network_neurons);
+            for neuron_p=1:num_network_neurons % for all neurons in network
+                col_p = floor(neuron_p/n_total_neurons) + 1;
+                neuron_p_index_in_column = mod(neuron_p,n_total_neurons);
+                if neuron_p_index_in_column == 0
+                    neuron_p_index_in_column = 25;
+                end
+
+                if neuron_p_index_in_column > n_excitatory
+                    continue
+                end
+
+                % neuron_p -> postsyn : LTD
+                for postsyn_neuron=1:num_network_neurons
+                    col_postsyn = floor(postsyn_neuron/n_total_neurons) + 1;
+                    % check that column is within range
+                    if abs(col_postsyn - col_p) > 2
+                        continue
+                    end
+
+                    postsyn_neuron_index_in_column = mod(postsyn_neuron, n_total_neurons);
+                    if postsyn_neuron_index_in_column == 0
+                        postsyn_neuron_index_in_column = 25;
+                    end
+
+                    if postsyn_neuron_index_in_column > n_excitatory
+                        continue
+                    end
+
+                    if spikes(iter,col_p,neuron_p_index_in_column,i) == 1 % if there is a spike
+                        found_spike_in_window_LTD = 0;
+                        for postsyn_spike_time=i-1:-1:i-20
+                            if postsyn_spike_time >= 1 && spikes(iter,col_postsyn,postsyn_neuron_index_in_column,i) == 0 && spikes(iter,col_postsyn,postsyn_neuron_index_in_column,postsyn_spike_time) == 1
+                                network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron)*(1-Amp_weak*exp(-abs(i-postsyn_spike_time)/tau_weak));
+                                
+                                if network_weight_matrix(iter,i,neuron_p, postsyn_neuron) < minimum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = minimum_weight_exc_to_exc;
+                                end
+                                if network_weight_matrix(iter,i,neuron_p, postsyn_neuron) > maximum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = maximum_weight_exc_to_exc;
+                                end
+                                
+                                found_spike_in_window_LTD = 1;
+                                either_LTP_or_LTD_occured(neuron_p, postsyn_neuron) = 1;
+                                break
+                            end
+                        end
+
+                        if found_spike_in_window_LTD == 0 && either_LTP_or_LTD_occured(neuron_p, postsyn_neuron) == 0
+                            network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron);
+                        end
+                    else % if no spike
+                        if either_LTP_or_LTD_occured(neuron_p, postsyn_neuron) == 0
+                            network_weight_matrix(iter,i,neuron_p, postsyn_neuron) = network_weight_matrix(iter,i-1,neuron_p, postsyn_neuron);
+                        end
+                    end
+                end
+
+                % presyn -> neuron_p : LTP
+                for presyn_neuron=1:num_network_neurons
+                    col_presyn = floor(presyn_neuron/n_total_neurons) + 1;
+                    if abs(col_presyn - col_p) > 2
+                        continue
+                    end
+                    presyn_neuron_index_in_column = mod(presyn_neuron, n_total_neurons);
+                    if presyn_neuron_index_in_column == 0
+                        presyn_neuron_index_in_column = 25;
+                    end
+                    
+                    if presyn_neuron_index_in_column > n_excitatory
+                        continue
+                    end
+%                     if i == 13
+%                         if presyn_neuron == 79 && neuron_p == 7
+%                             fprintf("\n  spikes(iter,col_p,neuron_p_index_in_column,i) %d \n",spikes(iter,col_p,neuron_p_index_in_column,i))
+%                             pause(1)
+%                         end
+%                     end
+                    
+                    if spikes(iter,col_p,neuron_p_index_in_column,i) == 1
+                        found_spike_in_window_LTP = 0;
+                        for presyn_spike_time=i-1:-1:i-20
+                            if presyn_spike_time >= 1 && spikes(iter,col_presyn,presyn_neuron_index_in_column,i) == 0 && spikes(iter,col_presyn,presyn_neuron_index_in_column,presyn_spike_time) == 1
+                                network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p)*(1 + Amp_strength*exp(-abs(i-presyn_spike_time)/tau_strength));
+                                
+                                if network_weight_matrix(iter,i,presyn_neuron,neuron_p) < minimum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,presyn_neuron,neuron_p) = minimum_weight_exc_to_exc;
+                                end
+                                if network_weight_matrix(iter,i,presyn_neuron,neuron_p) > maximum_weight_exc_to_exc
+                                    network_weight_matrix(iter,i,presyn_neuron,neuron_p) = maximum_weight_exc_to_exc;
+                                end
+                                
+                                found_spike_in_window_LTP = 1;
+                                either_LTP_or_LTD_occured(presyn_neuron,neuron_p) = 1;
+                                break
+                            end
+                        end
+
+                        if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-5,presyn_neuron,neuron_p); 
+                        end
+                    else % if no spike
+                        if either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-5,presyn_neuron,neuron_p); 
+                        end
+                        
+                    end
+                end
+            end % end of all network neurons
+        
                
         % re-initialize at the end of token
         if ismember(i,token_start_times)
-%             disp('*******************token resest***************************')
+%             disp("*******************token resest***************************")
             voltages(:,:,:,i) = v0;  
             xr(:, :, :, i) = 1;
             xe(:, :, :, i) = 0;
@@ -645,18 +851,8 @@ for iter=1:n_iters
 
 end % end of an iter
 
-    % per subatch mean spike rate of all cols
-    for sub_col=1:n_columns
-        col_spike_rates_per_subatch(ccc,sub_col) = mean(mean(squeeze(spikes(1,sub_col,:,:)) , 1));
-    end
-
-    end % end of ccc
-
-    for sub_col=1:n_columns
-        xxx(bbb,sub_col) = mean(col_spike_rates_per_subatch(:,sub_col));
-    end
-
-end % end of bbb
-
-save(fname, 'xxx')
+% save('batch_1.mat')
+% filename = strcat('batch_1_',num2str(som_reduction_factor),'_', '.mat');
+filename = 'batch_1.mat';
+save(filename)
 toc
