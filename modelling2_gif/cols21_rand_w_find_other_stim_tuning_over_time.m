@@ -5,9 +5,9 @@ n_columns = 21;
 n_steps = 1;
 xxx = zeros(n_steps,n_columns); % rates of all cols, for easy access named xxx
 starting_bbb = 495;
-data_path = strcat("D:\som-on-21cols-9-13-AB-trained-rand-w-data", "\");
-som_reduction_factor = 1;
-fname = 'c21_rand_w_9_13_on_AB_trained_BA_final.mat';
+data_path = strcat("D:\som-off-21cols-9-13-AB-trained-rand-w-data", "\");
+som_reduction_factor = 0;
+fname = 'c21_rand_w_9_13_off_AB_trained_BA_final.mat';
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)

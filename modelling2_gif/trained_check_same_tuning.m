@@ -2,11 +2,11 @@ close all;
 % every 5 batches
 n_columns = 21;
 n_steps = 1;
-ba_from_last = zeros(n_steps,n_columns);
+xxx = zeros(n_steps,n_columns);
 starting_bbb = 495;
 % starting_bbb = 1:5;
-data_path = "D:\som-on-21cols-9-13-AB-trained-rand-w-data";
-fname = 'c21_rand_w_9_13_on_AB_trained_AB_final.mat';
+data_path = "D:\som-off-21cols-9-13-AB-trained-rand-w-data";
+fname = 'c21_rand_w_9_13_off_AB_trained_AB_final.mat';
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
@@ -24,9 +24,9 @@ for bbb=1:length(starting_bbb)
     end % end of b2
 
     for ccc=1:n_columns
-         ba_from_last(bbb, ccc) = mean(cols_spike_rates_subatch(:,ccc));
+         xxx(bbb, ccc) = mean(cols_spike_rates_subatch(:,ccc));
     end
     
 
 end % end of bbb
-save(fname, 'ba_from_last')
+save(fname, 'xxx')
