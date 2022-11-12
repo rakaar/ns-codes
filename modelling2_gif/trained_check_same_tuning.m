@@ -5,8 +5,8 @@ n_steps = 1;
 xxx = zeros(n_steps,n_columns);
 starting_bbb = 495;
 % starting_bbb = 1:5;
-data_path = "D:\som-off-21cols-9-13-AB-trained-rand-w-data";
-fname = 'c21_rand_w_9_13_off_AB_trained_AB_final.mat';
+data_path = "D:\som-off-21cols-9-13-BA-trained-rand-w-data";
+fname = 'c21_rand_w_9_13_off_BA_trained_BA_final.mat';
 
 for bbb=1:length(starting_bbb)
     fprintf("\n bbb is %d \n", bbb)
