@@ -1,4 +1,4 @@
-for batch=2:500
+for batch=2:3
 
 % previous batch variables
 previous_batch_file = strcat('batch_', num2str(batch-1), '.mat');
@@ -37,7 +37,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;

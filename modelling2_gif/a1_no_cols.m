@@ -3,18 +3,22 @@ clear all
 
 tic
 n_exc = 80;
-n_pv = 12;
+n_pv = 12; 
 n_som = 8;
 n_total_neurons = n_exc + n_pv + n_som;
 
 n_thalamus = 100;
 
 % time step
-n_tokens = 2; 
+n_tokens = 4; 
 single_stimulus_duration = 50; gap_duration = 50;
 pre_token_silence = 10;
 post_token_silence = 10;
 token_start_times = zeros(n_tokens,1);
+
+% plastic weights
+Amp_strength = 0.015; Amp_weak = 0.021;
+tau_strength = 30; tau_weak = 50;
 
 % total time
 physical_time_in_ms = 1; %dt time step
@@ -33,11 +37,11 @@ J_ee_0 = 30*weight_scaling_factor;
 J_pv_e_0 = 1.8750*weight_scaling_factor;
 J_som_e_0 = 1.8750*3*weight_scaling_factor;
 
-J_e_pv = -120*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_pv = -130*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_pv = 0;
 
-J_e_som = -20*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_som = -60*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_som = 0;
 J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor*imbalance_factor_pv_som;
 
@@ -79,6 +83,7 @@ shuffled_neuron_types = neuron_types(shuffled_indices);
 
 % weight matrix
 weight_matrix = zeros(n_total_neurons, n_total_neurons, length(tspan));
+% pre, post
 
 for i=1:n_total_neurons
     for j=1:n_total_neurons
@@ -138,9 +143,9 @@ for i=1:n_total_neurons
             if random_num <= 33
                 weight_matrix(i,j,:) = J_e_som;
             elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = J_e_som_1;
-            elseif random_num > 67
-                weight_matrix(i,j,:) = J_e_som_2;
+              weight_matrix(i,j,:) = J_e_som_1;
+           elseif random_num > 67
+             weight_matrix(i,j,:) = J_e_som_2;
             end
         end
 
@@ -265,11 +270,12 @@ thalamus_to_som_epsc = zeros(n_som, length(tspan));
 
 % weights will be same, epsc will change
 rand_weights_thalamus_to_exc = zeros(n_exc,5); 
-rand_weights_thalamus_to_exc(:,1) = make_rand_vector(55,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,2) = make_rand_vector(110,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,3) = make_rand_vector(220,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,4) = make_rand_vector(110,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,5) = make_rand_vector(55,10,[n_exc 1]);
+max_weight_thalamus_to_l4 = 240;
+rand_weights_thalamus_to_exc(:,1) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
+rand_weights_thalamus_to_exc(:,2) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
+rand_weights_thalamus_to_exc(:,3) = make_rand_vector(max_weight_thalamus_to_l4,10,[n_exc 1]);
+rand_weights_thalamus_to_exc(:,4) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
+rand_weights_thalamus_to_exc(:,5) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
 
 weight_thalamus_to_pv_weak = 77.5; weight_thalamus_to_pv_moderate = 155; weight_thalamus_to_pv_strong = 310;
 weights_thalamus_to_pv = [weight_thalamus_to_pv_weak,weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_strong, weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_weak];
@@ -338,6 +344,9 @@ end
 tau_syn = 10;
 kernel_kt = [0 exp(-[0:t_simulate])./tau_syn];
 
+tau_syn_longer = 45;
+kernel_kt_longer = [0 exp(-[0:t_simulate])./tau_syn_longer];
+
 rec_exc_epsc = zeros(n_total_neurons, length(tspan));
 rec_pv_epsc = zeros(n_total_neurons, length(tspan));
 rec_som_epsc = zeros(n_total_neurons, length(tspan));
@@ -355,7 +364,7 @@ xi = zeros(n_total_neurons, length(tspan));
 
 % initialize
 v0 = -70;  
-xr(:, :, :, 1:5) = 1; 
+xr(:, 1:5) = 1; 
 voltages(:, 1:5) = v0; % 
 i1s(:, 1:5) = 0.01;
 i2s(:, 1:5) = 0.001;
@@ -373,6 +382,9 @@ for n=1:n_total_neurons
         background_epsc(n,:) = background_epsc_reshaped;
 end
 
+% test
+g_t_test = zeros(n_total_neurons, n_total_neurons, length(tspan));
+
 for t=6:length(tspan)
     for n=1:n_total_neurons
        thalamic_epsc_for_n = thalamus_to_all_l4_epsc(n,t);
@@ -385,7 +397,12 @@ for t=6:length(tspan)
             end
 
             pre_spike_train = spikes(pre,:);
-            pre_g_t = get_g_t(pre_spike_train, dt, t-5, tspan,kernel_kt);
+            if shuffled_neuron_types(pre) == 0
+                pre_g_t = get_g_t(pre_spike_train, dt, t-5, tspan,kernel_kt);
+            else
+                pre_g_t = get_g_t(pre_spike_train, dt, t-5, tspan,kernel_kt_longer);
+            end
+            g_t_test(n,pre,t) = g_t_test(n,pre,t) + pre_g_t; 
             pre_xe = xe(pre, t-5);
             pre_weight = weight_matrix(pre,n,t-5);
             pre_epsc = pre_g_t*pre_xe*pre_weight;
@@ -448,6 +465,114 @@ for t=6:length(tspan)
     end % end of n
 
     %%%% STDP %%%%%
+    either_LTP_or_LTD_occured = zeros(n_total_neurons, n_total_neurons);
+    t1 = t-1;
+    t2 = max(1, t-20);
+    for neuron_p=1:n_total_neurons
+        % if not an exc neuron, skip
+        if shuffled_neuron_types(neuron_p) ~= 0
+            continue
+        end
+
+        %%%%%% presyn
+        for presyn=1:n_total_neurons
+            
+            if shuffled_neuron_types(presyn) ~= 0
+                continue
+            end
+            
+            if presyn == neuron_p
+                continue
+            end
+            
+            if spikes(neuron_p,t) == 1
+                found_spike_in_window = 0;
+                for t_w=t1:-1:t2
+                    if spikes(presyn,t_w) == 1 && spikes(presyn,t) == 0
+                        weight_matrix(presyn,neuron_p,t) =  weight_matrix(presyn,neuron_p,t-1)*(1+Amp_strength*exp(-abs(t-t_w)/tau_strength));
+                        if weight_matrix(presyn,neuron_p,t) < minimum_weight_exc_to_exc
+                            weight_matrix(presyn,neuron_p,t) = minimum_weight_exc_to_exc;
+                        end
+
+                        if weight_matrix(presyn,neuron_p,t) > maximum_weight_exc_to_exc
+                            weight_matrix(presyn,neuron_p,t) = maximum_weight_exc_to_exc;
+                        end
+
+                        either_LTP_or_LTD_occured(presyn, neuron_p) = 1;
+                        found_spike_in_window = 1;
+                        break;
+                    end
+                end
+
+                if found_spike_in_window == 0 && either_LTP_or_LTD_occured(presyn, neuron_p) == 0
+                    weight_matrix(presyn,neuron_p,t) = weight_matrix(presyn,neuron_p,t-1); 
+                end
+
+            else % if no spike
+                if either_LTP_or_LTD_occured(presyn,neuron_p) == 0
+                    weight_matrix(presyn,neuron_p,t) = weight_matrix(presyn,neuron_p,t-1);
+                end
+                
+            end % if there is a spike
+        
+        end % end of presyn
+
+      %%% post syn
+      for postsyn=1:n_total_neurons
+            
+            if shuffled_neuron_types(postsyn) ~= 0
+                continue
+            end
+
+            if postsyn == neuron_p
+                continue
+            end
+            
+            if spikes(neuron_p,t) == 1
+                found_spike_in_window = 0;
+                for t_w=t1:-1:t2
+                    if spikes(postsyn,t_w) == 1 && spikes(postsyn,t) == 0
+                        weight_matrix(neuron_p,postsyn,t) =  weight_matrix(neuron_p,postsyn,t-1)*(1-Amp_weak*exp(-abs(t-t_w)/tau_weak));
+                        if weight_matrix(neuron_p,postsyn,t) < minimum_weight_exc_to_exc
+                            weight_matrix(neuron_p,postsyn,t) = minimum_weight_exc_to_exc;
+                        end
+
+                        if weight_matrix(neuron_p,postsyn,t) > maximum_weight_exc_to_exc
+                            weight_matrix(neuron_p,postsyn,t) = maximum_weight_exc_to_exc;
+                        end
+
+                        either_LTP_or_LTD_occured(neuron_p,postsyn) = 1;
+                        found_spike_in_window = 1;
+                        break;
+                    end
+                end
+
+                if found_spike_in_window == 0 && either_LTP_or_LTD_occured(neuron_p,postsyn) == 0
+                    weight_matrix(neuron_p,postsyn,t) = weight_matrix(neuron_p,postsyn,t-1); 
+                end
+
+            else % if no spike
+                if either_LTP_or_LTD_occured(neuron_p,postsyn) == 0
+                    weight_matrix(neuron_p,postsyn,t) = weight_matrix(neuron_p,postsyn,t-1);
+                end
+                
+            end % if there is a spike
+        
+        end % end of postsyn
+
+    end % end of STDP
+
+    % if t is initializing of a token, reset values
+
+        if ismember(t,token_start_times)
+            voltages(:,t) = v0;  
+            xr(:, t) = 1;
+            xe(:, t) = 0;
+            xi(:, t) = 0;
+            i1s(:, t) = 0.01;
+            i2s(:, t) = 0.001;
+            thetas(:,t) = -50.0;
+        end
 
 end % end of t
 

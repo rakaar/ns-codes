@@ -33,7 +33,7 @@ spike_rate_length = (length(tspan)-1)/(spike_rate_dt/dt);
 
 % connection strength
 % within column
-som_reduction_factor = 0;
+som_reduction_factor = 1;
 inc_inh_to_exc_factor = 2.5;
 weight_scaling_factor = 0.2;
 inhibition_reduction_factor = 1.2;
@@ -820,11 +820,11 @@ for iter=1:n_iters
                         end
 
                         if found_spike_in_window_LTP == 0 && either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
-                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-5,presyn_neuron,neuron_p); 
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
                         end
                     else % if no spike
                         if either_LTP_or_LTD_occured(presyn_neuron,neuron_p) == 0
-                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-5,presyn_neuron,neuron_p); 
+                            network_weight_matrix(iter,i,presyn_neuron,neuron_p) = network_weight_matrix(iter,i-1,presyn_neuron,neuron_p); 
                         end
                         
                     end
