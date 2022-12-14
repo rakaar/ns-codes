@@ -37,11 +37,11 @@ J_ee_0 = 30*weight_scaling_factor;
 J_pv_e_0 = 1.8750*weight_scaling_factor;
 J_som_e_0 = 1.8750*3*weight_scaling_factor;
 
-J_e_pv = -130*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_pv = -150*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_pv = 0;
 
-J_e_som = -60*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
+J_e_som = -70*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
 J_som_som = 0;
 J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor*imbalance_factor_pv_som;
 
@@ -159,6 +159,7 @@ for i=1:n_total_neurons
     end % end of j
 end % end of i,weight assignment
 
+
 lamda_1 = 300;
 lamda_2 = 100;
 lamda_3 = 50;
@@ -270,7 +271,7 @@ thalamus_to_som_epsc = zeros(n_som, length(tspan));
 
 % weights will be same, epsc will change
 rand_weights_thalamus_to_exc = zeros(n_exc,5); 
-max_weight_thalamus_to_l4 = 240;
+max_weight_thalamus_to_l4 = 250;
 rand_weights_thalamus_to_exc(:,1) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
 rand_weights_thalamus_to_exc(:,2) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
 rand_weights_thalamus_to_exc(:,3) = make_rand_vector(max_weight_thalamus_to_l4,10,[n_exc 1]);
@@ -577,3 +578,4 @@ for t=6:length(tspan)
 end % end of t
 
 toc
+save('batch_1.mat')

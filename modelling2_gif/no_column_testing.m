@@ -21,6 +21,44 @@ figure
     title(num2str(nt))
 grid
 
+%% number of spikes for A and B
+a_rate = zeros(80,4);
+b_rate = zeros(80,4);
+
+for e=1:length(exc_index) 
+    k_counter=1;
+    for k=11:170:521
+        a_rate(e,k_counter) = sum(spikes(exc_index(e), k:k+49));
+        k_counter = k_counter + 1;
+    end
+
+    k_counter=1;
+    for k=111:170:621
+        b_rate(e,k_counter) = sum(spikes(exc_index(e), k:k+49));
+        k_counter = k_counter + 1;
+    end
+end
+
+figure
+    imagesc(a_rate)
+    title('a counter')
+grid
+
+figure
+    imagesc(b_rate)
+    title('b counter')
+grid
+
+figure
+    a_mean = mean(a_rate,1);
+    b_mean = mean(b_rate,1);
+
+    hold on
+        plot(a_mean)
+        plot(b_mean)
+    hold off
+    legend('a mean', 'b mean')
+grid
 % figure
 %     hold on
 %         plot(thetas.')
@@ -49,3 +87,26 @@ grid
 % figure
 %     imagesc(squeeze(weight_matrix(find(shuffled_neuron_types == 1),nt, :)))
 % grid
+
+% x1 = load( 'som_epsc_1.mat')
+% x1 = x1.rec_som_epsc;
+% x0 = load('som_epsc_0.mat').rec_som_epsc;
+% xd = x1 - x0;
+% imagesc(xd)
+% plot(xd.')
+
+
+%% 
+s = load('batch_3.mat','shuffled_neuron_types').shuffled_neuron_types;
+w1 = load('batch_1.mat', 'weight_matrix').weight_matrix;
+w2 = load('batch_2.mat', 'weight_matrix').weight_matrix;
+w3 = load('batch_3.mat', 'weight_matrix').weight_matrix;
+
+
+figure
+hold on
+plot(squeeze(w1(70,87,:)))
+plot(squeeze(w2(70,93,:)))
+plot(squeeze(w3(70,93,:)))
+hold off
+grid
