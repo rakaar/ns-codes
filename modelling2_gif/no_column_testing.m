@@ -97,16 +97,16 @@ grid
 
 
 %% 
-s = load('batch_3.mat','shuffled_neuron_types').shuffled_neuron_types;
-w1 = load('batch_1.mat', 'weight_matrix').weight_matrix;
-w2 = load('batch_2.mat', 'weight_matrix').weight_matrix;
-w3 = load('batch_3.mat', 'weight_matrix').weight_matrix;
-
-
-figure
-hold on
-plot(squeeze(w1(70,87,:)))
-plot(squeeze(w2(70,93,:)))
-plot(squeeze(w3(70,93,:)))
-hold off
-grid
+% s = load('batch_3.mat','shuffled_neuron_types').shuffled_neuron_types;
+% w1 = load('batch_1.mat', 'weight_matrix').weight_matrix;
+% w2 = load('batch_2.mat', 'weight_matrix').weight_matrix;
+% w3 = load('batch_3.mat', 'weight_matrix').weight_matrix;
+% 
+% 
+% figure
+% hold on
+% plot(squeeze(w1(70,87,:)))
+% plot(squeeze(w2(70,93,:)))
+% plot(squeeze(w3(70,93,:)))
+% hold off
+% grid

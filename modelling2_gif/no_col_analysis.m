@@ -88,10 +88,11 @@ figure
 grid
 %% spike rate over time
 spike_rate_over_time = zeros(80,500);
-neuron_types = load("D:\no_cols_1000tokens\batch_1.mat").shuffled_neuron_types;
-data_path = "D:\no_cols_1000tokens";
+neuron_types = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat").shuffled_neuron_types;
+data_path = "D:\no_col_2000tokens_more_ee_var";
 
 for b=1:500
+    disp(b)
     data_file = strcat(data_path, '\', 'batch_', num2str(b), '.mat');
     all_spikes = load(data_file).spikes;
     exc_spikes = all_spikes(find(neuron_types == 0),:);
@@ -145,24 +146,24 @@ initial_AB = zeros(100,5);
 final_AB = zeros(100,5);
 
 for b=5:9
-    spikes = load(strcat("D:\no_cols_1000tokens\batch_", num2str(b), '.mat')).spikes;
+    spikes = load(strcat("D:\no_col_2000tokens_more_ee_var\batch_", num2str(b), '.mat')).spikes;
     initial_AB(:,b-4) = mean(spikes,2);
 end
 
 for b=496:500
-    spikes = load(strcat("D:\no_cols_1000tokens\batch_", num2str(b), '.mat')).spikes;
+    spikes = load(strcat("D:\no_col_2000tokens_more_ee_var\batch_", num2str(b), '.mat')).spikes;
     final_AB(:,b-495) = mean(spikes,2);
 end
 
 %% 
-load('initial_A.mat') 
-load('final_A.mat') 
+initial_A = load('ee_var_initial_A.mat').response_to_A; 
+final_A = load('ee_var_final_A.mat').response_to_A; 
 
-load('initial_B.mat') 
-load('final_B.mat') 
+initial_B = load('ee_var_initial_B.mat').response_to_B; 
+final_B = load('ee_var_final_B.mat').response_to_B; 
 
-load('initial_BA.mat') 
-load('final_BA.mat') 
+initial_BA = load('ee_var_initial_BA.mat').response_to_BA; 
+final_BA = load('ee_var_final_BA.mat').response_to_BA; 
 
 initial_A = mean(initial_A,2);
 final_A = mean(final_A,2);
@@ -197,6 +198,8 @@ grid
 figure
     plot(all_tunings.')
 grid
+
+%% csi analysis
 
 a_csi = (final_A - initial_A)./(final_A + initial_A);
 b_csi = (final_B - initial_B)./(final_B + initial_B);
