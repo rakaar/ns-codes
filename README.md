@@ -5,4 +5,6 @@
 - Variability in all weights -  `a1_no_cols_full_var.m` , `a1_no_cols_full_var_long.m`
 - Variability in E-E weights - `a1_no_cols_ee_w_var.m`, `a1_no_cols_ee_w_var_long.m`
 - Normal version: `a1_no_cols.m` , `a1_no_cols_long.m`
+- Variability in all types of weights - `a1_no_cols_full_var.m` `a1_no_cols_full_var_long.m`
+
 
