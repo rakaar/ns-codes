@@ -1,8 +1,12 @@
 clear all
 tic
 response_to_A = zeros(100,5);
-shuffled_neuron_types = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat", 'shuffled_neuron_types').shuffled_neuron_types;
-weight_matrix = load("D:\no_col_2000tokens_more_ee_var\batch_496.mat").weight_matrix;
+batch_1_path = "D:\RK AM simulation_full_var_no_cols\batch_1.mat";
+starting_batch_path = "D:\RK AM simulation_full_var_no_cols\batch_6.mat";
+ending_batch_path = "D:\RK AM simulation_full_var_no_cols\batch_496.mat";
+
+shuffled_neuron_types = load(batch_1_path, 'shuffled_neuron_types').shuffled_neuron_types;
+weight_matrix = load(ending_batch_path).weight_matrix;
 for rep=1:5
 n_exc = 80;
 n_pv = 12; 
@@ -142,7 +146,7 @@ thalamus_to_som_epsc = zeros(n_som, length(tspan));
 % rand_weights_thalamus_to_exc(:,5) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
 % JUST IMPORT IT FROM PREVIOUS BATCH/FIRST BATCH - weights from thalamus to
 % exc are constant over time, but vary over L4 neurons.
-rand_weights_thalamus_to_exc = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat",'rand_weights_thalamus_to_exc').rand_weights_thalamus_to_exc;
+rand_weights_thalamus_to_exc = load(batch_1_path,'rand_weights_thalamus_to_exc').rand_weights_thalamus_to_exc;
 
 weight_thalamus_to_pv_weak = 77.5; weight_thalamus_to_pv_moderate = 155; weight_thalamus_to_pv_strong = 310;
 weights_thalamus_to_pv = [weight_thalamus_to_pv_weak,weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_strong, weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_weak];
@@ -182,15 +186,15 @@ for i=1:4
 end % end of i
 
 % thalamus_to_exc_shuffle_indices = randperm(n_exc); % IMPORT
-thalamus_to_exc_shuffle_indices = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat", 'thalamus_to_exc_shuffle_indices').thalamus_to_exc_shuffle_indices;
+thalamus_to_exc_shuffle_indices = load(batch_1_path, 'thalamus_to_exc_shuffle_indices').thalamus_to_exc_shuffle_indices;
 thalamus_to_exc_epsc = thalamus_to_exc_epsc(thalamus_to_exc_shuffle_indices,:);
 
 % thalamus_to_pv_shuffle_indices = randperm(n_pv); % IMPORT
-thalamus_to_pv_shuffle_indices = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat",'thalamus_to_pv_shuffle_indices').thalamus_to_pv_shuffle_indices;
+thalamus_to_pv_shuffle_indices = load(batch_1_path,'thalamus_to_pv_shuffle_indices').thalamus_to_pv_shuffle_indices;
 thalamus_to_pv_epsc = thalamus_to_pv_epsc(thalamus_to_pv_shuffle_indices,:);
 
 % thalamus_to_som_shuffle_indices = randperm(n_som); % IMPORT
-thalamus_to_som_shuffle_indices = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat", 'thalamus_to_som_shuffle_indices').thalamus_to_som_shuffle_indices;
+thalamus_to_som_shuffle_indices = load(batch_1_path, 'thalamus_to_som_shuffle_indices').thalamus_to_som_shuffle_indices;
 thalamus_to_som_epsc = thalamus_to_som_epsc(thalamus_to_som_shuffle_indices,:);
 
 thalamus_to_all_l4_epsc = zeros(n_total_neurons, length(tspan));

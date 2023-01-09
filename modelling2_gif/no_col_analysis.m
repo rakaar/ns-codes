@@ -141,29 +141,30 @@ figure
 grid
 
 %% 
+path = "D:\RK AM simulation_full_var_no_cols\batch_";
 
 initial_AB = zeros(100,5);
 final_AB = zeros(100,5);
 
-for b=5:9
-    spikes = load(strcat("D:\no_col_2000tokens_more_ee_var\batch_", num2str(b), '.mat')).spikes;
+for b=6:10
+    spikes = load(strcat(path, num2str(b), '.mat')).spikes;
     initial_AB(:,b-4) = mean(spikes,2);
 end
 
 for b=496:500
-    spikes = load(strcat("D:\no_col_2000tokens_more_ee_var\batch_", num2str(b), '.mat')).spikes;
+    spikes = load(strcat(path, num2str(b), '.mat')).spikes;
     final_AB(:,b-495) = mean(spikes,2);
 end
 
 %% 
-initial_A = load('ee_var_initial_A.mat').response_to_A; 
-final_A = load('ee_var_final_A.mat').response_to_A; 
+initial_A = load('initial_A.mat').initial_A; 
+final_A = load('final_A.mat').final_A; 
 
-initial_B = load('ee_var_initial_B.mat').response_to_B; 
-final_B = load('ee_var_final_B.mat').response_to_B; 
+initial_B = load('initial_B.mat').initial_B; 
+final_B = load('final_B.mat').final_B; 
 
-initial_BA = load('ee_var_initial_BA.mat').response_to_BA; 
-final_BA = load('ee_var_final_BA.mat').response_to_BA; 
+initial_BA = load('initial_BA.mat').initial_BA; 
+final_BA = load('final_BA.mat').final_BA; 
 
 initial_A = mean(initial_A,2);
 final_A = mean(final_A,2);
@@ -237,4 +238,19 @@ figure
         scatter(ab_csi(find(id2 == 1)), ba_csi(find(id2 == 1)), '*r')
         scatter(ab_csi(find(id2 == 2)), ba_csi(find(id2 == 2)), '*b')
     hold off
+grid
+
+%% csi diff
+initial_b_wrt_a = (initial_B - initial_A)./(initial_B + initial_A);
+final_b_wrt_a = (final_B - final_A)./(final_B + final_A);
+
+batch_1_path = "D:\RK AM simulation_full_var_no_cols\batch_1.mat";
+shuffled_neuron_types = load(batch_1_path, 'shuffled_neuron_types').shuffled_neuron_types;
+
+figure
+    hold on
+        plot( initial_b_wrt_a(  find(shuffled_neuron_types == 0)  )  )
+        plot( final_b_wrt_a(    find(shuffled_neuron_types == 0)  )  )
+    hold off
+    legend('initial b', 'final b')
 grid
