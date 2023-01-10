@@ -96,44 +96,44 @@ for i=1:n_total_neurons
         % e -> e
         if shuffled_neuron_types(i) == 0 && shuffled_neuron_types(j) == 0
             if random_num <= 33
-               weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_0)-(log(2)/2),log(J_ee_0)+(log(2)/2)));
+               weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_0)-(log(2)/8),log(J_ee_0)+(log(2)/8)));
             elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_1)-(log(2)/2),log(J_ee_1)+(log(2)/2)));
+                weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_1)-(log(2)/8),log(J_ee_1)+(log(2)/8)));
             elseif random_num > 67
-                weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_2)-(log(2)/2),log(J_ee_2)+(log(2)/2)));
+                weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_2)-(log(2)/8),log(J_ee_2)+(log(2)/8)));
             end
         end
 
         % e -> pv
         if shuffled_neuron_types(i) == 0 && shuffled_neuron_types(j) == 1
             if random_num <= 33
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_0) - log(2)/2,log(J_pv_e_0) + log(2)/2 ) );
+                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_0) - log(2)/8,log(J_pv_e_0) + log(2)/8 ) );
             elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_1) - log(2)/2,log(J_pv_e_1) + log(2)/2 ) );
+                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_1) - log(2)/1000,log(J_pv_e_1) + log(2)/1000 ) );
             elseif random_num > 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_2) - log(2)/2,log(J_pv_e_2) + log(2)/2 ) );
+                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_2) - log(2)/1000,log(J_pv_e_2) + log(2)/1000 ) );
             end
         end
 
         % e -> som
         if shuffled_neuron_types(i) == 0 && shuffled_neuron_types(j) == 2
             if random_num <= 33
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_0) - log(2)/2,log(J_som_e_0) + log(2)/2 ) );
+                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_0) - log(2)/8,log(J_som_e_0) + log(2)/8 ) );
             elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_1) - log(2)/2,log(J_som_e_1) + log(2)/2 ) );
+                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_1) - log(2)/1000,log(J_som_e_1) + log(2)/1000 ) );
             elseif random_num > 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_2) - log(2)/2,log(J_som_e_2) + log(2)/2 ) );
+                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_2) - log(2)/1000,log(J_som_e_2) + log(2)/1000 ) );
             end
         end
 
         % pv -> e
         if shuffled_neuron_types(i) == 1 && shuffled_neuron_types(j) == 0
-            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_pv) - log(2)/2,log(-J_e_pv) + log(2)/2 ) );
+            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_pv) - log(2)/8,log(-J_e_pv) + log(2)/8 ) );
         end
 
         % pv -> pv
         if shuffled_neuron_types(i) == 1 && shuffled_neuron_types(j) == 1
-            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_pv_pv) - log(2)/2,log(-J_pv_pv) + log(2)/2 ) );
+            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_pv_pv) - log(2)/8,log(-J_pv_pv) + log(2)/8 ) );
         end
 
         % pv -> som - no connections
@@ -141,17 +141,17 @@ for i=1:n_total_neurons
         % som -> e
         if shuffled_neuron_types(i) == 2 && shuffled_neuron_types(j) == 0
             if random_num <= 33
-                weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som) - log(2)/2,log(-J_e_som) + log(2)/2 ) );
+                weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som) - log(2)/8,log(-J_e_som) + log(2)/8 ) );
             elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som_1) - log(2)/2,log(-J_e_som_1) + log(2)/2 ) );
+                weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som_1) - log(2)/8,log(-J_e_som_1) + log(2)/8 ) );
            elseif random_num > 67
-               weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som_2) - log(2)/2,log(-J_e_som_2) + log(2)/2 ) );
+               weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som_2) - log(2)/8,log(-J_e_som_2) + log(2)/8 ) );
             end
         end
 
         % som -> pv
         if shuffled_neuron_types(i) == 2 && shuffled_neuron_types(j) == 1
-            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_pv_som) - log(2)/2,log(-J_pv_som) + log(2)/2 ) );
+            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_pv_som) - log(2)/8,log(-J_pv_som) + log(2)/8 ) );
         end
 
         % som -> som : no connections
@@ -283,9 +283,9 @@ thalamus_to_exc_epsc = zeros(n_exc, length(tspan));
 thalamus_to_pv_epsc = zeros(n_pv, length(tspan));
 thalamus_to_som_epsc = zeros(n_som, length(tspan));
 
-% weights will be same, epsc will change
+% weights will be same, epsc will change`
 rand_weights_thalamus_to_exc = zeros(n_exc,5); 
-max_weight_thalamus_to_l4 = 385;
+max_weight_thalamus_to_l4 = 450;
 rand_weights_thalamus_to_exc(:,1) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
 rand_weights_thalamus_to_exc(:,2) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
 rand_weights_thalamus_to_exc(:,3) = make_rand_vector(max_weight_thalamus_to_l4,10,[n_exc 1]);
