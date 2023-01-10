@@ -1,7 +1,5 @@
-close all
-clear all
+for batch=2:500
 
-tic
 n_exc = 80;
 n_pv = 12; 
 n_som = 8;
@@ -24,138 +22,23 @@ dt = 1;  % 0.2 dt = 20 ms, so 0 .01 = 1 ms
 t_simulate = n_tokens*(2*single_stimulus_duration + gap_duration + pre_token_silence + post_token_silence);
 tspan = 1:dt:t_simulate;
 
-% weights
-som_reduction_factor = 1;
-inc_inh_to_exc_factor = 2.5;
-weight_scaling_factor = 0.2;
-inhibition_reduction_factor = 1.2;
-imbalance_factor_pv_som = 6; % unequalise som -> pv and pv -> pv weights
-
-J_ee_0 = 30*weight_scaling_factor;
-J_pv_e_0 = 1.8750*weight_scaling_factor;
-J_som_e_0 = 1.8750*3*weight_scaling_factor;
-
-J_e_pv = -250*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
-J_pv_pv = -9.3750*inc_inh_to_exc_factor*weight_scaling_factor*inhibition_reduction_factor;
-J_som_pv = 0;
-
-J_e_som = -150*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
-J_som_som = 0;
-J_pv_som = -9.3750*inc_inh_to_exc_factor*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor*imbalance_factor_pv_som;
-
-% other column
-J_ee_1 = 15*weight_scaling_factor;
-J_pv_e_1 = 0.0131*weight_scaling_factor;
-J_som_e_1 = 0.0131*weight_scaling_factor;
-
-J_e_som_1 = -10*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
-
-J_ee_2 = 5*weight_scaling_factor;
-J_pv_e_2 = 0.0056*weight_scaling_factor;
-J_som_e_2 = 0.0056*weight_scaling_factor;
-
-J_e_som_2 = -2*som_reduction_factor*weight_scaling_factor*inhibition_reduction_factor;
-
-% space of params
-pv_space_of_parameter = 1;
-som_space_of_parameter = 1;
-J_e_pv = J_e_pv*pv_space_of_parameter;
-J_pv_pv = J_pv_pv*pv_space_of_parameter;
-J_som_pv = J_som_pv*pv_space_of_parameter;
-
-J_e_som = J_e_som*som_space_of_parameter;
-J_som_som = J_som_som*som_space_of_parameter;
-J_pv_som = J_pv_som*som_space_of_parameter;
-
-J_e_som_1 = J_e_som_1*som_space_of_parameter; 
-J_e_som_2 =  J_e_som_2*som_space_of_parameter;
 
 % synaptic weight matrix - exc to exc - row: presyn, col: postsyn
 minimum_weight_exc_to_exc = 0.01;
 maximum_weight_exc_to_exc = 500;
 
 
-neuron_types = [2*ones(n_som,1); zeros(n_exc,1); 1*ones(n_pv,1)];
-shuffled_indices = randperm(n_total_neurons);
-shuffled_neuron_types = neuron_types(shuffled_indices);
+% IMPORT
+shuffled_neuron_types = load('batch_1.mat', 'shuffled_neuron_types').shuffled_neuron_types;
 
 % weight matrix
 weight_matrix = zeros(n_total_neurons, n_total_neurons, length(tspan));
 % pre, post
-
-for i=1:n_total_neurons
-    for j=1:n_total_neurons
-        if i == j
-            continue
-        end
-
-
-        random_num = ceil(100*rand);
-        % e -> e
-        if shuffled_neuron_types(i) == 0 && shuffled_neuron_types(j) == 0
-            if random_num <= 33
-               weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_0)-(log(2)/8),log(J_ee_0)+(log(2)/8)));
-            elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_1)-(log(2)/8),log(J_ee_1)+(log(2)/8)));
-            elseif random_num > 67
-                weight_matrix(i,j,:)= exp(unifrnd(log(J_ee_2)-(log(2)/8),log(J_ee_2)+(log(2)/8)));
-            end
-        end
-
-        % e -> pv
-        if shuffled_neuron_types(i) == 0 && shuffled_neuron_types(j) == 1
-            if random_num <= 33
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_0) - log(2)/8,log(J_pv_e_0) + log(2)/8 ) );
-            elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_1) - log(2)/1000,log(J_pv_e_1) + log(2)/1000 ) );
-            elseif random_num > 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_pv_e_2) - log(2)/1000,log(J_pv_e_2) + log(2)/1000 ) );
-            end
-        end
-
-        % e -> som
-        if shuffled_neuron_types(i) == 0 && shuffled_neuron_types(j) == 2
-            if random_num <= 33
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_0) - log(2)/8,log(J_som_e_0) + log(2)/8 ) );
-            elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_1) - log(2)/1000,log(J_som_e_1) + log(2)/1000 ) );
-            elseif random_num > 67
-                weight_matrix(i,j,:) = exp( unifrnd( log(J_som_e_2) - log(2)/1000,log(J_som_e_2) + log(2)/1000 ) );
-            end
-        end
-
-        % pv -> e
-        if shuffled_neuron_types(i) == 1 && shuffled_neuron_types(j) == 0
-            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_pv) - log(2)/8,log(-J_e_pv) + log(2)/8 ) );
-        end
-
-        % pv -> pv
-        if shuffled_neuron_types(i) == 1 && shuffled_neuron_types(j) == 1
-            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_pv_pv) - log(2)/8,log(-J_pv_pv) + log(2)/8 ) );
-        end
-
-        % pv -> som - no connections
-        
-        % som -> e
-        if shuffled_neuron_types(i) == 2 && shuffled_neuron_types(j) == 0
-            if random_num <= 33
-                weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som) - log(2)/8,log(-J_e_som) + log(2)/8 ) );
-            elseif random_num > 33 && random_num <= 67
-                weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som_1) - log(2)/8,log(-J_e_som_1) + log(2)/8 ) );
-           elseif random_num > 67
-               weight_matrix(i,j,:) = -exp( unifrnd( log(-J_e_som_2) - log(2)/8,log(-J_e_som_2) + log(2)/8 ) );
-            end
-        end
-
-        % som -> pv
-        if shuffled_neuron_types(i) == 2 && shuffled_neuron_types(j) == 1
-            weight_matrix(i,j,:) = -exp( unifrnd( log(-J_pv_som) - log(2)/8,log(-J_pv_som) + log(2)/8 ) );
-        end
-
-        % som -> som : no connections
-
-    end % end of j
-end % end of i,weight assignment
+% initialize weight matrix with previous batch weights
+previous_weight_matrix = load(strcat('batch_', num2str(batch-1), '.mat'), 'weight_matrix').weight_matrix;
+for i=1:t_simulate
+    weight_matrix(:,:,i) = previous_weight_matrix(:,:,end);
+end
 
 
 lamda_i = 25;
@@ -221,7 +104,7 @@ for tok=1:n_tokens
         thalamic_cols_spike_rates(:,:,token_second_half_end_time:token_second_half_end_time+post_token_silence-1) = 0;
         
         token_start_times(tok,1) = token_second_half_end_time+post_token_silence;
-    end
+end
 
 % epsc produced by thalamic
 xr_thalamic = ones(n_thalamic_cols, n_thalamic_neurons,length(tspan));
@@ -276,15 +159,17 @@ for c=1:n_thalamic_cols
     end % end of n
 end % end of c
 
-
-% weights will be same, epsc will change`
-rand_weights_thalamus_to_exc = zeros(n_exc,5); 
-max_weight_thalamus_to_l4 = 400;
-rand_weights_thalamus_to_exc(:,1) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,2) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,3) = make_rand_vector(max_weight_thalamus_to_l4,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,4) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
-rand_weights_thalamus_to_exc(:,5) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
+% weights will be same, epsc will change
+% rand_weights_thalamus_to_exc = zeros(n_exc,5); 
+% max_weight_thalamus_to_l4 = 250;
+% rand_weights_thalamus_to_exc(:,1) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
+% rand_weights_thalamus_to_exc(:,2) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
+% rand_weights_thalamus_to_exc(:,3) = make_rand_vector(max_weight_thalamus_to_l4,10,[n_exc 1]);
+% rand_weights_thalamus_to_exc(:,4) = make_rand_vector(max_weight_thalamus_to_l4/2,10,[n_exc 1]);
+% rand_weights_thalamus_to_exc(:,5) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
+% JUST IMPORT IT FROM PREVIOUS BATCH/FIRST BATCH - weights from thalamus to
+% exc are constant over time, but vary over L4 neurons.
+rand_weights_thalamus_to_exc = load('batch_1.mat','rand_weights_thalamus_to_exc').rand_weights_thalamus_to_exc;
 
 weight_thalamus_to_pv_weak = 77.5; weight_thalamus_to_pv_moderate = 155; weight_thalamus_to_pv_strong = 310;
 weights_thalamus_to_pv = [weight_thalamus_to_pv_weak,weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_strong, weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_weak];
@@ -292,14 +177,7 @@ weights_thalamus_to_pv = [weight_thalamus_to_pv_weak,weight_thalamus_to_pv_moder
 weight_thalamus_to_som_weak = 65; weight_thalamus_to_som_moderate = 130; weight_thalamus_to_som_strong = 260;
 weights_thalamus_to_som = [weight_thalamus_to_som_weak,weight_thalamus_to_som_moderate, weight_thalamus_to_som_strong, weight_thalamus_to_som_moderate, weight_thalamus_to_som_weak];
 
-thalamic_centers = 4:23;
-shuffled_thalamic_centers = [];
-for i=1:5
-    shuffle1 = thalamic_centers(randperm(length(thalamic_centers)));
-    shuffled_thalamic_centers = [ shuffled_thalamic_centers shuffle1];
-end
-
-shuffled_thalamic_centers = shuffled_thalamic_centers(randperm(length(shuffled_thalamic_centers)));
+shuffled_thalamic_centers = load('batch_1.mat', 'shuffled_thalamic_centers').shuffled_thalamic_centers;
 
 
 thalamus_to_all_l4_epsc = zeros(n_total_neurons, length(tspan));
@@ -571,5 +449,7 @@ for t=6:length(tspan)
 
 end % end of t
 
-toc
-save('batch_1.mat')
+
+save(strcat('batch_', num2str(batch), '.mat'))
+clear all
+end % end of all batches
