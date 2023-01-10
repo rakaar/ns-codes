@@ -1,4 +1,4 @@
-
+close all
  exc_index = find(shuffled_neuron_types == 0);
 nt = exc_index(randi(length(exc_index)));
 figure
@@ -39,16 +39,16 @@ for e=1:length(exc_index)
     end
 end
 
-figure
-    imagesc(a_rate)
-    title('a counter')
-grid
-
-figure
-    imagesc(b_rate)
-    title('b counter')
-grid
-
+% figure
+%     imagesc(a_rate)
+%     title('a counter')
+% grid
+% 
+% figure
+%     imagesc(b_rate)
+%     title('b counter')
+% grid
+% 
 figure
     a_mean = mean(a_rate,1);
     b_mean = mean(b_rate,1);
