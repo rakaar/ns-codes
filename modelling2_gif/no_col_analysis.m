@@ -150,7 +150,7 @@ final_AB = zeros(100,5);
 
 for b=6:10
     spikes = load(strcat(path, num2str(b), '.mat')).spikes;
-    initial_AB(:,b-4) = mean(spikes,2);
+    initial_AB(:,b-5) = mean(spikes,2);
 end
 
 for b=max_batches-4:max_batches
@@ -217,57 +217,140 @@ figure
     title(strcat('A-','B-','AB-','BA-', '-i,f x 4'))
 grid
 
+%% statistical analysis
+% - A
+disp(['On A stimulus on AB trained matrix: ttest and ranksun test btn initial and final'])
+initial_res = load('initial_response_to_A.mat').response_to_A;
+final_res = load('final_response_to_A.mat').response_to_A;
+ttest1 = zeros(100,1);
+ranksum1 = zeros(100,1);
+for n=1:100
+    ttest1(n) = ttest(initial_res(n,:), final_res(n,:));
+    [~,ranksum1(n)] = ranksum(initial_res(n,:), final_res(n,:));
+end
+
+disp((['Ttest: ' num2str(sum(ttest1)) '/' num2str(length(ttest1)) ' have sig difference' ]))
+disp((['Ranksum: ' num2str(sum(ranksum1)) '/' num2str(length(ranksum1)) ' have sig difference' ]))
+disp('-----------------------------------------------------------')
+% - B
+disp(['On B stimulus on AB trained matrix: ttest and ranksun test btn initial and final'])
+initial_res = load('initial_response_to_B.mat').response_to_B;
+final_res = load('final_response_to_B.mat').response_to_B;
+ttest1 = zeros(100,1);
+ranksum1 = zeros(100,1);
+for n=1:100
+    ttest1(n) = ttest(initial_res(n,:), final_res(n,:));
+    [~,ranksum1(n)] = ranksum(initial_res(n,:), final_res(n,:));
+end
+
+disp((['Ttest: ' num2str(sum(ttest1)) '/' num2str(length(ttest1)) ' have sig difference' ]))
+disp((['Ranksum: ' num2str(sum(ranksum1)) '/' num2str(length(ranksum1)) ' have sig difference' ]))
+disp('-----------------------------------------------------------')
+% - AB
+path = "E:\RK_modelling\data\batch_";
+
+initial_AB = zeros(100,5);
+final_AB = zeros(100,5);
+
+for b=6:10
+    spikes = load(strcat(path, num2str(b), '.mat')).spikes;
+    initial_AB(:,b-5) = mean(spikes,2);
+end
+
+for b=max_batches-4:max_batches
+    spikes = load(strcat(path, num2str(b), '.mat')).spikes;
+    final_AB(:,b-(max_batches - 5)) = mean(spikes,2);
+end
+
+disp(['On AB stimulus on AB trained matrix: ttest and ranksun test btn initial and final'])
+initial_res = initial_AB;
+final_res = final_AB;
+ttest1 = zeros(100,1);
+ranksum1 = zeros(100,1);
+for n=1:100
+    ttest1(n) = ttest(initial_res(n,:), final_res(n,:));
+    [~,ranksum1(n)] = ranksum(initial_res(n,:), final_res(n,:));
+end
+disp((['Ttest: ' num2str(nansum(ttest1)) '/' num2str(length(ttest1)) ' have sig difference' ]))
+disp((['Ranksum: ' num2str(sum(ranksum1)) '/' num2str(length(ranksum1)) ' have sig difference' ]))
+disp('-----------------------------------------------------------')
+
+% - BA
+disp(['On BA stimulus on AB trained matrix: ttest and ranksun test btn initial and final'])
+initial_res = load('initial_response_to_BA.mat').response_to_BA;
+final_res = load('final_response_to_BA.mat').response_to_BA;
+ttest1 = zeros(100,1);
+ranksum1 = zeros(100,1);
+for n=1:100
+    ttest1(n) = ttest(initial_res(n,:), final_res(n,:));
+    [~,ranksum1(n)] = ranksum(initial_res(n,:), final_res(n,:));
+end
+
+disp((['Ttest: ' num2str(sum(ttest1)) '/' num2str(length(ttest1)) ' have sig difference' ]))
+disp((['Ranksum: ' num2str(sum(ranksum1)) '/' num2str(length(ranksum1)) ' have sig difference' ]))
+disp('-----------------------------------------------------------')
+
+
+disp(['-----------Between AB and BA : right------------'])
+ttest1 = zeros(100,1);
+ranksum1 = zeros(100,1);
+for n=1:100
+    ttest1(n) = ttest2(final_AB(n,:), final_BA(n,:), 'tail', 'right');
+    [~,ranksum1(n)] = ranksum(final_AB(n,:), final_BA(n,:), 'tail', 'right');
+end
+disp(['Ttest: ' num2str(nansum(ttest1)) '/' num2str(length(ttest1)) ' have sig difference' ])
+disp(['Ranksum: ' num2str(nansum(ranksum1)) '/' num2str(length(ranksum1)) ' have sig difference' ])
 %% csi analysis
 
-a_csi = (final_A - initial_A)./(final_A + initial_A);
-b_csi = (final_B - initial_B)./(final_B + initial_B);
-ab_csi = (final_AB - initial_AB)./(final_AB + initial_AB);
-ba_csi = (final_BA - initial_BA)./(final_BA + initial_BA);
+% a_csi = (final_A - initial_A)./(final_A + initial_A);
+% b_csi = (final_B - initial_B)./(final_B + initial_B);
+% ab_csi = (final_AB - initial_AB)./(final_AB + initial_AB);
+% ba_csi = (final_BA - initial_BA)./(final_BA + initial_BA);
 
-figure
-    scatter(a_csi, b_csi, '*')
+% figure
+%     scatter(a_csi, b_csi, '*')
 
-grid
+% grid
 
-figure
-    scatter(ab_csi, ba_csi, '*')
+% figure
+%     scatter(ab_csi, ba_csi, '*')
 
-grid
+% grid
 
-a_and_b =[a_csi b_csi];
+% a_and_b =[a_csi b_csi];
 
-id = kmeans(a_and_b, 2);
+% id = kmeans(a_and_b, 2);
 
 
-ab_and_ba =[ab_csi ba_csi];
+% ab_and_ba =[ab_csi ba_csi];
 
-id2 = kmeans(ab_and_ba, 2);
+% id2 = kmeans(ab_and_ba, 2);
 
-figure
-    hold on
-        scatter(a_csi(find(id == 1)), b_csi(find(id == 1)), '*r')
-        scatter(a_csi(find(id == 2)), b_csi(find(id == 2)), '*b')
-    hold off
-grid
+% figure
+%     hold on
+%         scatter(a_csi(find(id == 1)), b_csi(find(id == 1)), '*r')
+%         scatter(a_csi(find(id == 2)), b_csi(find(id == 2)), '*b')
+%     hold off
+% grid
 
-figure
-    hold on
-        scatter(ab_csi(find(id2 == 1)), ba_csi(find(id2 == 1)), '*r')
-        scatter(ab_csi(find(id2 == 2)), ba_csi(find(id2 == 2)), '*b')
-    hold off
-grid
+% figure
+%     hold on
+%         scatter(ab_csi(find(id2 == 1)), ba_csi(find(id2 == 1)), '*r')
+%         scatter(ab_csi(find(id2 == 2)), ba_csi(find(id2 == 2)), '*b')
+%     hold off
+% grid
 
-%% csi diff
-initial_b_wrt_a = (initial_B - initial_A)./(initial_B + initial_A);
-final_b_wrt_a = (final_B - final_A)./(final_B + final_A);
+% %% csi diff
+% initial_b_wrt_a = (initial_B - initial_A)./(initial_B + initial_A);
+% final_b_wrt_a = (final_B - final_A)./(final_B + final_A);
 
-batch_1_path = "E:\RK_modelling\data\batch_1.mat";
-shuffled_neuron_types = load(batch_1_path, 'shuffled_neuron_types').shuffled_neuron_types;
+% batch_1_path = "E:\RK_modelling\data\batch_1.mat";
+% shuffled_neuron_types = load(batch_1_path, 'shuffled_neuron_types').shuffled_neuron_types;
 
-figure
-    hold on
-        plot( initial_b_wrt_a(  find(shuffled_neuron_types == 0)  )  )
-        plot( final_b_wrt_a(    find(shuffled_neuron_types == 0)  )  )
-    hold off
-    legend('initial b', 'final b')
-grid
+% figure
+%     hold on
+%         plot( initial_b_wrt_a(  find(shuffled_neuron_types == 0)  )  )
+%         plot( final_b_wrt_a(    find(shuffled_neuron_types == 0)  )  )
+%     hold off
+%     legend('initial b', 'final b')
+% grid
