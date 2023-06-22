@@ -572,4 +572,4 @@ for t=6:length(tspan)
 end % end of t
 
 toc
-save('batch_1.mat')
+save('E:\RK_modelling\data\batch_1.mat')

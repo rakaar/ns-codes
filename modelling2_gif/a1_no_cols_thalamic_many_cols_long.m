@@ -1,4 +1,4 @@
-for batch=2:500
+for batch=2:300
 
 n_exc = 80;
 n_pv = 12; 
@@ -29,13 +29,13 @@ maximum_weight_exc_to_exc = 500;
 
 
 % IMPORT
-shuffled_neuron_types = load('batch_1.mat', 'shuffled_neuron_types').shuffled_neuron_types;
+shuffled_neuron_types = load('E:\RK_modelling\data\\batch_1.mat', 'shuffled_neuron_types').shuffled_neuron_types;
 
 % weight matrix
 weight_matrix = zeros(n_total_neurons, n_total_neurons, length(tspan));
 % pre, post
 % initialize weight matrix with previous batch weights
-previous_weight_matrix = load(strcat('batch_', num2str(batch-1), '.mat'), 'weight_matrix').weight_matrix;
+previous_weight_matrix = load(strcat('E:\RK_modelling\data\\batch_', num2str(batch-1), '.mat'), 'weight_matrix').weight_matrix;
 for i=1:t_simulate
     weight_matrix(:,:,i) = previous_weight_matrix(:,:,end);
 end
@@ -169,7 +169,7 @@ end % end of c
 % rand_weights_thalamus_to_exc(:,5) = make_rand_vector(max_weight_thalamus_to_l4/4,10,[n_exc 1]);
 % JUST IMPORT IT FROM PREVIOUS BATCH/FIRST BATCH - weights from thalamus to
 % exc are constant over time, but vary over L4 neurons.
-rand_weights_thalamus_to_exc = load('batch_1.mat','rand_weights_thalamus_to_exc').rand_weights_thalamus_to_exc;
+rand_weights_thalamus_to_exc = load('E:\RK_modelling\data\\batch_1.mat','rand_weights_thalamus_to_exc').rand_weights_thalamus_to_exc;
 
 weight_thalamus_to_pv_weak = 77.5; weight_thalamus_to_pv_moderate = 155; weight_thalamus_to_pv_strong = 310;
 weights_thalamus_to_pv = [weight_thalamus_to_pv_weak,weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_strong, weight_thalamus_to_pv_moderate, weight_thalamus_to_pv_weak];
@@ -177,7 +177,7 @@ weights_thalamus_to_pv = [weight_thalamus_to_pv_weak,weight_thalamus_to_pv_moder
 weight_thalamus_to_som_weak = 65; weight_thalamus_to_som_moderate = 130; weight_thalamus_to_som_strong = 260;
 weights_thalamus_to_som = [weight_thalamus_to_som_weak,weight_thalamus_to_som_moderate, weight_thalamus_to_som_strong, weight_thalamus_to_som_moderate, weight_thalamus_to_som_weak];
 
-shuffled_thalamic_centers = load('batch_1.mat', 'shuffled_thalamic_centers').shuffled_thalamic_centers;
+shuffled_thalamic_centers = load('E:\RK_modelling\data\\batch_1.mat', 'shuffled_thalamic_centers').shuffled_thalamic_centers;
 
 
 thalamus_to_all_l4_epsc = zeros(n_total_neurons, length(tspan));
@@ -450,6 +450,6 @@ for t=6:length(tspan)
 end % end of t
 
 
-save(strcat('batch_', num2str(batch), '.mat'))
+save(strcat('E:\RK_modelling\data\\batch_', num2str(batch), '.mat'))
 clear all
 end % end of all batches

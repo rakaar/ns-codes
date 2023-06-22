@@ -1,13 +1,14 @@
 clear all
 tic
 response_to_B = zeros(100,5);
-batch_1_path = "D:\RK AM simulation_full_var_no_cols\batch_1.mat";
-starting_batch_path = "D:\RK AM simulation_full_var_no_cols\batch_6.mat";
-ending_batch_path = "D:\RK AM simulation_full_var_no_cols\batch_496.mat";
+batch_1_path = "E:\RK_modelling\data\batch_1.mat";
+starting_batch_path = "E:\RK_modelling\data\batch_6.mat";
+ending_batch_path = "E:\RK_modelling\data\batch_296.mat";
 
 shuffled_neuron_types = load(batch_1_path, 'shuffled_neuron_types').shuffled_neuron_types;
-weight_matrix = load(ending_batch_path).weight_matrix;
+weight_matrix = load(starting_batch_path).weight_matrix;
 for rep=1:5
+    disp(['rep: ', num2str(rep)])
 n_exc = 80;
 n_pv = 12; 
 n_som = 8;
@@ -42,15 +43,16 @@ tspan = 1:dt:t_simulate;
 
 
 
-
-lamda_1 = 300;
-lamda_2 = 100;
-lamda_3 = 50;
-lamda_4 = 25;
+lamda_i = 25;
+lamda_a = 300;
+lamda_b = 50;
+lamda_m = 100;
+lamda_s = 0;
 
 % thalamus tuning
-n_thalamic_cols = 8;
+n_thalamic_cols = 25;
 n_thalamic_neurons = 20;
+
 thalamic_cols_spike_rates =  zeros(n_thalamic_cols,n_thalamic_neurons,length(tspan));
 for tok=1:n_tokens
     ind =  (tok-1)*(single_stimulus_duration + pre_token_silence + post_token_silence) + 1;
@@ -58,15 +60,17 @@ for tok=1:n_tokens
     %%% first stim
     token_first_half_start_time = ind+pre_token_silence;
     token_first_half_end_time = token_first_half_start_time+single_stimulus_duration-1;
-    thalamic_cols_spike_rates(1,:,token_first_half_start_time:token_first_half_end_time) = lamda_4;
-    thalamic_cols_spike_rates(2,:,token_first_half_start_time:token_first_half_end_time) = lamda_4;
-    thalamic_cols_spike_rates(3,:,token_first_half_start_time:token_first_half_end_time) = lamda_3;
-    thalamic_cols_spike_rates(4,:,token_first_half_start_time:token_first_half_end_time) = lamda_2;
-    thalamic_cols_spike_rates(5,:,token_first_half_start_time:token_first_half_end_time) = lamda_1;
-    thalamic_cols_spike_rates(6,:,token_first_half_start_time:token_first_half_end_time) = lamda_2;
-    thalamic_cols_spike_rates(7,:,token_first_half_start_time:token_first_half_end_time) = lamda_3;
-    thalamic_cols_spike_rates(8,:,token_first_half_start_time:token_first_half_end_time) = lamda_4;
-
+    thalamic_cols_spike_rates(1:8,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+    thalamic_cols_spike_rates(9,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+    thalamic_cols_spike_rates(10,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+    thalamic_cols_spike_rates(11,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+    thalamic_cols_spike_rates(12,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+    thalamic_cols_spike_rates(13,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+    thalamic_cols_spike_rates(14,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+    thalamic_cols_spike_rates(15,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
+    thalamic_cols_spike_rates(16,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+    thalamic_cols_spike_rates(17,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+    thalamic_cols_spike_rates(18:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
 
     %%% silence
     token_gap_duration_start = ind+pre_token_silence+single_stimulus_duration;
@@ -185,34 +189,39 @@ for i=1:4
 
 end % end of i
 
-% thalamus_to_exc_shuffle_indices = randperm(n_exc); % IMPORT
-thalamus_to_exc_shuffle_indices = load(batch_1_path, 'thalamus_to_exc_shuffle_indices').thalamus_to_exc_shuffle_indices;
-thalamus_to_exc_epsc = thalamus_to_exc_epsc(thalamus_to_exc_shuffle_indices,:);
-
-% thalamus_to_pv_shuffle_indices = randperm(n_pv); % IMPORT
-thalamus_to_pv_shuffle_indices = load(batch_1_path,'thalamus_to_pv_shuffle_indices').thalamus_to_pv_shuffle_indices;
-thalamus_to_pv_epsc = thalamus_to_pv_epsc(thalamus_to_pv_shuffle_indices,:);
-
-% thalamus_to_som_shuffle_indices = randperm(n_som); % IMPORT
-thalamus_to_som_shuffle_indices = load(batch_1_path, 'thalamus_to_som_shuffle_indices').thalamus_to_som_shuffle_indices;
-thalamus_to_som_epsc = thalamus_to_som_epsc(thalamus_to_som_shuffle_indices,:);
-
+shuffled_thalamic_centers = load(batch_1_path, 'shuffled_thalamic_centers').shuffled_thalamic_centers;
 thalamus_to_all_l4_epsc = zeros(n_total_neurons, length(tspan));
 exc_counter = 1;
-pv_counter = 1;
-som_counter = 1;
 for n=1:n_total_neurons
     if shuffled_neuron_types(n) == 0 % exc
-        thalamus_to_all_l4_epsc(n,:) = thalamus_to_exc_epsc(exc_counter,:);
+        for i=1:5
+            thal_col = shuffled_thalamic_centers(n)+(-3+i);
+            thal_neuron = randi(n_thalamic_neurons);
+            thal_epsc = squeeze(thalamic_epsc(thal_col, thal_neuron,:));
+            thal_weight = rand_weights_thalamus_to_exc(exc_counter,i);
+            thalamus_to_all_l4_epsc(n,:) = thalamus_to_all_l4_epsc(n,:) + transpose(thal_weight*thal_epsc);
+        end
         exc_counter = exc_counter + 1;
     elseif shuffled_neuron_types(n) == 1 % pv 
-        thalamus_to_all_l4_epsc(n,:) = thalamus_to_pv_epsc(pv_counter,:);
-        pv_counter = pv_counter + 1;
+        for i=1:5
+            thal_col = shuffled_thalamic_centers(n)+(-3+i);
+            thal_neuron = randi(n_thalamic_neurons);
+            thal_epsc = squeeze(thalamic_epsc(thal_col, thal_neuron,:));
+            thal_weight = weights_thalamus_to_pv(i);
+            thalamus_to_all_l4_epsc(n,:) = thalamus_to_all_l4_epsc(n,:) + transpose(thal_weight*thal_epsc);
+        end
     else % som
-        thalamus_to_all_l4_epsc(n,:) = thalamus_to_som_epsc(som_counter,:);
-        som_counter = som_counter + 1;
+        for i=1:5
+            thal_col = shuffled_thalamic_centers(n)+(-3+i);
+            thal_neuron = randi(n_thalamic_neurons);
+            thal_epsc = squeeze(thalamic_epsc(thal_col, thal_neuron,:));
+            thal_weight = weights_thalamus_to_som(i);
+            thalamus_to_all_l4_epsc(n,:) = thalamus_to_all_l4_epsc(n,:) + transpose(thal_weight*thal_epsc);
+        end
+
     end
 end
+
 
 % kernel for g(t)
 tau_syn = 10;
@@ -358,3 +367,5 @@ response_to_B(:,rep) = mean(spikes,2);
 disp(rep)
 end % end of rep
 toc
+
+save('response_to_B.mat', 'response_to_B')

@@ -1,7 +1,9 @@
 %%  response to AB at initial and final stages
-neuron_types = load("D:\no_cols_1000tokens\batch_1.mat").shuffled_neuron_types;
-data_path = "D:\no_cols_1000tokens";
+neuron_types = load("E:\RK_modelling\data\batch_1.mat").shuffled_neuron_types;
+data_path = "E:\RK_modelling\data";
 % for initial tuning
+max_batches = 300;
+
 initial_exc_spike_rate =  zeros(80,1);
 for b=5:9
     data_file = strcat(data_path, '\', 'batch_', num2str(b), '.mat');
@@ -37,9 +39,9 @@ figure
 grid
 
 %% weight distribution initial and final
-initial_weight_matrix = load("D:\no_cols_1000tokens\batch_1.mat").weight_matrix;
-final_weight_matrix = load("D:\no_cols_1000tokens\batch_250.mat").weight_matrix;
-neuron_types = load("D:\no_cols_1000tokens\batch_1.mat").shuffled_neuron_types;
+initial_weight_matrix = load("E:\RK_modelling\data\batch_1.mat").weight_matrix;
+final_weight_matrix = load("E:\RK_modelling\data\batch_250.mat").weight_matrix;
+neuron_types = load("E:\RK_modelling\data\batch_1.mat").shuffled_neuron_types;
 
 exc_initial_weights = initial_weight_matrix(find(neuron_types == 0), find(neuron_types == 0),:);
 exc_initial_weights_mean = mean(exc_initial_weights, 3);
@@ -58,9 +60,9 @@ figure
  grid
 
  %% eigenvalues ?
- initial_weight_matrix = load("D:\no_cols_1000tokens\batch_1.mat").weight_matrix;
-final_weight_matrix = load("D:\no_cols_1000tokens\batch_250.mat").weight_matrix;
-neuron_types = load("D:\no_cols_1000tokens\batch_1.mat").shuffled_neuron_types;
+ initial_weight_matrix = load("E:\RK_modelling\data\batch_1.mat").weight_matrix;
+final_weight_matrix = load("E:\RK_modelling\data\batch_250.mat").weight_matrix;
+neuron_types = load("E:\RK_modelling\data\batch_1.mat").shuffled_neuron_types;
 
 exc_initial_weights = initial_weight_matrix(find(neuron_types == 0), find(neuron_types == 0),:);
 exc_initial_weights_mean = mean(exc_initial_weights, 3);
@@ -87,11 +89,11 @@ figure
     legend('initial-real', 'initial-img', 'final-real','final-img')
 grid
 %% spike rate over time
-spike_rate_over_time = zeros(80,500);
-neuron_types = load("D:\no_col_2000tokens_more_ee_var\batch_1.mat").shuffled_neuron_types;
-data_path = "D:\no_col_2000tokens_more_ee_var";
+spike_rate_over_time = zeros(80,max_batches);
+neuron_types = load("E:\RK_modelling\data\batch_1.mat").shuffled_neuron_types;
+data_path = "E:\RK_modelling\data";
 
-for b=1:500
+for b=1:max_batches
     disp(b)
     data_file = strcat(data_path, '\', 'batch_', num2str(b), '.mat');
     all_spikes = load(data_file).spikes;
@@ -105,11 +107,11 @@ figure
 grid
 
 %% set of neurons in 1 ensemble
-last_batch_spike_rates = spike_rate_over_time(:,500);
+last_batch_spike_rates = spike_rate_over_time(:,max_batches);
 
 set1_indices = find(last_batch_spike_rates >= 0.075 & last_batch_spike_rates <= 0.085 );
 set2_indices = find(last_batch_spike_rates >= 0.05 & last_batch_spike_rates <= 0.056);
-final_weight_matrix = load("D:\no_cols_1000tokens\batch_500.mat").weight_matrix;
+final_weight_matrix = load("E:\RK_modelling\data\batch_" + num2str(max_batches) +  ".mat").weight_matrix;
 final_weight_matrix = final_weight_matrix(find(neuron_types == 0), find(neuron_types == 0), :);
 set1_weights_matrix = squeeze(final_weight_matrix(set1_indices, set1_indices, end));
 set2_weights_matrix = squeeze(final_weight_matrix(set2_indices, set2_indices, end));
@@ -124,10 +126,10 @@ figure
     title('set2')
 grid
 %% 
-w1 = load("D:\no_cols_1000tokens\batch_1.mat").weight_matrix;
-w500 = load("D:\no_cols_1000tokens\batch_500.mat").weight_matrix;
+w1 = load("E:\RK_modelling\data\batch_1.mat").weight_matrix;
+w500 = load("E:\RK_modelling\data\batch_" + num2str(max_batches) +  ".mat").weight_matrix;
 
-neuron_types = load("D:\no_cols_1000tokens\batch_1.mat").shuffled_neuron_types;
+neuron_types = load("E:\RK_modelling\data\batch_1.mat").shuffled_neuron_types;
 
 w_begin = squeeze(w1(find(neuron_types == 0),find(neuron_types == 0),1));
 w_end = squeeze(w500(find(neuron_types == 0),find(neuron_types == 0),end));
@@ -141,7 +143,7 @@ figure
 grid
 
 %% 
-path = "D:\RK AM simulation_full_var_no_cols\batch_";
+path = "E:\RK_modelling\data\batch_";
 
 initial_AB = zeros(100,5);
 final_AB = zeros(100,5);
@@ -151,20 +153,28 @@ for b=6:10
     initial_AB(:,b-4) = mean(spikes,2);
 end
 
-for b=496:500
+for b=max_batches-4:max_batches
     spikes = load(strcat(path, num2str(b), '.mat')).spikes;
-    final_AB(:,b-495) = mean(spikes,2);
+    final_AB(:,b-(max_batches - 5)) = mean(spikes,2);
 end
 
 %% 
-initial_A = load('initial_A.mat').initial_A; 
-final_A = load('final_A.mat').final_A; 
+% initial_A = load('initial_A.mat').initial_A; 
+% final_A = load('final_A.mat').final_A; 
 
-initial_B = load('initial_B.mat').initial_B; 
-final_B = load('final_B.mat').final_B; 
+% initial_B = load('initial_B.mat').initial_B; 
+% final_B = load('final_B.mat').final_B; 
 
-initial_BA = load('initial_BA.mat').initial_BA; 
-final_BA = load('final_BA.mat').final_BA; 
+% initial_BA = load('initial_BA.mat').initial_BA; 
+% final_BA = load('final_BA.mat').final_BA; 
+initial_A = load('initial_response_to_A.mat').response_to_A;
+final_A = load('final_response_to_A.mat').response_to_A;
+
+initial_B = load('initial_response_to_B.mat').response_to_B;
+final_B = load('final_response_to_B.mat').response_to_B;
+
+initial_BA = load('initial_response_to_BA.mat').response_to_BA;
+final_BA = load('final_response_to_BA.mat').response_to_BA;
 
 initial_A = mean(initial_A,2);
 final_A = mean(final_A,2);
@@ -191,6 +201,12 @@ all_tunings(:,6) = final_AB;
 all_tunings(:,7) = initial_BA;
 all_tunings(:,8) = final_BA;
 
+initial_response_to_AB = initial_AB;
+final_response_to_AB = final_AB;
+
+save('initial_response_to_AB.mat', 'initial_response_to_AB')
+save('final_response_to_AB.mat', 'final_response_to_AB')
+
 figure
     imagesc(all_tunings)
     title(strcat('A-','B-','AB-','BA-', '-i,f x 4'))
@@ -198,6 +214,7 @@ grid
 
 figure
     plot(all_tunings.')
+    title(strcat('A-','B-','AB-','BA-', '-i,f x 4'))
 grid
 
 %% csi analysis
@@ -244,7 +261,7 @@ grid
 initial_b_wrt_a = (initial_B - initial_A)./(initial_B + initial_A);
 final_b_wrt_a = (final_B - final_A)./(final_B + final_A);
 
-batch_1_path = "D:\RK AM simulation_full_var_no_cols\batch_1.mat";
+batch_1_path = "E:\RK_modelling\data\batch_1.mat";
 shuffled_neuron_types = load(batch_1_path, 'shuffled_neuron_types').shuffled_neuron_types;
 
 figure
