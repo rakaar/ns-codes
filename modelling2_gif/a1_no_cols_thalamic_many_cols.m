@@ -174,7 +174,7 @@ for tok=1:n_tokens
         
 
         % ---- first half of token
-        
+        % 10 and 16 are the indices of the two thalamic columns that are tuned to A and B
         % pretoken silence
         thalamic_cols_spike_rates(:,:,ind:ind+pre_token_silence-1) = lamda_s;
 
@@ -182,18 +182,25 @@ for tok=1:n_tokens
         token_first_half_start_time = ind+pre_token_silence;
         token_first_half_end_time = token_first_half_start_time+single_stimulus_duration-1;
 
-        thalamic_cols_spike_rates(1:8,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(9,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
-        thalamic_cols_spike_rates(10,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        thalamic_cols_spike_rates(11,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
-        thalamic_cols_spike_rates(12,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
-        thalamic_cols_spike_rates(13,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
-        thalamic_cols_spike_rates(14,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(15,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(16,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(17,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(18:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(1:8,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(9,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        % thalamic_cols_spike_rates(10,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        % thalamic_cols_spike_rates(11,:,token_first_half_start_time:token_first_half_end_time) = lamda_a;
+        % thalamic_cols_spike_rates(12,:,token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        % thalamic_cols_spike_rates(13,:,token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        % thalamic_cols_spike_rates(14,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(15,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(16,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(17,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(18:25,:,token_first_half_start_time:token_first_half_end_time) = lamda_i;
         
+        thalamic_cols_spike_rates(1:7, :, token_first_half_start_time:token_first_half_end_time) = lamda_i;
+        thalamic_cols_spike_rates(8, :, token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        thalamic_cols_spike_rates(9, :, token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        thalamic_cols_spike_rates(10, :, token_first_half_start_time:token_first_half_end_time) = lamda_a;
+        thalamic_cols_spike_rates(11, :, token_first_half_start_time:token_first_half_end_time) = lamda_m;
+        thalamic_cols_spike_rates(12, :, token_first_half_start_time:token_first_half_end_time) = lamda_b;
+        thalamic_cols_spike_rates(13:25, :, token_first_half_start_time:token_first_half_end_time) = lamda_i;
        
         % posttoken silence
         token_gap_duration_start = ind+pre_token_silence+single_stimulus_duration;
@@ -204,17 +211,25 @@ for tok=1:n_tokens
         % stimulus
         token_second_half_start_time = token_gap_duration_end;
         token_second_half_end_time = token_second_half_start_time + single_stimulus_duration - 1;
-        thalamic_cols_spike_rates(1:8,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(9,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(10,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(11,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(12,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
-        thalamic_cols_spike_rates(13,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
-        thalamic_cols_spike_rates(14,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
-        thalamic_cols_spike_rates(15,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
-        thalamic_cols_spike_rates(16,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
-        thalamic_cols_spike_rates(17,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
-        thalamic_cols_spike_rates(18:25,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(1:8,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(9,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(10,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(11,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(12,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        % thalamic_cols_spike_rates(13,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        % thalamic_cols_spike_rates(14,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        % thalamic_cols_spike_rates(15,:,token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        % thalamic_cols_spike_rates(16,:,token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        % thalamic_cols_spike_rates(17,:,token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        % thalamic_cols_spike_rates(18:25,:,token_second_half_start_time:token_second_half_end_time) = lamda_i;
+
+        thalamic_cols_spike_rates(1:13, :, token_second_half_start_time:token_second_half_end_time) = lamda_i;
+        thalamic_cols_spike_rates(14, :, token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        thalamic_cols_spike_rates(15, :, token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        thalamic_cols_spike_rates(16, :, token_second_half_start_time:token_second_half_end_time) = lamda_a;
+        thalamic_cols_spike_rates(17, :, token_second_half_start_time:token_second_half_end_time) = lamda_m;
+        thalamic_cols_spike_rates(18, :, token_second_half_start_time:token_second_half_end_time) = lamda_b;
+        thalamic_cols_spike_rates(19:25, :, token_second_half_start_time:token_second_half_end_time) = lamda_i;
         % silence - saving time computationally
         
         
